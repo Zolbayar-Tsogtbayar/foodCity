@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
 import { translations, Lang, Translations } from "@/lib/translations";
 
 type LanguageContextType = {
@@ -36,7 +42,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, t: translations[lang], toggle }}>
+    <LanguageContext.Provider
+      value={{
+        lang,
+        t: translations[lang] as Translations,
+        toggle,
+      }}
+    >
       {children}
     </LanguageContext.Provider>
   );

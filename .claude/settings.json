@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ':*)",
+      "Bash(cp d:/zolbayar/foodCity/node_modules/next/dist/server/config.js.bak2 d:/zolbayar/foodCity/node_modules/next/dist/server/config.js)",
+      "Bash(cp d:/zolbayar/foodCity/node_modules/next/node_modules/postcss/lib/lazy-result.js.bak d:/zolbayar/foodCity/node_modules/next/node_modules/postcss/lib/lazy-result.js)",
+      "Bash(rm -f /tmp/debug.log)",
+      "Read(//tmp/**)",
+      "Bash(rm -rf d:/zolbayar/foodCity/.next)",
+      "Bash(env)",
+      "Bash(env -u __NEXT_PRIVATE_STANDALONE_CONFIG -u __NEXT_PRIVATE_ORIGIN npm run build)",
+      "Bash(env -u __NEXT_PRIVATE_STANDALONE_CONFIG -u __NEXT_PRIVATE_ORIGIN next dev --webpack --port 3456)",
+      "Bash(taskkill /PID 8732 /F)",
+      "Bash(cmd /c \"taskkill /PID 8732 /F\")",
+      "Bash(cmd /c \"taskkill /PID 8732 /F 2>&1\")",
+      "Bash(powershell -Command \"Stop-Process -Id 8732 -Force -ErrorAction SilentlyContinue; Write-Host 'Done'\")",
+      "Bash(env -u __NEXT_PRIVATE_STANDALONE_CONFIG npm run build)"
+    ],
+    "additionalDirectories": [
+      "d:\\zolbayar\\food-city-temp"
+    ]
+  }
+}

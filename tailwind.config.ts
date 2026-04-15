@@ -31,7 +31,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "Arial", "sans-serif"],
+        sans: ["var(--font-roboto)", "Roboto", "Arial", "sans-serif"],
       },
       colors: { brand, accent },
     },

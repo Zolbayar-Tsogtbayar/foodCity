@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const footerLinks = {
   Компани: ["Бидний тухай", "Манай төслүүд", "Ажлын байр", "Мэдээ & Хэвлэл"],
   Үйлчилгээ: [
@@ -15,12 +17,12 @@ const footerLinks = {
 };
 
 const partners = [
-  "ING Банк",
-  "Голомт Банк",
-  "MCS Групп",
-  "Ньюком Групп",
-  "Хаан Банк",
-  "АПУ ХК",
+  { name: "ING Банк",     src: "/logos/ing.svg",      width: 100, height: 36 },
+  { name: "Голомт Банк",  src: "/logos/golomt.svg",   width: 130, height: 36 },
+  { name: "MCS Групп",    src: "/logos/mcs.svg",       width: 110, height: 36 },
+  { name: "Ньюком Групп", src: "/logos/newcom.png",    width: 120, height: 36 },
+  { name: "Хаан Банк",    src: "/logos/khanbank.svg",  width: 120, height: 36 },
+  { name: "АПУ ХК",       src: "/logos/apu.svg",       width: 90,  height: 36 },
 ];
 
 const socials = [
@@ -62,13 +64,20 @@ export default function Footer() {
           <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-4 sm:mb-6">
             Тэргүүлэх байгууллагуудын итгэлийг хүлээсэн
           </p>
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-8">
+          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10">
             {partners.map((p) => (
               <div
-                key={p}
-                className="text-gray-600 font-bold text-xs sm:text-sm uppercase tracking-widest hover:text-gray-400 transition-colors cursor-default"
+                key={p.name}
+                className="opacity-40 hover:opacity-70 transition-opacity duration-200 grayscale hover:grayscale-0"
               >
-                {p}
+                <Image
+                  src={p.src}
+                  alt={p.name}
+                  width={p.width}
+                  height={p.height}
+                  className="object-contain"
+                  style={{ maxHeight: 36 }}
+                />
               </div>
             ))}
           </div>
@@ -80,7 +89,7 @@ export default function Footer() {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <a href="#home" className="flex items-center gap-2.5 mb-4 sm:mb-5">
+            <a href="/" className="flex items-center gap-2.5 mb-4 sm:mb-5">
               <div className="w-9 h-9 bg-accent-500 rounded flex items-center justify-center">
                 <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
                   <path d="M3 10.5L12 3l9 7.5V21H3V10.5z" />

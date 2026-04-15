@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <!-- APU shield/crest simplified -->
+  <path d="M10 6 L30 6 L30 26 Q20 34 10 26 Z" fill="#C8102E"/>
+  <text x="12" y="23" font-family="Arial, sans-serif" font-size="11" font-weight="900" fill="white">APU</text>
+  <!-- АПУ ХК text -->
+  <text x="38" y="18" font-family="Arial, sans-serif" font-size="11" font-weight="800" fill="#C8102E" letter-spacing="1">АПУ</text>
+  <text x="38" y="32" font-family="Arial, sans-serif" font-size="10" font-weight="700" fill="#888" letter-spacing="1">ХК</text>
+</svg>

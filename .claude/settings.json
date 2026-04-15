@@ -14,7 +14,11 @@
       "Bash(cmd /c \"taskkill /PID 8732 /F\")",
       "Bash(cmd /c \"taskkill /PID 8732 /F 2>&1\")",
       "Bash(powershell -Command \"Stop-Process -Id 8732 -Force -ErrorAction SilentlyContinue; Write-Host 'Done'\")",
-      "Bash(env -u __NEXT_PRIVATE_STANDALONE_CONFIG npm run build)"
+      "Bash(env -u __NEXT_PRIVATE_STANDALONE_CONFIG npm run build)",
+      "WebFetch(domain:www.ing.mn)",
+      "WebFetch(domain:www.golomtbank.mn)",
+      "WebFetch(domain:www.khanbank.mn)",
+      "WebFetch(domain:golomtbank.com)"
     ],
     "additionalDirectories": [
       "d:\\zolbayar\\food-city-temp"

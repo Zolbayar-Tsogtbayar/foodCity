@@ -12,20 +12,33 @@ export default function Team() {
     <section id="team" className="py-16 sm:py-20 lg:py-24 bg-brand-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
-          <span className="inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+          <span
+            className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
+            style={{ animationDelay: "0.1s" }}
+          >
             Манай мэргэжилтнүүд
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4">
+          <h2
+            className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
+            style={{ animationDelay: "0.25s" }}
+          >
             Багтай <span className="text-accent-500">Танилцах</span>
           </h2>
-          <p className="text-gray-500 text-base sm:text-lg">
+          <p
+            className="hero-reveal text-gray-500 text-base sm:text-lg"
+            style={{ animationDelay: "0.4s" }}
+          >
             Онцгой орон зай болон гайхалтай үйлчлүүлэгчийн туршлагыг хүргэхэд зориулагдсан туршлагатай мэргэжилтнүүд.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {team.map((member, i) => (
-            <div key={i} className="bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-xl transition-all duration-300">
+            <div
+              key={i}
+              className="hero-reveal bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-xl transition-all duration-300"
+              style={{ animationDelay: `${0.5 + i * 0.1}s` }}
+            >
               <div className="relative bg-brand-900 h-24 sm:h-28 flex items-end px-5 sm:px-6 pb-0">
                 <div className={`absolute top-3 sm:top-4 right-3 sm:right-4 text-xs font-bold text-white ${member.color} px-2 sm:px-2.5 py-1 rounded uppercase tracking-wider max-w-[60%] text-right line-clamp-1`}>
                   {member.role}
@@ -65,12 +78,15 @@ export default function Team() {
           ))}
         </div>
 
-        <div className="mt-10 sm:mt-16 bg-accent-500 rounded p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left">
+        <div
+          className="hero-reveal mt-10 sm:mt-16 bg-accent-500 rounded p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 text-center sm:text-left"
+          style={{ animationDelay: "1.1s" }}
+        >
           <div className="text-white">
             <h3 className="text-xl sm:text-2xl font-black mb-1">Тохирох орон зайгаа олоход бэлэн үү?</h3>
             <p className="text-accent-100 text-sm">Манай зөвлөхүүд Даваа–Баасан, 09:00–18:00 цагт ажиллана.</p>
           </div>
-          <a href="#contact" className="shrink-0 bg-white text-accent-600 font-bold px-6 sm:px-8 py-3 rounded hover:bg-accent-50 transition-colors whitespace-nowrap text-sm sm:text-base">
+          <a href="/contact" className="shrink-0 bg-white text-accent-600 font-bold px-6 sm:px-8 py-3 rounded hover:bg-accent-50 transition-colors whitespace-nowrap text-sm sm:text-base">
             Зөвлөхтэй ярилцах
           </a>
         </div>

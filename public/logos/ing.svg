@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 40" fill="none">
+  <!-- ING orange lion simplified mark -->
+  <rect x="0" y="8" width="6" height="24" rx="1" fill="#FF6200"/>
+  <path d="M10 8 L22 8 L30 20 L30 8 L36 8 L36 32 L24 32 L16 20 L16 32 L10 32 Z" fill="#FF6200"/>
+  <path d="M40 8 L46 8 L46 14 Q46 8 52 8 L58 8 Q66 8 66 16 L66 32 L60 32 L60 17 Q60 14 57 14 L52 14 Q49 14 49 17 L49 32 L40 32 Z" fill="#FF6200"/>
+  <!-- Банк text -->
+  <text x="72" y="24" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#FF6200" letter-spacing="1">БАНК</text>
+</svg>

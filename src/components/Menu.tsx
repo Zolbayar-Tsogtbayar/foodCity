@@ -57,20 +57,32 @@ export default function Properties() {
     <section id="properties" className="py-16 sm:py-20 lg:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12">
-          <span className="inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+          <span
+            className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
+            style={{ animationDelay: "0.1s" }}
+          >
             Боломжит орон зайнууд
           </span>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4">
+          <h2
+            className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
+            style={{ animationDelay: "0.25s" }}
+          >
             Бизнестэй <span className="text-accent-500">Нийцэх орон зайгаа олоорой</span>
           </h2>
-          <p className="text-gray-500 text-base sm:text-lg">
+          <p
+            className="hero-reveal text-gray-500 text-base sm:text-lg"
+            style={{ animationDelay: "0.4s" }}
+          >
             Хамтын ажлын байрнаас бүтэн давхар хүртэл — багийнхаа хүсэл эрмэлзэлд
             тохирсон оффисийг түрээслэх эсвэл худалдаж авах боломжтой.
           </p>
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 sm:gap-3 mb-8 sm:mb-12 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:justify-center">
+        <div
+          className="hero-reveal flex gap-2 sm:gap-3 mb-8 sm:mb-12 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:justify-center"
+          style={{ animationDelay: "0.5s" }}
+        >
           {categories.map((cat) => (
             <button
               key={cat}
@@ -87,7 +99,10 @@ export default function Properties() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div
+          className="hero-reveal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+          style={{ animationDelay: "0.6s" }}
+        >
           {filtered.map((p) => (
             <div
               key={p.id}
@@ -143,7 +158,7 @@ export default function Properties() {
                     <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">{p.price}</div>
                   </div>
                   <a
-                    href="#contact"
+                    href="/contact"
                     className="shrink-0 bg-brand-900 hover:bg-accent-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded transition-colors duration-200"
                   >
                     Лавлагаа авах
@@ -156,8 +171,9 @@ export default function Properties() {
 
         <div className="text-center mt-8 sm:mt-12">
           <a
-            href="#contact"
-            className="inline-flex items-center gap-2 border-2 border-brand-900 text-brand-900 font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded hover:bg-brand-900 hover:text-white transition-all text-sm sm:text-base"
+            href="/contact"
+            className="hero-reveal inline-flex items-center gap-2 border-2 border-brand-900 text-brand-900 font-bold px-6 sm:px-8 py-3 sm:py-3.5 rounded hover:bg-brand-900 hover:text-white transition-all text-sm sm:text-base"
+            style={{ animationDelay: "0.7s" }}
           >
             Бүх үл хөдлөхийг харах
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

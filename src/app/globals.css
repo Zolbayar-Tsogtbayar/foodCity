@@ -11,3 +11,40 @@ html {
     @apply bg-white text-gray-900 antialiased;
   }
 }
+
+/* ── Hero staggered reveal ── */
+.hero-reveal {
+  animation: heroReveal 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Page enter animation ── */
+.page-enter {
+  animation: pageEnter 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter {
+    animation: none;
+  }
+}

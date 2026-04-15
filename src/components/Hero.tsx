@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import CountUp from "@/components/CountUp";
 
 const slides = [
   "/images/baclground-image-1.jpg",
@@ -21,7 +22,9 @@ export default function Hero() {
       const next = (current + 1) % slides.length;
       setIncoming(next);
       setEntered(false);
-      requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => setEntered(true)),
+      );
     }, HOLD);
     return () => clearTimeout(id);
   }, [current]);
@@ -44,7 +47,10 @@ export default function Hero() {
   };
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden">
+    <section
+      id="home"
+      className="relative min-h-screen flex items-center overflow-hidden"
+    >
       {/* Sliding backgrounds */}
       <div className="absolute inset-0">
         <div
@@ -52,7 +58,9 @@ export default function Hero() {
           style={{
             backgroundImage: `url(${slides[current]})`,
             transform: entered ? "translateX(-100%)" : "translateX(0)",
-            transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+            transition: entered
+              ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)`
+              : "none",
           }}
         />
         {incoming !== null && (
@@ -61,7 +69,9 @@ export default function Hero() {
             style={{
               backgroundImage: `url(${slides[incoming]})`,
               transform: entered ? "translateX(0)" : "translateX(100%)",
-              transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+              transition: entered
+                ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)`
+                : "none",
             }}
           />
         )}
@@ -76,38 +86,59 @@ export default function Hero() {
       <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 sm:pt-32 sm:pb-24 lg:py-0 lg:min-h-screen lg:flex lg:items-center">
         <div className="w-full max-w-3xl">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 border border-accent-500/40 bg-accent-500/10 rounded px-3 py-1.5 mb-6 sm:mb-8">
+          <div
+            className="hero-reveal inline-flex items-center gap-2 border border-accent-500/40 bg-accent-500/10 rounded px-3 py-1.5 mb-6 sm:mb-8"
+            style={{ animationDelay: "0.1s" }}
+          >
             <div className="w-1.5 h-1.5 bg-accent-500 rounded-full shrink-0" />
             <span className="text-accent-400 text-xs font-semibold uppercase tracking-widest">
               Барилга &amp; Оффис түрээс
             </span>
           </div>
 
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-5 sm:mb-6">
-            Таны төслийг{" "}
-            <span className="text-accent-500">Бодит</span>
+          <h1
+            className="hero-reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-5 sm:mb-6"
+            style={{ animationDelay: "0.25s" }}
+          >
+            Таны төслийг <span className="text-accent-500">Бодит</span>
             <br />
             болгоно
           </h1>
 
-          <p className="text-gray-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl">
+          <p
+            className="hero-reveal text-gray-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl"
+            style={{ animationDelay: "0.45s" }}
+          >
             FoodCity нь барилгын дэвшилтэт үйлчилгээ болон уян хатан оффис
-            түрээслүүлэх боломжийг санал болгодог. Санаанаас хэрэгжилт хүртэл —
+            түрээслүүлэх боломжийг санал болгодог. Санаанаас хэрэгжилт хүртэл
             бид таны бизнесийг дэвшүүлэх орон зайг бүтээдэг.
           </p>
 
-          <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 mb-12 sm:mb-16">
+          <div
+            className="hero-reveal flex flex-col xs:flex-row gap-3 sm:gap-4 mb-12 sm:mb-16 sm:w-1/2"
+            style={{ animationDelay: "0.6s" }}
+          >
             <a
-              href="#properties"
+              href="/properties"
               className="inline-flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
               Үл хөдлөх харах
-              <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              <svg
+                className="w-4 h-4 shrink-0"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
               </svg>
             </a>
             <a
-              href="#contact"
+              href="/contact"
               className="inline-flex items-center justify-center gap-2 border border-gray-500 hover:border-accent-500 text-gray-300 hover:text-accent-500 font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
               Мэргэжилтэнтэй холбогдох
@@ -115,16 +146,24 @@ export default function Hero() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/20">
+          <div
+            className="hero-reveal grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/20"
+            style={{ animationDelay: "0.75s" }}
+          >
             {[
               { value: "120К+", label: "Нийт талбай м²" },
-              { value: "240",   label: "Паркингийн байр" },
-              { value: "85+",   label: "Оффисийн нэгж" },
-              { value: "12",    label: "Давхрын тоо" },
+              { value: "240", label: "Паркингийн байр" },
+              { value: "85+", label: "Оффисийн нэгж" },
+              { value: "12", label: "Давхрын тоо" },
             ].map((stat) => (
               <div key={stat.label}>
-                <div className="text-2xl sm:text-3xl font-black text-accent-500">{stat.value}</div>
-                <div className="text-gray-400 text-xs sm:text-sm mt-1 uppercase tracking-wide">{stat.label}</div>
+                <CountUp
+                  value={stat.value}
+                  className="text-2xl sm:text-3xl font-black text-accent-500"
+                />
+                <div className="text-gray-400 text-xs sm:text-sm mt-1 uppercase tracking-wide">
+                  {stat.label}
+                </div>
               </div>
             ))}
           </div>

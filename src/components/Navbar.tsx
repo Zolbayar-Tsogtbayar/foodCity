@@ -1,19 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
-  { label: "Нүүр", href: "#home" },
-  { label: "Бидний тухай", href: "#about" },
-  { label: "Үйл ажиллагаа", href: "#services" },
-  { label: "Хамтран ажиллах", href: "#properties" },
-  { label: "Мэдээ мэдээлэл", href: "#team" },
-  { label: "Холбоо барих", href: "#contact" },
+  { label: "Нүүр", href: "/" },
+  { label: "Бидний тухай", href: "/about" },
+  { label: "Үйл ажиллагаа", href: "/services" },
+  { label: "Хамтран ажиллах", href: "/properties" },
+  { label: "Мэдээ мэдээлэл", href: "/team" },
+  { label: "Холбоо барих", href: "/contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -29,6 +32,11 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -37,7 +45,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16 sm:h-20">
         {/* Logo */}
-        <a href="#home" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <div className="w-8 h-8 sm:w-9 sm:h-9 bg-accent-500 rounded flex items-center justify-center">
             <svg
               viewBox="0 0 24 24"
@@ -58,22 +66,29 @@ export default function Navbar() {
           <span className="text-white font-bold text-lg sm:text-xl tracking-wide">
             Food<span className="text-accent-500">City</span>
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="text-gray-300 hover:text-accent-500 text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap"
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
-        {/* Phone + CTA — desktop only */}
+        {/* Phone — desktop only */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
           <a
             href="tel:+97611000000"
@@ -139,17 +154,23 @@ export default function Navbar() {
         }`}
       >
         <div className="bg-brand-900 border-t border-brand-700 px-4 sm:px-6 pb-4">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center py-3.5 text-gray-300 hover:text-accent-500 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-accent-500/50 mr-3 shrink-0" />
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors ${
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`} />
+                {link.label}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </header>

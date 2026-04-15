@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none">
+  <!-- G mark -->
+  <path d="M20 8 Q6 8 6 20 Q6 32 20 32 Q28 32 32 27 L32 20 L22 20 L22 24 L27 24 Q25 27 20 27 Q12 27 12 20 Q12 13 20 13 Q25 13 27 16 L32 13 Q28 8 20 8Z" fill="#1B5E94"/>
+  <!-- ГОЛОМТ БАНК text -->
+  <text x="40" y="16" font-family="Arial, sans-serif" font-size="10" font-weight="800" fill="#1B5E94" letter-spacing="0.5">ГОЛОМТ</text>
+  <text x="40" y="30" font-family="Arial, sans-serif" font-size="10" font-weight="800" fill="#1B5E94" letter-spacing="0.5">БАНК</text>
+</svg>

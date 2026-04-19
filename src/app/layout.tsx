@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import { Roboto } from "next/font/google";
 import "./globals.css";
@@ -7,11 +6,7 @@ import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import FooterWithContent from "@/components/FooterWithContent";
 import PageWrapper from "@/components/PageWrapper";
-
-const ChatBot = dynamic(() => import("@/components/ChatBot"), {
-  ssr: false,
-  loading: () => null,
-});
+import ChatBotLoader from "@/components/ChatBotLoader";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -48,7 +43,7 @@ export default function RootLayout({
           <Suspense fallback={<FooterFallback />}>
             <FooterWithContent />
           </Suspense>
-          <ChatBot />
+          <ChatBotLoader />
         </Providers>
       </body>
     </html>

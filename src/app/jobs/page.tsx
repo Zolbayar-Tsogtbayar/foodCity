@@ -30,7 +30,7 @@ export default async function JobsPage() {
   const [jobs, header] = await Promise.all([loadJobs(), getJobsPageSections()]);
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pb-16 pt-24 sm:pt-28">
+    <section className="mx-auto max-w-6xl px-4 pb-16 pt-24 sm:pt-28">
       <h1 className="mb-2 text-3xl font-bold text-brand-900">
         {header.header.title}
       </h1>

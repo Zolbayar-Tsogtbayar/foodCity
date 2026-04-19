@@ -1,14 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import {
   Briefcase,
   Building2,
+  CalendarDays,
+  LayoutList,
   Mail,
   MapPin,
   X,
-  Calendar,
   Banknote,
   User,
 } from "lucide-react";
@@ -35,6 +36,9 @@ function excerpt(text: string, max = 140): string {
   return `${t.slice(0, max).trimEnd()}…`;
 }
 
+/** Two columns × two rows per page */
+const JOBS_PAGE_SIZE = 4;
+
 function formatPosted(iso?: string): string | null {
   if (!iso) return null;
   try {
@@ -50,15 +54,32 @@ function formatPosted(iso?: string): string | null {
   }
 }
 
+function MetaCell({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <div className="self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm ring-1 ring-slate-900/[0.03]">
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
+      <p className="mt-1 text-sm font-semibold leading-snug text-brand-900">{value}</p>
+    </div>
+  );
+}
+
 export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
   const [open, setOpen] = useState<JobItem | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const [page, setPage] = useState(1);
 
   const close = useCallback(() => setOpen(null), []);
 
+  const totalPages = Math.max(1, Math.ceil(jobs.length / JOBS_PAGE_SIZE));
+  const currentPage = Math.min(Math.max(1, page), totalPages);
+
+  const pageJobs = useMemo(() => {
+    const start = (currentPage - 1) * JOBS_PAGE_SIZE;
+    return jobs.slice(start, start + JOBS_PAGE_SIZE);
+  }, [jobs, currentPage]);
+
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (page !== currentPage) setPage(currentPage);
+  }, [page, currentPage]);
 
   useEffect(() => {
     if (!open) return;
@@ -84,237 +105,293 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
 
   return (
     <>
-      <ul className="space-y-4">
-        {jobs.map((job) => {
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        {pageJobs.map((job) => {
           const posted = formatPosted(job.createdAt);
           return (
-            <li key={job.id}>
+            <li key={job.id} className="min-w-0">
               <button
                 type="button"
                 onClick={() => setOpen(job)}
-                className="w-full min-w-0 rounded-xl border border-gray-100 bg-white p-4 text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40 sm:p-5"
+                className="flex h-full min-h-[320px] w-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40"
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-between sm:gap-4">
-                  {job.imageUrl ? (
-                    <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-lg bg-brand-900/5 sm:aspect-auto sm:h-24 sm:w-36">
-                      {/* eslint-disable-next-line @next/next/no-img-element -- API /upload URLs */}
-                      <img
-                        src={resolvePublicMediaUrl(job.imageUrl) ?? job.imageUrl}
-                        alt=""
-                        className="h-full w-full object-cover sm:object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-24 w-full shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-800 to-brand-900 sm:w-36">
-                      <Briefcase className="h-10 w-10 text-white/25" aria-hidden />
-                    </div>
-                  )}
-                  <div className="min-w-0 flex-1">
-                    <h2 className="break-words text-lg font-semibold text-brand-900 sm:text-xl">
-                      {job.title}
-                    </h2>
-                    <p className="mt-1 flex flex-col gap-1 text-sm text-gray-600 sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2 sm:gap-y-0.5">
-                      <span className="inline-flex min-w-0 items-center gap-1">
-                        <Building2 className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                        <span className="break-words">{job.company}</span>
-                      </span>
-                      <span className="hidden text-gray-300 sm:inline">·</span>
-                      <span className="inline-flex min-w-0 items-center gap-1">
-                        <MapPin className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                        <span className="break-words">{job.location}</span>
-                      </span>
-                    </p>
+                {job.imageUrl ? (
+                  <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-xl bg-brand-900/5">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- API /upload URLs */}
+                    <img
+                      src={resolvePublicMediaUrl(job.imageUrl) ?? job.imageUrl}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
                   </div>
+                ) : (
+                  <div className="flex aspect-[16/10] w-full shrink-0 items-center justify-center rounded-t-xl bg-gradient-to-br from-brand-800 to-brand-900">
+                    <Briefcase className="h-12 w-12 text-white/25" aria-hidden />
+                  </div>
+                )}
+                <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
+                  <h2 className="line-clamp-2 break-words text-lg font-semibold leading-snug text-brand-900">
+                    {job.title}
+                  </h2>
+                  <p className="mt-2 flex flex-col gap-1 text-sm text-gray-600">
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <Building2 className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                      <span className="break-words">{job.company}</span>
+                    </span>
+                    <span className="inline-flex min-w-0 items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
+                      <span className="break-words">{job.location}</span>
+                    </span>
+                  </p>
                   {job.salary && (
-                    <span className="inline-flex w-fit shrink-0 items-center gap-1 self-start rounded-lg bg-emerald-50 px-2.5 py-1 text-sm font-medium text-emerald-800 sm:self-auto">
-                      <Banknote className="h-3.5 w-3.5 shrink-0" aria-hidden />
-                      <span className="break-words">{job.salary}</span>
+                    <span className="mt-2 inline-flex w-fit max-w-full items-center gap-1.5 rounded-md border border-emerald-100/80 bg-emerald-50/90 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-900">
+                      <Banknote className="h-3 w-3 shrink-0 text-emerald-700" aria-hidden />
+                      <span className="leading-none">{job.salary}</span>
                     </span>
                   )}
-                </div>
-                <p className="mt-3 line-clamp-2 break-words text-sm leading-relaxed text-gray-700">
-                  {excerpt(job.description, 180)}
-                </p>
-                <span className="mt-4 inline-flex text-sm font-medium text-accent-600">
-                  Дэлгэрэнгүй үзэх →
-                </span>
-                {(posted || job.postedByDisplayName || job.lastEditedByDisplayName) && (
-                  <p className="mt-2 text-xs text-gray-400">
-                    {posted ? <>Нийтэлсэн: {posted}</> : null}
-                    {posted && (job.postedByDisplayName || job.lastEditedByDisplayName)
-                      ? " · "
-                      : null}
-                    {job.postedByDisplayName && (
-                      <span>Нийтлэгч: {job.postedByDisplayName}</span>
-                    )}
-                    {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
-                    {job.lastEditedByDisplayName &&
-                    job.lastEditedByDisplayName !== job.postedByDisplayName ? (
-                      <span>Сүүлд зассан: {job.lastEditedByDisplayName}</span>
-                    ) : null}
+                  <p className="mt-3 line-clamp-3 flex-1 break-words text-sm leading-relaxed text-gray-700">
+                    {excerpt(job.description, 160)}
                   </p>
-                )}
+                  <span className="mt-4 inline-flex text-sm font-medium text-accent-600">
+                    Дэлгэрэнгүй үзэх →
+                  </span>
+                  {(posted || job.postedByDisplayName || job.lastEditedByDisplayName) && (
+                    <p className="mt-2 line-clamp-2 text-xs text-gray-400">
+                      {posted ? <>Нийтэлсэн: {posted}</> : null}
+                      {posted && (job.postedByDisplayName || job.lastEditedByDisplayName)
+                        ? " · "
+                        : null}
+                      {job.postedByDisplayName && (
+                        <span>Нийтлэгч: {job.postedByDisplayName}</span>
+                      )}
+                      {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
+                      {job.lastEditedByDisplayName &&
+                      job.lastEditedByDisplayName !== job.postedByDisplayName ? (
+                        <span>Сүүлд зассан: {job.lastEditedByDisplayName}</span>
+                      ) : null}
+                    </p>
+                  )}
+                </div>
               </button>
             </li>
           );
         })}
       </ul>
 
-      {mounted &&
+      {totalPages > 1 && (
+        <nav
+          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
+          aria-label="Хуудаслалт"
+        >
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              disabled={currentPage <= 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Өмнөх
+            </button>
+            <button
+              type="button"
+              disabled={currentPage >= totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Дараах
+            </button>
+          </div>
+          <p className="text-sm text-gray-500">
+            Хуудас <span className="font-medium text-brand-900">{currentPage}</span> /{" "}
+            {totalPages}{" "}
+            <span className="text-gray-400">
+              ({jobs.length} зар)
+            </span>
+          </p>
+        </nav>
+      )}
+
+      {typeof document !== "undefined" &&
         open &&
         createPortal(
           <div
-            className="fixed inset-0 z-[600] flex items-end justify-center overflow-x-hidden overflow-y-auto overscroll-contain sm:items-center sm:p-4"
+            className="fixed inset-0 z-[1100] flex items-end justify-center overflow-hidden sm:items-center sm:p-5"
             role="dialog"
             aria-modal="true"
             aria-labelledby="job-modal-title"
           >
             <button
               type="button"
-              className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
+              className="absolute inset-0 bg-brand-950/75 backdrop-blur-[3px] transition-opacity hover:bg-brand-950/80"
               aria-label="Хаах"
               onClick={close}
             />
             <div
-              className="relative z-10 flex max-h-[min(92dvh,720px)] w-full min-w-0 max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-gray-100 bg-white shadow-2xl sm:mx-4 sm:rounded-2xl"
+              className="relative z-[1101] flex h-[min(92dvh,900px)] w-[min(100vw-1rem,1200px)] max-w-[min(100vw-1rem,1200px)] flex-col overflow-hidden rounded-t-2xl border border-slate-200/90 bg-white shadow-[0_25px_80px_-12px_rgba(15,23,42,0.35)] ring-1 ring-black/[0.04] sm:rounded-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-            <div className="flex shrink-0 items-start justify-between gap-2 border-b border-gray-100 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
-              <div className="min-w-0 flex-1 pr-1">
-                <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                  Ажлын зар
-                </p>
-                <h2
-                  id="job-modal-title"
-                  className="mt-1 break-words text-xl font-bold leading-snug text-brand-900 sm:text-2xl"
-                >
-                  {open.title}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={close}
-                className="shrink-0 rounded-lg p-2 text-gray-500 transition hover:bg-gray-100 hover:text-gray-800"
-                aria-label="Хаах"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6">
-              {open.imageUrl && (
-                <div className="relative mb-5 aspect-[21/9] w-full overflow-hidden rounded-xl bg-brand-900/5 sm:aspect-[2/1]">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl}
-                    alt=""
-                    className="h-full w-full object-cover object-center"
-                  />
-                </div>
-              )}
-              <dl className="space-y-3 text-sm">
-                <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
-                  <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />
-                  <div className="min-w-0">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                      Байгууллага
-                    </dt>
-                    <dd className="mt-0.5 break-words font-medium text-brand-900">{open.company}</dd>
+              <header className="relative shrink-0 overflow-hidden border-b border-slate-200/80 bg-gradient-to-br from-slate-50 via-white to-emerald-500/[0.06] px-5 py-5 sm:px-7">
+                <div
+                  className="pointer-events-none absolute inset-y-3 left-0 w-1 rounded-full bg-gradient-to-b from-emerald-500 to-accent-600"
+                  aria-hidden
+                />
+                <div className="relative flex items-start justify-between gap-4 pl-3 sm:pl-4">
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-900">
+                      <Briefcase className="h-3.5 w-3.5" aria-hidden />
+                      Ажлын зар
+                    </span>
+                    <h2
+                      id="job-modal-title"
+                      className="break-words text-xl font-bold leading-tight tracking-tight text-brand-900 sm:text-2xl lg:text-[1.65rem]"
+                    >
+                      {open.title}
+                    </h2>
                   </div>
-                </div>
-                <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
-                  <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />
-                  <div className="min-w-0">
-                    <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                      Байршил
-                    </dt>
-                    <dd className="mt-0.5 break-words font-medium text-brand-900">{open.location}</dd>
-                  </div>
-                </div>
-                {open.salary && (
-                  <div className="flex min-w-0 gap-3 rounded-xl bg-emerald-50/80 px-3 py-3 ring-1 ring-emerald-100 sm:px-4">
-                    <Banknote className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" aria-hidden />
-                    <div className="min-w-0">
-                      <dt className="text-xs font-medium uppercase tracking-wide text-emerald-800/90">
-                        Цалин
-                      </dt>
-                      <dd className="mt-0.5 break-words font-semibold text-emerald-900">{open.salary}</dd>
-                    </div>
-                  </div>
-                )}
-                {formatPosted(open.createdAt) && (
-                  <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
-                    <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />
-                    <div className="min-w-0">
-                      <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                        Нийтэлсэн
-                      </dt>
-                      <dd className="mt-0.5 break-words text-brand-900">{formatPosted(open.createdAt)}</dd>
-                    </div>
-                  </div>
-                )}
-                {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
-                  <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
-                    <User className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />
-                    <div className="min-w-0">
-                      <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
-                        Админ
-                      </dt>
-                      <dd className="mt-0.5 break-words text-brand-900">
-                        {open.postedByDisplayName && (
-                          <span>Нийтлэгч: {open.postedByDisplayName}</span>
-                        )}
-                        {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
-                        {open.lastEditedByDisplayName &&
-                        open.lastEditedByDisplayName !== open.postedByDisplayName ? (
-                          <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
-                        ) : null}
-                      </dd>
-                    </div>
-                  </div>
-                )}
-              </dl>
-
-              <div className="mt-6">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-brand-900">
-                  <Briefcase className="h-4 w-4 text-accent-600" aria-hidden />
-                  Дэлгэрэнгүй
-                </h3>
-                <div className="mt-3 break-words whitespace-pre-wrap text-sm leading-relaxed text-gray-700">
-                  {open.description}
-                </div>
-              </div>
-
-              {open.contactEmail && (
-                <div className="mt-8 border-t border-gray-100 pt-6">
-                  <a
-                    href={`mailto:${open.contactEmail}?subject=${encodeURIComponent(`Ажлын зар: ${open.title}`)}`}
-                    className="flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-accent-500 px-3 py-3.5 text-center text-sm font-semibold text-white shadow-sm transition hover:bg-accent-600 sm:inline-flex sm:flex-row sm:min-w-[240px] sm:px-4"
+                  <button
+                    type="button"
+                    onClick={close}
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-brand-900"
+                    aria-label="Хаах"
                   >
-                    <span className="inline-flex items-center gap-2">
-                      <Mail className="h-5 w-5 shrink-0" aria-hidden />
-                      Имэйл илгээх
-                    </span>
-                    <span className="max-w-full break-all text-xs font-normal opacity-95 sm:text-sm">
-                      {open.contactEmail}
-                    </span>
-                  </a>
-                  <p className="mt-2 text-xs text-gray-500">
-                    Таны имэйл програмыг нээж, анхны захиалгыг бөглөх болно.
-                  </p>
+                    <X className="h-5 w-5" strokeWidth={2} />
+                  </button>
                 </div>
-              )}
-            </div>
+              </header>
 
-            <div className="shrink-0 border-t border-gray-100 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-3">
-              <button
-                type="button"
-                onClick={close}
-                className="w-full rounded-lg border border-gray-200 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-gray-50 sm:w-auto sm:px-8"
-              >
-                Хаах
-              </button>
-            </div>
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-gradient-to-b from-slate-100/40 via-white to-white">
+                <div className="flex flex-col gap-6 px-5 py-6 sm:px-7 lg:flex-row lg:items-stretch lg:gap-8">
+                  <div className="relative w-full shrink-0 overflow-hidden rounded-2xl border border-slate-200/60 bg-slate-100 shadow-inner ring-1 ring-slate-900/[0.04] lg:sticky lg:top-0 lg:w-[min(420px,42%)] lg:self-start">
+                    {open.imageUrl ? (
+                      <div className="aspect-[16/10] w-full lg:aspect-auto lg:max-h-[min(380px,42vh)] lg:min-h-[220px]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl}
+                          alt=""
+                          className="h-full w-full object-cover object-center"
+                        />
+                      </div>
+                    ) : (
+                      <div className="relative flex aspect-[16/10] min-h-[200px] flex-col items-center justify-center gap-3 bg-gradient-to-br from-brand-800 via-brand-900 to-brand-950 px-6 py-10 lg:aspect-auto lg:min-h-[min(320px,38vh)]">
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.12),transparent)]" />
+                        <Briefcase
+                          className="relative h-14 w-14 text-white/30 sm:h-16 sm:w-16"
+                          strokeWidth={1.25}
+                          aria-hidden
+                        />
+                        <p className="relative text-center text-xs font-medium uppercase tracking-widest text-white/40">
+                          Ажлын зар
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1 space-y-5">
+                    <section className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/90 p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
+                      <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                        <LayoutList className="h-4 w-4 text-emerald-600" aria-hidden />
+                        Товч мэдээлэл
+                      </h3>
+                      <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
+                        <div className="col-span-2 flex gap-2 self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-emerald-50/50 px-3 py-2 sm:col-span-1">
+                          <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              Байгууллага
+                            </p>
+                            <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
+                              {open.company}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="col-span-2 flex gap-2 self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm sm:col-span-1">
+                          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                              Байршил
+                            </p>
+                            <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
+                              {open.location}
+                            </p>
+                          </div>
+                        </div>
+                        {open.salary ? (
+                          <div className="col-span-2 flex w-fit max-w-full flex-nowrap items-center gap-2 self-start rounded-lg border border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-white px-3 py-1.5 sm:col-span-1">
+                            <Banknote className="h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden />
+                            <span className="shrink-0 text-[10px] font-bold uppercase leading-none tracking-wide text-emerald-800">
+                              Цалин
+                            </span>
+                            <span className="min-w-0 text-sm font-bold leading-none tabular-nums text-emerald-950">
+                              {open.salary}
+                            </span>
+                          </div>
+                        ) : null}
+                        {formatPosted(open.createdAt) ? (
+                          <MetaCell label="Нийтэлсэн" value={formatPosted(open.createdAt)} />
+                        ) : null}
+                        {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
+                          <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
+                            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
+                              <User className="h-3.5 w-3.5" aria-hidden />
+                              Админ
+                            </p>
+                            <p className="mt-1 text-sm font-semibold text-brand-900">
+                              {open.postedByDisplayName && (
+                                <span>Нийтлэгч: {open.postedByDisplayName}</span>
+                              )}
+                              {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
+                              {open.lastEditedByDisplayName &&
+                              open.lastEditedByDisplayName !== open.postedByDisplayName ? (
+                                <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
+                              ) : null}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+
+                    <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
+                      <h3 className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                        <CalendarDays className="h-4 w-4 text-accent-600" aria-hidden />
+                        Ажлын тайлбар
+                      </h3>
+                      <div className="break-words whitespace-pre-wrap text-sm leading-relaxed text-slate-700 sm:text-[15px]">
+                        {open.description}
+                      </div>
+                    </section>
+
+                    {open.contactEmail ? (
+                      <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white p-4 sm:p-5">
+                        <a
+                          href={`mailto:${open.contactEmail}?subject=${encodeURIComponent(`Ажлын зар: ${open.title}`)}`}
+                          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-4 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-accent-500/20 transition hover:from-accent-600 hover:to-accent-700 sm:inline-flex sm:flex-row sm:min-w-[260px] sm:px-5"
+                        >
+                          <span className="inline-flex items-center gap-2">
+                            <Mail className="h-5 w-5 shrink-0" aria-hidden />
+                            Имэйл илгээх
+                          </span>
+                          <span className="max-w-full break-all text-xs font-normal opacity-95 sm:text-sm">
+                            {open.contactEmail}
+                          </span>
+                        </a>
+                        <p className="mt-3 text-center text-xs leading-relaxed text-slate-500 sm:text-left">
+                          Таны имэйл програмыг нээж, анхны захиалгыг бөглөх болно.
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+
+              <footer className="flex shrink-0 items-center justify-end border-t border-slate-200/80 bg-gradient-to-t from-slate-100/50 to-slate-50/30 px-5 py-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-7">
+                <button
+                  type="button"
+                  onClick={close}
+                  className="w-full rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[140px]"
+                >
+                  Хаах
+                </button>
+              </footer>
             </div>
           </div>,
           document.body,

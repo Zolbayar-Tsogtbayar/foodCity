@@ -13,7 +13,7 @@ function parse(raw: string): { num: number; suffix: string } {
 
 export default function CountUp({
   value,
-  duration = 1800,
+  duration = 900,
   className,
 }: {
   value: string;
@@ -21,59 +21,55 @@ export default function CountUp({
   className?: string;
 }) {
   const { num, suffix } = parse(value);
-  const [count, setCount] = useState(0);
-  /** Until true, show full `value` so SSR/crawlers never snapshot "0". */
-  const [animating, setAnimating] = useState(false);
+  /** Full string — good for SSR / crawlers (never "0" only). */
+  const [display, setDisplay] = useState(value);
   const ref = useRef<HTMLDivElement>(null);
-  const started = useRef(false);
 
   useEffect(() => {
     const el = ref.current;
-    if (!el || animating) return;
+    if (!el) return;
+
+    let finished = false;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
-          started.current = true;
-          setAnimating(true);
-          setCount(0);
+        if (!entry.isIntersecting || finished) return;
+        finished = true;
+        observer.disconnect();
 
-          const start = performance.now();
+        const start = performance.now();
+        let lastInt = -1;
 
-          const tick = (now: number) => {
-            const elapsed = now - start;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.floor(eased * num));
-            if (progress < 1) requestAnimationFrame(tick);
-            else setCount(num);
-          };
+        const tick = (now: number) => {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = Math.min(Math.floor(eased * num), num);
 
-          requestAnimationFrame(tick);
-          observer.disconnect();
-        }
+          // Only re-render when the integer changes — avoids ~60 React updates/sec.
+          if (current !== lastInt || progress >= 1) {
+            lastInt = current;
+            const formatted = value.includes(",")
+              ? current.toLocaleString()
+              : String(current);
+            setDisplay(formatted + suffix);
+          }
+
+          if (progress < 1) requestAnimationFrame(tick);
+        };
+
+        requestAnimationFrame(tick);
       },
-      { threshold: 0.4 },
+      { threshold: 0.25, rootMargin: "0px 0px 8% 0px" },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [num, duration, animating]);
-
-  if (!animating) {
-    return (
-      <div ref={ref} className={className} suppressHydrationWarning>
-        {value}
-      </div>
-    );
-  }
-
-  const formatted = value.includes(",") ? count.toLocaleString() : String(count);
+  }, [num, duration, value, suffix]);
 
   return (
-    <div ref={ref} className={className}>
-      {formatted}
-      {suffix}
+    <div ref={ref} className={className} suppressHydrationWarning>
+      {display}
     </div>
   );
 }

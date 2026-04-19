@@ -1,4 +1,4 @@
-export const DEFAULT_API = "http://bukhbatllc.mn";
+export const DEFAULT_API = "/api";
 
 export function getApiBaseUrl(): string {
   return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API;

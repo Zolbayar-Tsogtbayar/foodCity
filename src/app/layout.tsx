@@ -1,17 +1,23 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import FooterWithContent from "@/components/FooterWithContent";
 import PageWrapper from "@/components/PageWrapper";
-import ChatBot from "@/components/ChatBot";
-import { getFooterSections } from "@/lib/getSiteContent";
+
+const ChatBot = dynamic(() => import("@/components/ChatBot"), {
+  ssr: false,
+  loading: () => null,
+});
 
 const roboto = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700", "900"],
+  weight: ["400", "700", "900"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -20,12 +26,17 @@ export const metadata: Metadata = {
     "FoodCity нь premium арилжааны орон зай болон оффис барьж, түрээслүүлдэг. Орчин үеийн барилга, ухаалаг дизайн, бизнест зориулсан уян хатан түрээсийн нөхцөл.",
 };
 
-export default async function RootLayout({
+function FooterFallback() {
+  return (
+    <footer className="min-h-[12rem] border-t border-brand-800 bg-brand-900" aria-hidden />
+  );
+}
+
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const footerContent = await getFooterSections();
   return (
     <html lang="mn" className={`${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
@@ -34,7 +45,9 @@ export default async function RootLayout({
           <PageWrapper>
             <main className="flex-1">{children}</main>
           </PageWrapper>
-          <Footer content={footerContent} />
+          <Suspense fallback={<FooterFallback />}>
+            <FooterWithContent />
+          </Suspense>
           <ChatBot />
         </Providers>
       </body>

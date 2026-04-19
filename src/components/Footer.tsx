@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { resolveMediaUrl } from "@/lib/media";
 import type { FooterSections } from "@/lib/site-content-types";
 
@@ -83,24 +84,17 @@ export default function Footer({ content }: { content: FooterSections }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <a href="/" className="flex items-center gap-2.5 mb-4 sm:mb-5">
-              <div className="w-9 h-9 bg-accent-500 rounded flex items-center justify-center">
-                <svg viewBox="0 0 24 24" fill="white" className="w-5 h-5">
-                  <path d="M3 10.5L12 3l9 7.5V21H3V10.5z" />
-                  <rect
-                    x="9"
-                    y="14"
-                    width="6"
-                    height="7"
-                    fill="white"
-                    opacity="0.8"
-                  />
-                </svg>
-              </div>
-              <span className="font-bold text-xl">
-                Food<span className="text-accent-500">City</span>
+            <Link href="/" className="mb-4 sm:mb-5 inline-block">
+              <span className="inline-flex rounded-lg bg-white px-2.5 py-2 shadow-md ring-1 ring-black/10">
+                <Image
+                  src="/fclogo.png"
+                  alt="Food City"
+                  width={280}
+                  height={100}
+                  className="h-9 w-auto max-w-[180px] object-contain object-left sm:h-10 sm:max-w-[200px]"
+                />
               </span>
-            </a>
+            </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
               {content.brand.desc}
             </p>

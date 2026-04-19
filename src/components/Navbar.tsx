@@ -91,14 +91,16 @@ export default function Navbar() {
           href="/"
           className="flex min-w-0 flex-1 items-center lg:flex-initial lg:shrink-0"
         >
-          <Image
-            src="/fclogo.png"
-            alt="Food City"
-            width={320}
-            height={114}
-            className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-12 sm:max-w-[240px] lg:h-14 lg:max-w-[280px]"
-            priority
-          />
+          <span className="inline-flex rounded-lg bg-white px-2 py-1.5 shadow-sm ring-1 ring-black/10">
+            <Image
+              src="/fclogo.png"
+              alt="Food City"
+              width={320}
+              height={114}
+              className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[220px] lg:h-12 lg:max-w-[260px]"
+              priority
+            />
+          </span>
         </Link>
 
         {/* Desktop Nav */}

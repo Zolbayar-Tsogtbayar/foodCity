@@ -59,19 +59,19 @@ export default function Footer({ content }: { content: FooterSections }) {
           <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-4 sm:mb-6">
             {partnersLabel}
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10">
+          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-6 sm:gap-x-12 sm:gap-y-8">
             {partners.map((p) => (
               <div
                 key={p.name}
-                className="opacity-40 hover:opacity-70 transition-opacity duration-200 grayscale hover:grayscale-0"
+                className="flex h-10 max-h-10 min-w-0 max-w-[min(100%,220px)] items-center justify-center px-1 opacity-40 grayscale transition-opacity duration-200 hover:opacity-70 hover:grayscale-0 sm:h-11 sm:max-h-11 sm:max-w-[260px]"
               >
                 <Image
                   src={resolveMediaUrl(p.src)}
                   alt={p.name}
-                  width={p.width}
-                  height={p.height}
-                  className="object-contain"
-                  style={{ maxHeight: 36 }}
+                  width={Math.max(p.width, 1)}
+                  height={Math.max(p.height, 1)}
+                  className="h-auto max-h-10 w-auto max-w-full object-contain object-center sm:max-h-11"
+                  sizes="(max-width: 640px) 42vw, 220px"
                 />
               </div>
             ))}

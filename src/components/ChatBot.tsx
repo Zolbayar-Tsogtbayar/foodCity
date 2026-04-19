@@ -108,7 +108,10 @@ export default function ChatBot() {
     let guestId: string;
     try {
       guestId = getOrCreateGuestId();
-      s = io(base, { transports: ["websocket", "polling"] });
+      s = io(base, {
+        transports: ["websocket", "polling"],
+        withCredentials: true,
+      });
     } catch (e) {
       console.warn("[ChatBot] init failed", e);
       return;

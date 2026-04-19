@@ -10,6 +10,7 @@ import {
   Calendar,
   Banknote,
 } from "lucide-react";
+import { resolvePublicMediaUrl } from "@/lib/api";
 
 export type JobItem = {
   id: string;
@@ -19,6 +20,7 @@ export type JobItem = {
   description: string;
   salary?: string;
   contactEmail?: string;
+  imageUrl?: string;
   createdAt?: string;
 };
 
@@ -82,7 +84,21 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                 onClick={() => setOpen(job)}
                 className="w-full min-w-0 rounded-xl border border-gray-100 bg-white p-4 text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40 sm:p-5"
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-between sm:gap-4">
+                  {job.imageUrl ? (
+                    <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-lg bg-brand-900/5 sm:aspect-auto sm:h-24 sm:w-36">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- API /upload URLs */}
+                      <img
+                        src={resolvePublicMediaUrl(job.imageUrl) ?? job.imageUrl}
+                        alt=""
+                        className="h-full w-full object-cover sm:object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex h-24 w-full shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-800 to-brand-900 sm:w-36">
+                      <Briefcase className="h-10 w-10 text-white/25" aria-hidden />
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <h2 className="break-words text-lg font-semibold text-brand-900 sm:text-xl">
                       {job.title}
@@ -163,6 +179,16 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6">
+              {open.imageUrl && (
+                <div className="relative mb-5 aspect-[21/9] w-full overflow-hidden rounded-xl bg-brand-900/5 sm:aspect-[2/1]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl}
+                    alt=""
+                    className="h-full w-full object-cover object-center"
+                  />
+                </div>
+              )}
               <dl className="space-y-3 text-sm">
                 <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
                   <Building2 className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />

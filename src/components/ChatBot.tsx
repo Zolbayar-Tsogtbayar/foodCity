@@ -212,7 +212,7 @@ export default function ChatBot() {
         }`}
       >
         <div
-          className="bg-white rounded-xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+          className="bg-white rounded-xl shadow-2xl border border-gray-100 flex flex-col min-h-0 overflow-hidden"
           style={{ height: "480px" }}
         >
           <div className="bg-brand-900 px-4 py-3 flex items-center gap-3 shrink-0">
@@ -247,7 +247,7 @@ export default function ChatBot() {
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-gray-50">
+          <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-gray-50">
             {error && (
               <p className="text-xs text-red-600 bg-red-50 rounded-lg px-2 py-1">{error}</p>
             )}

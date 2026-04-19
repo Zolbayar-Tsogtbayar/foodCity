@@ -2,7 +2,7 @@ import type { ContactSections } from "@/lib/site-content-types";
 
 const CONTACT_ICONS = [
   (
-    <svg key="loc" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -18,7 +18,7 @@ const CONTACT_ICONS = [
     </svg>
   ),
   (
-    <svg key="tel" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -28,7 +28,7 @@ const CONTACT_ICONS = [
     </svg>
   ),
   (
-    <svg key="mail" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -38,7 +38,7 @@ const CONTACT_ICONS = [
     </svg>
   ),
   (
-    <svg key="clock" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"

@@ -29,6 +29,7 @@ export type AboutSections = {
     h2Accent: string;
     p1: string;
     p2: string;
+    imageUrl: string;
     imageBuildingName: string;
     imageBuildingSubtitle: string;
     yearsBadgeValue: string;
@@ -73,6 +74,34 @@ export type ServicesSections = {
   };
   features: { title: string; desc: string }[];
   banner: { value: string; suffix: string; label: string }[];
+};
+
+/** /properties listing page copy (site page id: `properties-page`) */
+export type PropertiesPageSections = {
+  header: {
+    badge: string;
+    titleLine1: string;
+    titleAccent: string;
+    intro: string;
+  };
+  categories: string[];
+  items: {
+    id: number;
+    name: string;
+    image: string;
+    category: string;
+    badge: string | null;
+    size: string;
+    floor: string;
+    parking: string;
+    price: string;
+    tag: string;
+    description: string;
+  }[];
+  cta: {
+    href: string;
+    label: string;
+  };
 };
 
 /** /sales marketing header (site page id: `sales-page`) */

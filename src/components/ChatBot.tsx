@@ -1,13 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { getApiBaseUrl, getSocketBaseUrl, type ChatMessage } from "@/lib/api";
+
+type ChatChoiceNode = {
+  id: string;
+  label: string;
+  choices: ChatChoiceNode[];
+};
+
+type ChatbotConfig = {
+  rootChoices: ChatChoiceNode[];
+};
 
 const GUEST_KEY = "foodcity_guest_id";
 const CONV_KEY = "foodcity_conversation_id";
 
-/** `crypto.randomUUID` is only available in secure contexts (HTTPS or localhost). Plain HTTP sites crash if we call it. */
+const DEFAULT_CONFIG: ChatbotConfig = {
+  rootChoices: [
+    { id: "order", label: "Захиалга", choices: [] },
+    { id: "sales", label: "Борлуулалтын зар", choices: [] },
+    { id: "jobs", label: "Ажлын зар", choices: [] },
+    { id: "connect", label: "Ажилтантай холбогдох", choices: [] },
+  ],
+};
+
+/** `crypto.randomUUID` is only available in secure contexts (HTTPS or localhost). */
 function createGuestId(): string {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
@@ -28,25 +47,82 @@ function getOrCreateGuestId(): string {
   }
 }
 
+function normalizeNode(node: unknown, depth = 0): ChatChoiceNode | null {
+  if (!node || typeof node !== "object" || depth > 8) return null;
+  const raw = node as Record<string, unknown>;
+  const label = String(raw.label ?? "").trim();
+  if (!label) return null;
+  const id = String(raw.id ?? label.toLowerCase().replace(/\s+/g, "-")).trim();
+  const childrenRaw = Array.isArray(raw.choices) ? raw.choices : [];
+  return {
+    id: id || `choice-${depth}-${Math.random().toString(36).slice(2, 8)}`,
+    label,
+    choices: childrenRaw
+      .map((c) => normalizeNode(c, depth + 1))
+      .filter((c): c is ChatChoiceNode => Boolean(c)),
+  };
+}
+
+function normalizeConfig(raw: unknown): ChatbotConfig {
+  if (!raw || typeof raw !== "object") return DEFAULT_CONFIG;
+  const r = raw as Record<string, unknown>;
+  const rootChoicesRaw = Array.isArray(r.rootChoices) ? r.rootChoices : [];
+  const rootChoices = rootChoicesRaw
+    .map((n) => normalizeNode(n))
+    .filter((n): n is ChatChoiceNode => Boolean(n));
+  return {
+    rootChoices: rootChoices.length > 0 ? rootChoices : DEFAULT_CONFIG.rootChoices,
+  };
+}
+
+function getLocalBotFallback(userText: string): string {
+  const lower = userText.toLowerCase();
+  if (lower.includes("заавар")) {
+    return "Заавар: Захиалга өгөх бол «Захиалга» хэсгийг бөглөнө үү. Борлуулалтын санал, үйлчилгээний мэдээллийг «Борлуулалтын зар»-аас үзнэ үү.";
+  }
+  if (lower.includes("бидний тухай") || lower.includes("танилцуулга")) {
+    return "«Бидний тухай» хэсгээс FoodCity-ийн туршлага, гүйцэтгэсэн төслүүд, багийн мэдээлэлтэй танилцана уу.";
+  }
+  return "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.";
+}
+
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [socketLive, setSocketLive] = useState(false);
+  const [config, setConfig] = useState<ChatbotConfig>(DEFAULT_CONFIG);
+  const [activeChoices, setActiveChoices] = useState<ChatChoiceNode[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loadingConfig, setLoadingConfig] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const socketRef = useRef<Socket | null>(null);
   const seenIds = useRef<Set<string>>(new Set());
   const base = getApiBaseUrl();
 
-  const scrollBottom = useCallback(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, []);
+  const loadConfig = useCallback(async () => {
+    setLoadingConfig(true);
+    try {
+      const res = await fetch(`${base}/api/v1/site-pages/chatbot`);
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as {
+        data?: { sections?: unknown };
+      };
+      const next = normalizeConfig(json.data?.sections);
+      setConfig(next);
+      setActiveChoices(next.rootChoices);
+    } catch (e) {
+      setConfig(DEFAULT_CONFIG);
+      setActiveChoices(DEFAULT_CONFIG.rootChoices);
+    } finally {
+      setLoadingConfig(false);
+    }
+  }, [base]);
 
-  const bootstrap = useCallback(async () => {
+  const bootstrapConversation = useCallback(async () => {
     setError(null);
     const guestId = getOrCreateGuestId();
     let convId = localStorage.getItem(CONV_KEY);
@@ -74,9 +150,9 @@ export default function ChatBot() {
           await ensureConv();
         }
       }
+
       const finalId = localStorage.getItem(CONV_KEY);
       if (!finalId) throw new Error("No conversation");
-
       const res = await fetch(
         `${base}/api/v1/chat/conversations/${finalId}/messages?guestId=${encodeURIComponent(guestId)}`,
       );
@@ -86,6 +162,7 @@ export default function ChatBot() {
       seenIds.current = new Set(list.map((m) => m.id));
       setMessages(list);
       setReady(true);
+      setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Алдаа");
       setReady(false);
@@ -93,16 +170,18 @@ export default function ChatBot() {
   }, [base]);
 
   useEffect(() => {
-    if (open) void bootstrap();
-  }, [open, bootstrap]);
+    if (!open) return;
+    void loadConfig();
+    void bootstrapConversation();
+  }, [open, loadConfig, bootstrapConversation]);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
 
   useEffect(() => {
-    scrollBottom();
-  }, [messages, open, scrollBottom]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, activeChoices, open]);
 
   useEffect(() => {
     let s: Socket;
@@ -111,8 +190,7 @@ export default function ChatBot() {
         transports: ["websocket", "polling"],
         withCredentials: true,
       });
-    } catch (e) {
-      console.warn("[ChatBot] init failed", e);
+    } catch {
       return;
     }
     socketRef.current = s;
@@ -121,17 +199,14 @@ export default function ChatBot() {
       const convId = localStorage.getItem(CONV_KEY);
       const guestId = getOrCreateGuestId();
       if (!convId || !s.connected) return;
-      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
-        if (err) console.warn("[ChatBot] join", err);
-      });
+      s.emit("join", { conversationId: convId, guestId }, () => {});
     }
 
     function onNew(payload: { conversationId?: string; message?: ChatMessage }) {
       const convId = localStorage.getItem(CONV_KEY);
       if (!payload?.message || payload.conversationId !== convId) return;
-      const id = payload.message.id;
-      if (seenIds.current.has(id)) return;
-      seenIds.current.add(id);
+      if (seenIds.current.has(payload.message.id)) return;
+      seenIds.current.add(payload.message.id);
       setMessages((prev) => [...prev, payload.message!]);
     }
 
@@ -151,7 +226,6 @@ export default function ChatBot() {
     };
   }, []);
 
-  /** Re-fetch history when opening; re-join socket room (connect/reopen/reconnect). */
   useEffect(() => {
     if (!open || !ready) return;
     const s = socketRef.current;
@@ -160,24 +234,29 @@ export default function ChatBot() {
     const guestId = getOrCreateGuestId();
     if (!convId) return;
     const run = () => {
-      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
-        if (err) console.warn("[ChatBot] join on open", err);
-      });
+      s.emit("join", { conversationId: convId, guestId }, () => {});
     };
     if (s.connected) run();
     else s.once("connect", run);
   }, [open, ready]);
 
-  async function send(text: string) {
+  const statusText = useMemo(() => {
+    if (!ready || loadingConfig) return "Холбогдож байна…";
+    if (error) return "Алдаа";
+    return socketLive ? "Онлайн" : "Холбогдож байна…";
+  }, [ready, socketLive, loadingConfig, error]);
+
+  async function send(text: string, nextChoices?: ChatChoiceNode[]) {
     const trimmed = text.trim();
     if (!trimmed || !ready) return;
     const guestId = getOrCreateGuestId();
     const convId = localStorage.getItem(CONV_KEY);
     if (!convId) return;
 
-    setInput("");
     setTyping(true);
     setError(null);
+    setInput("");
+    if (nextChoices) setActiveChoices(nextChoices);
     try {
       const res = await fetch(`${base}/api/v1/chat/conversations/${convId}/messages`, {
         method: "POST",
@@ -198,6 +277,12 @@ export default function ChatBot() {
         if (botMsg && !seenIds.current.has(botMsg.id)) {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
+        } else if (!botMsg) {
+          next.push({
+            id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            role: "bot",
+            text: getLocalBotFallback(trimmed),
+          });
         }
         return next;
       });
@@ -208,8 +293,12 @@ export default function ChatBot() {
     }
   }
 
-  function handleKey(e: React.KeyboardEvent) {
-    if (e.key === "Enter") void send(input);
+  function choose(node: ChatChoiceNode) {
+    if (!ready) {
+      setError("Чат хараахан холбогдоогүй байна. Түр хүлээгээд дахин оролдоно уу.");
+      return;
+    }
+    void send(node.label, node.choices.length > 0 ? node.choices : config.rootChoices);
   }
 
   return (
@@ -240,9 +329,7 @@ export default function ChatBot() {
               <div className="text-white font-bold text-sm">FoodCity Чат</div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
-                <span className="text-gray-400 text-xs">
-                  {ready && socketLive ? "Онлайн" : "Холбогдож байна…"}
-                </span>
+                <span className="text-gray-400 text-xs">{statusText}</span>
               </div>
             </div>
             <button
@@ -277,16 +364,13 @@ export default function ChatBot() {
                   className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
                     msg.role === "user"
                       ? "bg-accent-500 text-white rounded-br-sm"
-                      : msg.role === "agent"
-                        ? "bg-emerald-700 text-white rounded-bl-sm"
-                        : "bg-white text-brand-900 shadow-sm border border-gray-100 rounded-bl-sm"
+                      : "bg-white text-brand-900 shadow-sm border border-gray-100 rounded-bl-sm"
                   }`}
                 >
                   {msg.text}
                 </div>
               </div>
             ))}
-
             {typing && (
               <div className="flex justify-start">
                 <div className="w-7 h-7 bg-accent-500 rounded-full flex items-center justify-center shrink-0 mr-2 mt-0.5">
@@ -301,16 +385,30 @@ export default function ChatBot() {
                 </div>
               </div>
             )}
+            {activeChoices.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-1">
+                {activeChoices.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => choose(c)}
+                    disabled={!ready}
+                    className="rounded-full border border-accent-200 bg-white px-3 py-1.5 text-xs font-medium text-brand-900 shadow-sm hover:border-accent-400 hover:bg-accent-50 disabled:opacity-50"
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+            )}
             <div ref={bottomRef} />
           </div>
-
           <div className="px-3 py-3 border-t border-gray-100 bg-white flex gap-2 shrink-0">
             <input
               ref={inputRef}
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKey}
+              onKeyDown={(e) => e.key === "Enter" && void send(input)}
               placeholder="Асуулт бичих…"
               disabled={!ready}
               className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition disabled:opacity-50"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Briefcase,
   Building2,
@@ -47,8 +48,13 @@ function formatPosted(iso?: string): string | null {
 
 export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
   const [open, setOpen] = useState<JobItem | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const close = useCallback(() => setOpen(null), []);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -139,23 +145,25 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
         })}
       </ul>
 
-      {open && (
-        <div
-          className="fixed inset-0 z-[300] flex items-end justify-center overflow-x-hidden overflow-y-auto overscroll-contain sm:items-center sm:p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="job-modal-title"
-        >
-          <button
-            type="button"
-            className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
-            aria-label="Хаах"
-            onClick={close}
-          />
+      {mounted &&
+        open &&
+        createPortal(
           <div
-            className="relative z-10 flex max-h-[min(92dvh,720px)] w-full min-w-0 max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-gray-100 bg-white shadow-2xl sm:mx-4 sm:rounded-2xl"
-            onClick={(e) => e.stopPropagation()}
+            className="fixed inset-0 z-[600] flex items-end justify-center overflow-x-hidden overflow-y-auto overscroll-contain sm:items-center sm:p-4"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="job-modal-title"
           >
+            <button
+              type="button"
+              className="fixed inset-0 bg-black/50 backdrop-blur-[2px]"
+              aria-label="Хаах"
+              onClick={close}
+            />
+            <div
+              className="relative z-10 flex max-h-[min(92dvh,720px)] w-full min-w-0 max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-gray-100 bg-white shadow-2xl sm:mx-4 sm:rounded-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
             <div className="flex shrink-0 items-start justify-between gap-2 border-b border-gray-100 px-4 py-3 sm:gap-3 sm:px-6 sm:py-4">
               <div className="min-w-0 flex-1 pr-1">
                 <p className="text-xs font-medium uppercase tracking-wide text-gray-500">
@@ -272,9 +280,10 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                 Хаах
               </button>
             </div>
-          </div>
-        </div>
-      )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

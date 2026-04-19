@@ -1,6 +1,11 @@
 import type { AboutSections } from "@/lib/site-content-types";
+import { resolveMediaUrl } from "@/lib/media";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
+  const imageUrl = resolveMediaUrl(
+    main.imageUrl?.trim() || "/images/baclground-image-1.jpg",
+  );
+
   return (
     <section
       id="about"
@@ -14,7 +19,11 @@ export default function About({ main }: { main: AboutSections["main"] }) {
             style={{ animationDelay: "0.1s" }}
           >
             <div className="relative rounded overflow-hidden aspect-[4/3]">
-              <div className="absolute inset-0 bg-gradient-to-br from-brand-700 to-brand-900 flex items-end justify-start p-6 sm:p-8">
+              <div
+                className="absolute inset-0 bg-cover bg-center"
+                style={{ backgroundImage: `url("${imageUrl}")` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-start p-6 sm:p-8">
                 <div
                   className="absolute inset-0 opacity-10"
                   style={{
@@ -23,41 +32,6 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                     backgroundSize: "30px 30px",
                   }}
                 />
-                <svg
-                  viewBox="0 0 380 260"
-                  className="absolute inset-0 w-full h-full opacity-20"
-                  fill="none"
-                >
-                  <rect x="60" y="60" width="100" height="200" fill="white" />
-                  <rect x="180" y="20" width="140" height="240" fill="white" />
-                  <rect x="340" y="120" width="40" height="140" fill="white" />
-                  {[...Array(5)].map((_, r) =>
-                    [75, 100, 125].map((x) => (
-                      <rect
-                        key={`a${r}${x}`}
-                        x={x}
-                        y={80 + r * 32}
-                        width="16"
-                        height="22"
-                        fill="#f97316"
-                        opacity="0.7"
-                      />
-                    )),
-                  )}
-                  {[...Array(7)].map((_, r) =>
-                    [195, 225, 255, 285].map((x) => (
-                      <rect
-                        key={`b${r}${x}`}
-                        x={x}
-                        y={40 + r * 30}
-                        width="16"
-                        height="20"
-                        fill="#f97316"
-                        opacity="0.6"
-                      />
-                    )),
-                  )}
-                </svg>
                 <div className="relative z-10">
                   <div className="text-white text-lg sm:text-2xl font-black">
                     {main.imageBuildingName}

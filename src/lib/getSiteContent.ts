@@ -6,6 +6,7 @@ import {
   defaultFooterSections,
   defaultHomeSections,
   defaultJobsPageSections,
+  defaultPropertiesPageSections,
   defaultSalesPageSections,
   defaultServicesSections,
   defaultTeamPageSections,
@@ -16,6 +17,7 @@ import type {
   FooterSections,
   HomeSections,
   JobsPageSections,
+  PropertiesPageSections,
   SalesPageSections,
   ServicesSections,
   TeamPageSections,
@@ -102,6 +104,11 @@ export async function getContactSections(): Promise<ContactSections> {
 export async function getServicesSections(): Promise<ServicesSections> {
   const patch = await fetchSitePageSections("services");
   return mergeDeep(defaultServicesSections, patch);
+}
+
+export async function getPropertiesPageSections(): Promise<PropertiesPageSections> {
+  const patch = await fetchSitePageSections("properties-page");
+  return mergeDeep(defaultPropertiesPageSections, patch);
 }
 
 export async function getSalesPageSections(): Promise<SalesPageSections> {

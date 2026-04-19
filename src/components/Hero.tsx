@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from "react";
 import CountUp from "@/components/CountUp";
+import type { HomeSections } from "@/lib/site-content-types";
 
-const slides = [
-  "/images/baclground-image-1.jpg",
-  "/images/baclground-image-2.jpg",
-  "/images/baclground-image-3.jpg",
-];
+export type HeroContent = HomeSections["hero"];
 
 const HOLD = 5000;
 const SPEED = 900;
 
-export default function Hero() {
+export default function Hero({ hero }: { hero: HeroContent }) {
+  const slides =
+    hero.slideImages?.length > 0
+      ? hero.slideImages
+      : ["/images/baclground-image-1.jpg"];
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
@@ -92,7 +93,7 @@ export default function Hero() {
           >
             <div className="w-1.5 h-1.5 bg-accent-500 rounded-full shrink-0" />
             <span className="text-accent-400 text-xs font-semibold uppercase tracking-widest">
-              Барилга &amp; Оффис түрээс
+              {hero.badge}
             </span>
           </div>
 
@@ -100,18 +101,17 @@ export default function Hero() {
             className="hero-reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-5 sm:mb-6"
             style={{ animationDelay: "0.25s" }}
           >
-            Таны төслийг <span className="text-accent-500">Бодит</span>
+            {hero.titleLine1}{" "}
+            <span className="text-accent-500">{hero.titleAccent}</span>
             <br />
-            болгоно
+            {hero.titleLine2}
           </h1>
 
           <p
             className="hero-reveal text-gray-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl"
             style={{ animationDelay: "0.45s" }}
           >
-            FoodCity нь барилгын дэвшилтэт үйлчилгээ болон уян хатан оффис
-            түрээслүүлэх боломжийг санал болгодог. Санаанаас хэрэгжилт хүртэл
-            бид таны бизнесийг дэвшүүлэх орон зайг бүтээдэг.
+            {hero.desc}
           </p>
 
           <div
@@ -122,7 +122,7 @@ export default function Hero() {
               href="/properties"
               className="inline-flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
-              Үл хөдлөх харах
+              {hero.btn1}
               <svg
                 className="w-4 h-4 shrink-0"
                 fill="none"
@@ -141,7 +141,7 @@ export default function Hero() {
               href="/contact"
               className="inline-flex items-center justify-center gap-2 border border-gray-500 hover:border-accent-500 text-gray-300 hover:text-accent-500 font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
-              Мэргэжилтэнтэй холбогдох
+              {hero.btn2}
             </a>
           </div>
 
@@ -150,12 +150,7 @@ export default function Hero() {
             className="hero-reveal grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/20"
             style={{ animationDelay: "0.75s" }}
           >
-            {[
-              { value: "120К+", label: "Нийт талбай м²" },
-              { value: "240", label: "Паркингийн байр" },
-              { value: "85+", label: "Оффисийн нэгж" },
-              { value: "12", label: "Давхрын тоо" },
-            ].map((stat) => (
+            {hero.stats.map((stat) => (
               <div key={stat.label}>
                 <CountUp
                   value={stat.value}
@@ -176,7 +171,7 @@ export default function Hero() {
           <button
             key={i}
             onClick={() => goTo(i)}
-            aria-label={`Слайд ${i + 1}`}
+            aria-label={`${hero.slideLabel} ${i + 1}`}
             className={`transition-all duration-300 rounded-full ${
               i === (incoming ?? current)
                 ? "w-8 h-2 bg-accent-500"

@@ -1,11 +1,6 @@
-const stats = [
-  { value: "18+", label: "Жилийн туршлага" },
-  { value: "340+", label: "Дууссан төсөл" },
-  { value: "98%", label: "Үйлчлүүлэгчийн сэтгэл ханамж" },
-  { value: "60+", label: "Мэргэжилтэн инженер" },
-];
+import type { AboutSections } from "@/lib/site-content-types";
 
-export default function About() {
+export default function About({ main }: { main: AboutSections["main"] }) {
   return (
     <section id="about" className="py-16 sm:py-20 lg:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,18 +57,18 @@ export default function About() {
                 </svg>
                 <div className="relative z-10">
                   <div className="text-white text-lg sm:text-2xl font-black">
-                    FoodCity
+                    {main.imageBuildingName}
                   </div>
                   <div className="text-gray-400 text-sm">
-                    Улаанбаатар хотын бизнесийн төв
+                    {main.imageBuildingSubtitle}
                   </div>
                 </div>
               </div>
             </div>
             <div className="absolute -bottom-5 -right-3 sm:-bottom-6 sm:-right-6 bg-accent-500 text-white rounded px-4 sm:px-6 py-3 sm:py-4 shadow-xl">
-              <div className="text-2xl sm:text-3xl font-black">18+</div>
+              <div className="text-2xl sm:text-3xl font-black">{main.yearsBadgeValue}</div>
               <div className="text-xs font-semibold opacity-90 uppercase tracking-wide">
-                Жилийн туршлага
+                {main.yearsLabel}
               </div>
             </div>
           </div>
@@ -84,40 +79,34 @@ export default function About() {
               className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
               style={{ animationDelay: "0.2s" }}
             >
-              Дизайн &amp; Бүтэц
+              {main.sectionLabel}
             </span>
             <h2
               className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight mb-5 sm:mb-6"
               style={{ animationDelay: "0.35s" }}
             >
-              Ажлыг урамшуулах
+              {main.h2Line1}
               <br />
-              <span className="text-accent-500">Орон зай бүтээдэг</span>
+              <span className="text-accent-500">{main.h2Accent}</span>
             </h2>
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-5"
               style={{ animationDelay: "0.5s" }}
             >
-              FoodCity нь Улаанбаатарын тэргүүлэх арилжааны барилга угсралт
-              болон оффис түрээслүүлэх групп юм. 18 гаруй жилийн туршлагатай бид
-              Монгол болон Зүүн Өмнөд Азид шагналт оффисийн цамхаг, олон
-              зориулалттай цогцолбор, premium менежментийн ажлын байрнуудыг
-              хүргэж ирсэн.
+              {main.p1}
             </p>
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-8 sm:mb-10"
               style={{ animationDelay: "0.6s" }}
             >
-              Бид дизайн, барилга, менежментийг нэгдсэн байдлаар хэрэгжүүлдэг
-              тул үйлчлүүлэгчид суурь тавихаас өдөр тутмын үйл ажиллагаа хүртэл
-              нэг цэгийн хариуцлагатай харилцдаг.
+              {main.p2}
             </p>
 
             <div
               className="hero-reveal grid grid-cols-2 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-gray-100"
               style={{ animationDelay: "0.75s" }}
             >
-              {stats.map((s) => (
+              {main.stats.map((s) => (
                 <div key={s.label}>
                   <div className="text-2xl sm:text-3xl font-black text-brand-900">
                     {s.value}

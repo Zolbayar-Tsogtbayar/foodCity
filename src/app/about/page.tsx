@@ -1,5 +1,7 @@
 import About from "@/components/About";
+import { getAboutSections } from "@/lib/getSiteContent";
 
-export default function AboutPage() {
-  return <About />;
+export default async function AboutPage() {
+  const { main } = await getAboutSections();
+  return <About main={main} />;
 }

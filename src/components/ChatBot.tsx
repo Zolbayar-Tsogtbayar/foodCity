@@ -1,90 +1,190 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { io, type Socket } from "socket.io-client";
+import { getApiBaseUrl, type ChatMessage } from "@/lib/api";
 
-type Message = {
-  id: number;
-  from: "bot" | "user";
-  text: string;
-};
+const GUEST_KEY = "foodcity_guest_id";
+const CONV_KEY = "foodcity_conversation_id";
 
-const INITIAL: Message[] = [
-  {
-    id: 0,
-    from: "bot",
-    text: "Сайн байна уу! FoodCity-д тавтай морил. Оффис түрээс, барилга эсвэл үл хөдлөхийн талаар асуух зүйл байвал бэлэн хариулъя.",
-  },
-];
-
-const QUICK = [
-  "Боломжит оффисүүд",
-  "Үнийн мэдээлэл",
-  "Холбоо барих",
-];
+function getOrCreateGuestId(): string {
+  let id = localStorage.getItem(GUEST_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    localStorage.setItem(GUEST_KEY, id);
+  }
+  return id;
+}
 
 export default function ChatBot() {
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>(INITIAL);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [ready, setReady] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const nextId = useRef(1);
+  const socketRef = useRef<Socket | null>(null);
+  const seenIds = useRef<Set<string>>(new Set());
+  const base = getApiBaseUrl();
+
+  const scrollBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const bootstrap = useCallback(async () => {
+    setError(null);
+    const guestId = getOrCreateGuestId();
+    let convId = localStorage.getItem(CONV_KEY);
+
+    const ensureConv = async () => {
+      const res = await fetch(`${base}/api/v1/chat/conversations`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestId }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as { data: { id: string } };
+      convId = json.data.id;
+      localStorage.setItem(CONV_KEY, convId!);
+    };
+
+    try {
+      if (!convId) await ensureConv();
+      else {
+        const check = await fetch(
+          `${base}/api/v1/chat/conversations/${convId}/messages?guestId=${encodeURIComponent(guestId)}`,
+        );
+        if (!check.ok) {
+          localStorage.removeItem(CONV_KEY);
+          await ensureConv();
+        }
+      }
+      const finalId = localStorage.getItem(CONV_KEY);
+      if (!finalId) throw new Error("No conversation");
+
+      const res = await fetch(
+        `${base}/api/v1/chat/conversations/${finalId}/messages?guestId=${encodeURIComponent(guestId)}`,
+      );
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as { data: ChatMessage[] };
+      const list = json.data ?? [];
+      seenIds.current = new Set(list.map((m) => m.id));
+      setMessages(list);
+      setReady(true);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Алдаа");
+      setReady(false);
+    }
+  }, [base]);
 
   useEffect(() => {
-    if (open) {
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-      inputRef.current?.focus();
-    }
-  }, [open, messages]);
+    if (open) void bootstrap();
+  }, [open, bootstrap]);
 
-  function addMessage(from: "bot" | "user", text: string) {
-    setMessages((prev) => [...prev, { id: nextId.current++, from, text }]);
-  }
+  useEffect(() => {
+    if (open) inputRef.current?.focus();
+  }, [open]);
 
-  function botReply(userText: string) {
-    setTyping(true);
-    const lower = userText.toLowerCase();
-    let reply =
-      "Таны асуултыг манай зөвлөхүүдэд дамжуулна. +976 1100-0000 дугаарт залгах эсвэл contact хэсгийг ашиглана уу.";
+  useEffect(() => {
+    scrollBottom();
+  }, [messages, open, scrollBottom]);
 
-    if (lower.includes("оффис") || lower.includes("боломжит") || lower.includes("нэгж")) {
-      reply =
-        "Одоогоор 85+ оффисийн нэгж боломжтой — 65 м² suite-аас 800 м² бүтэн давхар хүртэл. /properties хэсгийг үзнэ үү.";
-    } else if (lower.includes("үнэ") || lower.includes("price") || lower.includes("төлбөр")) {
-      reply =
-        "Үнэ нь хэмжээ, байрлалаас хамаарна. Хамтын ажлын байр ₮150,000/ширээнээс, гүйцэтгэх suite ₮680,000/сар, том оффис ₮4,200,000/сараас эхэлнэ.";
-    } else if (lower.includes("холбоо") || lower.includes("утас") || lower.includes("имэйл")) {
-      reply =
-        "Утас: +976 1100-0000\nИмэйл: info@foodcity.mn\nАжлын цаг: Даваа–Баасан 09:00–18:00";
-    } else if (lower.includes("байршил") || lower.includes("хаана") || lower.includes("хаяг")) {
-      reply =
-        "Бид Энх тайваны өргөн чөлөө 17, Сүхбаатар дүүрэг, Улаанбаатар 14200-д байрладаг.";
-    } else if (lower.includes("паркинг") || lower.includes("зогсоол")) {
-      reply = "Манай барилгад 240 паркингийн байр байна. Нэгж бүрт паркингийн байр харгалзан олгогдоно.";
+  useEffect(() => {
+    const guestId = getOrCreateGuestId();
+    const s = io(base, { transports: ["websocket", "polling"] });
+    socketRef.current = s;
+
+    function onNew(payload: { conversationId?: string; message?: ChatMessage }) {
+      const convId = localStorage.getItem(CONV_KEY);
+      if (!payload?.message || payload.conversationId !== convId) return;
+      const id = payload.message.id;
+      if (seenIds.current.has(id)) return;
+      seenIds.current.add(id);
+      setMessages((prev) => [...prev, payload.message!]);
     }
 
-    setTimeout(() => {
-      setTyping(false);
-      addMessage("bot", reply);
-    }, 900);
-  }
+    s.on("message:new", onNew);
 
-  function send(text: string) {
+    function joinRoom() {
+      const convId = localStorage.getItem(CONV_KEY);
+      if (!convId || !s.connected) return;
+      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
+        if (err) console.warn(err);
+      });
+    }
+
+    s.on("connect", joinRoom);
+
+    return () => {
+      s.off("message:new", onNew);
+      s.off("connect", joinRoom);
+      s.disconnect();
+      socketRef.current = null;
+    };
+  }, [base]);
+
+  useEffect(() => {
+    if (!ready) return;
+    const s = socketRef.current;
+    const convId = localStorage.getItem(CONV_KEY);
+    const guestId = getOrCreateGuestId();
+    if (!s || !convId) return;
+    const run = () =>
+      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
+        if (err) console.warn(err);
+      });
+    if (s.connected) run();
+    else s.once("connect", run);
+  }, [ready]);
+
+  async function send(text: string) {
     const trimmed = text.trim();
-    if (!trimmed) return;
-    addMessage("user", trimmed);
+    if (!trimmed || !ready) return;
+    const guestId = getOrCreateGuestId();
+    const convId = localStorage.getItem(CONV_KEY);
+    if (!convId) return;
+
     setInput("");
-    botReply(trimmed);
+    setTyping(true);
+    setError(null);
+    try {
+      const res = await fetch(`${base}/api/v1/chat/conversations/${convId}/messages`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmed, guestId }),
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const json = (await res.json()) as {
+        data: { userMsg: ChatMessage; botMsg: ChatMessage | null };
+      };
+      const { userMsg, botMsg } = json.data;
+      setMessages((prev) => {
+        const next = [...prev];
+        if (!seenIds.current.has(userMsg.id)) {
+          seenIds.current.add(userMsg.id);
+          next.push(userMsg);
+        }
+        if (botMsg && !seenIds.current.has(botMsg.id)) {
+          seenIds.current.add(botMsg.id);
+          next.push(botMsg);
+        }
+        return next;
+      });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Алдаа");
+    } finally {
+      setTyping(false);
+    }
   }
 
   function handleKey(e: React.KeyboardEvent) {
-    if (e.key === "Enter") send(input);
+    if (e.key === "Enter") void send(input);
   }
 
   return (
     <>
-      {/* Chat panel */}
       <div
         className={`fixed bottom-24 right-4 sm:right-6 z-50 w-[calc(100vw-2rem)] max-w-sm transition-all duration-300 origin-bottom-right ${
           open
@@ -92,26 +192,35 @@ export default function ChatBot() {
             : "opacity-0 scale-95 pointer-events-none"
         }`}
       >
-        <div className="bg-white rounded-xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden" style={{ height: "480px" }}>
-          {/* Header */}
+        <div
+          className="bg-white rounded-xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+          style={{ height: "480px" }}
+        >
           <div className="bg-brand-900 px-4 py-3 flex items-center gap-3 shrink-0">
             <div className="w-9 h-9 bg-accent-500 rounded-lg flex items-center justify-center shrink-0">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-white font-bold text-sm">FoodCity Туслах</div>
+              <div className="text-white font-bold text-sm">FoodCity Чат</div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
-                <span className="text-gray-400 text-xs">Онлайн</span>
+                <span className="text-gray-400 text-xs">
+                  {ready ? "Онлайн" : "Холбогдож байна…"}
+                </span>
               </div>
             </div>
             <button
               onClick={() => setOpen(false)}
               className="text-gray-400 hover:text-white transition-colors p-1"
               aria-label="Хаах"
+              type="button"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -119,14 +228,16 @@ export default function ChatBot() {
             </button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-gray-50">
+            {error && (
+              <p className="text-xs text-red-600 bg-red-50 rounded-lg px-2 py-1">{error}</p>
+            )}
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                className={`flex ${msg.from === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
-                {msg.from === "bot" && (
+                {msg.role !== "user" && (
                   <div className="w-7 h-7 bg-accent-500 rounded-full flex items-center justify-center shrink-0 mr-2 mt-0.5">
                     <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
@@ -135,9 +246,11 @@ export default function ChatBot() {
                 )}
                 <div
                   className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-sm leading-relaxed whitespace-pre-line ${
-                    msg.from === "user"
+                    msg.role === "user"
                       ? "bg-accent-500 text-white rounded-br-sm"
-                      : "bg-white text-brand-900 shadow-sm border border-gray-100 rounded-bl-sm"
+                      : msg.role === "agent"
+                        ? "bg-emerald-700 text-white rounded-bl-sm"
+                        : "bg-white text-brand-900 shadow-sm border border-gray-100 rounded-bl-sm"
                   }`}
                 >
                   {msg.text}
@@ -162,22 +275,6 @@ export default function ChatBot() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Quick replies */}
-          {messages.length <= 2 && (
-            <div className="px-4 py-2 flex gap-2 overflow-x-auto shrink-0 bg-gray-50 border-t border-gray-100">
-              {QUICK.map((q) => (
-                <button
-                  key={q}
-                  onClick={() => send(q)}
-                  className="shrink-0 text-xs border border-accent-300 text-accent-600 hover:bg-accent-500 hover:text-white hover:border-accent-500 px-3 py-1.5 rounded-full transition-colors whitespace-nowrap"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {/* Input */}
           <div className="px-3 py-3 border-t border-gray-100 bg-white flex gap-2 shrink-0">
             <input
               ref={inputRef}
@@ -186,11 +283,13 @@ export default function ChatBot() {
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKey}
               placeholder="Асуулт бичих…"
-              className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition"
+              disabled={!ready}
+              className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition disabled:opacity-50"
             />
             <button
-              onClick={() => send(input)}
-              disabled={!input.trim()}
+              type="button"
+              onClick={() => void send(input)}
+              disabled={!input.trim() || !ready}
               className="w-9 h-9 bg-accent-500 hover:bg-accent-600 disabled:opacity-40 text-white rounded-full flex items-center justify-center transition-colors shrink-0"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,8 +300,8 @@ export default function ChatBot() {
         </div>
       </div>
 
-      {/* Toggle button */}
       <button
+        type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label="Чат нээх"
         className="fixed bottom-6 right-4 sm:right-6 z-50 w-14 h-14 bg-accent-500 hover:bg-accent-600 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110"
@@ -213,8 +312,12 @@ export default function ChatBot() {
           </svg>
         ) : (
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
           </svg>
         )}
       </button>

@@ -1,22 +1,53 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const navLinks = [
-  { label: "Нүүр", href: "/" },
+const mainNavLinks = [{ label: "Нүүр", href: "/" }];
+
+/** Shown under “Зар мэдээ” */
+const zarmedeeLinks = [
+  { label: "Захиалга", href: "/order" },
+  { label: "Борлуулалтын зар", href: "/sales" },
+  { label: "Ажлын зар", href: "/jobs" },
+  { label: "Мэдээ мэдээлэл", href: "/team" },
+];
+
+const restNavLinks = [
   { label: "Бидний тухай", href: "/about" },
   { label: "Үйл ажиллагаа", href: "/services" },
   { label: "Хамтран ажиллах", href: "/properties" },
-  { label: "Мэдээ мэдээлэл", href: "/team" },
   { label: "Холбоо барих", href: "/contact" },
 ];
+
+function ChevronDown({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [zarmedeeOpen, setZarmedeeOpen] = useState(false);
   const pathname = usePathname();
+
+  const isZarmedeeActive = zarmedeeLinks.some((l) => l.href === pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -32,10 +63,18 @@ export default function Navbar() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMenuOpen(false);
+    setZarmedeeOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) setZarmedeeOpen(false);
+  }, [menuOpen]);
+
+  useEffect(() => {
+    if (menuOpen && isZarmedeeActive) setZarmedeeOpen(true);
+  }, [menuOpen, isZarmedeeActive]);
 
   return (
     <header
@@ -43,43 +82,83 @@ export default function Navbar() {
         scrolled ? "bg-brand-900 shadow-xl" : "bg-brand-900/85 backdrop-blur-sm"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16 sm:h-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between min-h-[4.25rem] sm:min-h-[5.25rem] py-2 sm:py-2.5">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 bg-accent-500 rounded flex items-center justify-center">
-            <svg
-              viewBox="0 0 24 24"
-              fill="white"
-              className="w-4 h-4 sm:w-5 sm:h-5"
-            >
-              <path d="M3 10.5L12 3l9 7.5V21H3V10.5z" />
-              <rect
-                x="9"
-                y="14"
-                width="6"
-                height="7"
-                fill="white"
-                opacity="0.8"
-              />
-            </svg>
-          </div>
-          <span className="text-white font-bold text-lg sm:text-xl tracking-wide">
-            Food<span className="text-accent-500">City</span>
-          </span>
+        <Link href="/" className="flex shrink-0 items-center">
+          <Image
+            src="/fclogo.png"
+            alt="Food City"
+            width={320}
+            height={114}
+            className="h-11 w-auto max-w-[200px] object-contain object-left sm:h-12 sm:max-w-[240px] lg:h-14 lg:max-w-[280px]"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
-          {navLinks.map((link) => {
+        <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
+          {mainNavLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                  isActive
-                    ? "text-accent-500"
-                    : "text-gray-300 hover:text-accent-500"
+                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                }`}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+
+          {/* Panel overlaps trigger slightly (-mt-2 + pt-2) so the cursor never crosses a dead zone where :hover is lost */}
+          <div className="group relative">
+            <button
+              type="button"
+              className={`flex items-center gap-1 text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
+                isZarmedeeActive ? "text-accent-500" : "text-gray-300 group-hover:text-accent-500"
+              }`}
+              aria-haspopup="menu"
+            >
+              Зар мэдээ
+              <ChevronDown className="opacity-80 group-hover:translate-y-px transition-transform" />
+            </button>
+            <div
+              className="absolute left-0 top-full z-[100] -mt-2 min-w-[220px] pt-2 opacity-0 invisible transition-opacity duration-150 group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+              role="menu"
+              aria-label="Зар мэдээ"
+            >
+              <div className="rounded-lg border border-brand-700 bg-brand-800/95 py-2 shadow-xl backdrop-blur-sm">
+                {zarmedeeLinks.map((item) => {
+                  const active = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      role="menuitem"
+                      className={`block px-4 py-2.5 text-sm font-medium tracking-wide transition-colors ${
+                        active
+                          ? "bg-brand-900/80 text-accent-500"
+                          : "text-gray-200 hover:bg-brand-900/60 hover:text-accent-400"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {restNavLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
+                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
                 }`}
               >
                 {link.label}
@@ -147,26 +226,87 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile / Tablet Menu */}
+      {/* Mobile / Tablet Menu — allow scroll when content is taller than the viewport */}
       <div
-        className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0"
+        className={`lg:hidden transition-all duration-300 ease-in-out ${
+          menuOpen
+            ? "max-h-[min(100vh,100dvh)] overflow-y-auto overflow-x-hidden opacity-100"
+            : "max-h-0 overflow-hidden opacity-0"
         }`}
       >
         <div className="bg-brand-900 border-t border-brand-700 px-4 sm:px-6 pb-4">
-          {navLinks.map((link) => {
+          {mainNavLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 transition-colors ${
+                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                }`}
+              >
+                <span
+                  className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`}
+                />
+                {link.label}
+              </Link>
+            );
+          })}
+
+          <div className="border-b border-brand-800">
+            <button
+              type="button"
+              className={`flex w-full items-center justify-between py-3.5 text-sm font-medium text-left transition-colors ${
+                isZarmedeeActive ? "text-accent-500" : "text-gray-300"
+              }`}
+              onClick={() => setZarmedeeOpen(!zarmedeeOpen)}
+              aria-expanded={zarmedeeOpen}
+            >
+              <span className="flex items-center">
+                <span
+                  className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isZarmedeeActive ? "bg-accent-500" : "bg-accent-500/50"}`}
+                />
+                Зар мэдээ
+              </span>
+              <ChevronDown
+                className={`shrink-0 transition-transform ${zarmedeeOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {zarmedeeOpen && (
+              <div className="pb-2 pl-2">
+                {zarmedeeLinks.map((item) => {
+                  const active = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center py-2.5 pl-6 text-sm border-l-2 border-brand-700 transition-colors ${
+                        active
+                          ? "border-accent-500 text-accent-500"
+                          : "border-transparent text-gray-400 hover:text-accent-400"
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {restNavLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors ${
-                  isActive
-                    ? "text-accent-500"
-                    : "text-gray-300 hover:text-accent-500"
+                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
                 }`}
               >
-                <span className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`} />
+                <span
+                  className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`}
+                />
                 {link.label}
               </Link>
             );

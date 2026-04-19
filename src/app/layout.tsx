@@ -5,6 +5,8 @@ import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PageWrapper from "@/components/PageWrapper";
+import ChatBot from "@/components/ChatBot";
+import { getFooterSections } from "@/lib/getSiteContent";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -18,11 +20,12 @@ export const metadata: Metadata = {
     "FoodCity нь premium арилжааны орон зай болон оффис барьж, түрээслүүлдэг. Орчин үеийн барилга, ухаалаг дизайн, бизнест зориулсан уян хатан түрээсийн нөхцөл.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const footerContent = await getFooterSections();
   return (
     <html lang="mn" className={`${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
@@ -31,7 +34,8 @@ export default function RootLayout({
           <PageWrapper>
             <main className="flex-1">{children}</main>
           </PageWrapper>
-          <Footer />
+          <Footer content={footerContent} />
+          <ChatBot />
         </Providers>
       </body>
     </html>

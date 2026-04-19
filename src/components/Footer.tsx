@@ -1,4 +1,5 @@
 import Image from "next/image";
+import type { FooterSections } from "@/lib/site-content-types";
 
 const footerLinks = {
   Компани: ["Бидний тухай", "Манай төслүүд", "Ажлын байр", "Мэдээ & Хэвлэл"],
@@ -15,15 +16,6 @@ const footerLinks = {
     "Күүкийн бодлого",
   ],
 };
-
-const partners = [
-  { name: "ING Банк",     src: "/logos/ing.svg",      width: 100, height: 36 },
-  { name: "Голомт Банк",  src: "/logos/golomt.svg",   width: 130, height: 36 },
-  { name: "MCS Групп",    src: "/logos/mcs.svg",       width: 110, height: 36 },
-  { name: "Ньюком Групп", src: "/logos/newcom.png",    width: 120, height: 36 },
-  { name: "Хаан Банк",    src: "/logos/khanbank.svg",  width: 120, height: 36 },
-  { name: "АПУ ХК",       src: "/logos/apu.svg",       width: 90,  height: 36 },
-];
 
 const socials = [
   {
@@ -55,14 +47,15 @@ const socials = [
   },
 ];
 
-export default function Footer() {
+export default function Footer({ content }: { content: FooterSections }) {
+  const { partnersLabel, items: partners } = content.partners;
   return (
     <footer className="bg-brand-900 text-white">
       {/* Partners */}
       <div className="border-b border-brand-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
           <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-4 sm:mb-6">
-            Тэргүүлэх байгууллагуудын итгэлийг хүлээсэн
+            {partnersLabel}
           </p>
           <div className="flex flex-wrap justify-center items-center gap-6 sm:gap-10">
             {partners.map((p) => (
@@ -108,8 +101,7 @@ export default function Footer() {
               </span>
             </a>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              Улаанбаатарын тэргүүлэх барилга угсралт болон арилжааны оффис
-              түрээслүүлэх групп. 2006 оноос ухаалаг орон зай бүтээж байна.
+              {content.brand.desc}
             </p>
             <div className="flex gap-3">
               {socials.map((s) => (

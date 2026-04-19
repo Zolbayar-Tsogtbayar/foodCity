@@ -75,13 +75,90 @@ function normalizeConfig(raw: unknown): ChatbotConfig {
   };
 }
 
+/** Mirrors `foodcity-back/src/services/chatbot.ts` when API omits botMsg (offline edge). */
+function normalizeUserText(text: string): string {
+  return text
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
 function getLocalBotFallback(userText: string): string {
-  const lower = userText.toLowerCase();
-  if (lower.includes("заавар")) {
-    return "Заавар: Захиалга өгөх бол «Захиалга» хэсгийг бөглөнө үү. Борлуулалтын санал, үйлчилгээний мэдээллийг «Борлуулалтын зар»-аас үзнэ үү.";
+  const n = normalizeUserText(userText);
+  if (!n) {
+    return "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.";
   }
-  if (lower.includes("бидний тухай") || lower.includes("танилцуулга")) {
-    return "«Бидний тухай» хэсгээс FoodCity-ийн туршлага, гүйцэтгэсэн төслүүд, багийн мэдээлэлтэй танилцана уу.";
+  if (
+    n.includes("баярлалаа") ||
+    n.includes("thanks") ||
+    n.includes("thank you") ||
+    n.includes("thankyou")
+  ) {
+    return "Тустай сайхан байна! Өөр асуулт байвал энд бичнэ үү.";
+  }
+  if (
+    n.startsWith("сайн байна") ||
+    n.includes("сайн байна уу") ||
+    n === "сайн уу" ||
+    n === "сайн" ||
+    /^hello\b/.test(n) ||
+    /^hi\b/.test(n) ||
+    /^hey\b/.test(n)
+  ) {
+    return "Сайн байна уу! Захиалга, борлуулалтын зар, ажлын зарын талаар асууж болно. Тодорхой зүйл хайвал доорх сонголтуудыг ашиглана уу.";
+  }
+  if (
+    n.includes("холбоо барих") ||
+    n.includes("утасны дугаар") ||
+    (n.includes("утас") && (n.includes("дугаар") || n.includes("залгах"))) ||
+    (n.includes("имэйл") && n.includes("хаяг")) ||
+    n.includes("холбоо") ||
+    n.includes("утас") ||
+    n.includes("имэйл") ||
+    n.includes("дугаар") ||
+    n.includes("цагийн хуваарь") ||
+    n.includes("ажлын цаг") ||
+    (n.includes("ниээдэг") && n.includes("хаагддаг"))
+  ) {
+    return "Утас: +976 1100-0000\nИмэйл: info@foodcity.mn\nАжлын цаг: Даваа–Баасан 09:00–18:00";
+  }
+  if (
+    n.includes("бидний тухай") ||
+    n.includes("танилцуулга") ||
+    n.includes("компани") ||
+    (n.includes("түүх") && n.includes("food"))
+  ) {
+    return "«Бидний тухай» хэсгээс FoodCity-ийн туршлага, гүйцэтгэсэн төслүүд, багийн мэдээлэлтэй танилцана уу. Тодорхой асуулт байвал энд шууд бичээрэй.";
+  }
+  if (
+    n.includes("ажлын зар") ||
+    n.includes("ажлын байр") ||
+    n.includes("нийцтэй ажил") ||
+    n.includes("карьер") ||
+    (n.includes("ажил") && (n.includes("зар") || n.includes("байр")))
+  ) {
+    return "Нээлттэй ажлын байрны заруудыг «Ажлын зар» хуудаснаас үзнэ үү.";
+  }
+  if (n.includes("ажилтан") && (n.includes("холбогдох") || n.includes("оператор"))) {
+    return "Таны хүсэлтийг ажилтан руу дамжуулна. Түр хүлээнэ үү; шууд асуултанд хариулна.";
+  }
+  if (n.includes("үнэ") || n.includes("price") || n.includes("төлбөр") || n.includes("хямдрал") || n.includes("хөнгөлөлт")) {
+    return "Үнэ, хямдралын мэдээллийг «Борлуулалтын зар» хэсэгт нийтэлдэг. Тодорхой бүтээгдэхүүнээс хамаарч өөр өөр байна.";
+  }
+  if (
+    n.includes("оффис") ||
+    n.includes("боломжит") ||
+    n.includes("захиалга") ||
+    n.includes("хоол") ||
+    n.includes("заавар") ||
+    n.includes("хэрхэн захиалах") ||
+    n.includes("захиалах")
+  ) {
+    return "Захиалга өгөх бол вэб дээрх «Захиалга» хэсгээс бөглөнө үү. Оффис болон үйлчилгээний талаар дэлгэрэнгүй мэдээллийг «Борлуулалтын зар»-аас үзнэ үү.";
+  }
+  if (n.includes("байршил") || n.includes("хаана") || n.includes("хаяг") || n.includes("where")) {
+    return "Бид Улаанбаатар хотод үйл ажиллагаа явуулдаг. Хаягийн дэлгэрэнгүйг «Холбоо барих» хэсгээс үзнэ үү.";
   }
   return "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.";
 }

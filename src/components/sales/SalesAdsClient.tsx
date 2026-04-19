@@ -14,6 +14,9 @@ export type SalesAdItem = {
   validTo?: string;
   createdAt?: string;
   updatedAt?: string;
+  postedByDisplayName?: string;
+  postedByUsername?: string;
+  lastEditedByDisplayName?: string;
 };
 
 function formatDateMn(iso?: string | null): string | null {
@@ -101,6 +104,18 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-gray-600">
                   {previewText(ad, 220)}
                 </p>
+                {(ad.postedByDisplayName || ad.lastEditedByDisplayName) && (
+                  <p className="mt-3 text-xs text-gray-500">
+                    {ad.postedByDisplayName && (
+                      <span>Нийтлэгч: {ad.postedByDisplayName}</span>
+                    )}
+                    {ad.postedByDisplayName && ad.lastEditedByDisplayName ? " · " : null}
+                    {ad.lastEditedByDisplayName &&
+                    ad.lastEditedByDisplayName !== ad.postedByDisplayName ? (
+                      <span>Сүүлд зассан: {ad.lastEditedByDisplayName}</span>
+                    ) : null}
+                  </p>
+                )}
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600">
                   Дэлгэрэнгүй үзэх
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,6 +197,21 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                       <div className="sm:col-span-2">
                         <dt className="font-medium text-gray-500">Нийтлэгдсэн</dt>
                         <dd className="mt-0.5 text-gray-900">{formatDateMn(open.createdAt)}</dd>
+                      </div>
+                    )}
+                    {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
+                      <div className="sm:col-span-2">
+                        <dt className="font-medium text-gray-500">Админ</dt>
+                        <dd className="mt-0.5 text-gray-900">
+                          {open.postedByDisplayName && (
+                            <span>Нийтлэгч: {open.postedByDisplayName}</span>
+                          )}
+                          {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
+                          {open.lastEditedByDisplayName &&
+                          open.lastEditedByDisplayName !== open.postedByDisplayName ? (
+                            <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
+                          ) : null}
+                        </dd>
                       </div>
                     )}
                   </dl>

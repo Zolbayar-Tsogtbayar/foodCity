@@ -23,6 +23,9 @@ export type JobItem = {
   contactEmail?: string;
   imageUrl?: string;
   createdAt?: string;
+  postedByDisplayName?: string;
+  postedByUsername?: string;
+  lastEditedByDisplayName?: string;
 };
 
 function excerpt(text: string, max = 140): string {
@@ -134,9 +137,20 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                 <span className="mt-4 inline-flex text-sm font-medium text-accent-600">
                   Дэлгэрэнгүй үзэх →
                 </span>
-                {posted && (
+                {(posted || job.postedByDisplayName || job.lastEditedByDisplayName) && (
                   <p className="mt-2 text-xs text-gray-400">
-                    Нийтэлсэн: {posted}
+                    {posted ? <>Нийтэлсэн: {posted}</> : null}
+                    {posted && (job.postedByDisplayName || job.lastEditedByDisplayName)
+                      ? " · "
+                      : null}
+                    {job.postedByDisplayName && (
+                      <span>Нийтлэгч: {job.postedByDisplayName}</span>
+                    )}
+                    {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
+                    {job.lastEditedByDisplayName &&
+                    job.lastEditedByDisplayName !== job.postedByDisplayName ? (
+                      <span>Сүүлд зассан: {job.lastEditedByDisplayName}</span>
+                    ) : null}
                   </p>
                 )}
               </button>

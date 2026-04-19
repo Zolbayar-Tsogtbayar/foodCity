@@ -171,7 +171,10 @@ export default function ChatBot() {
   const [ready, setReady] = useState(false);
   const [socketLive, setSocketLive] = useState(false);
   const [config, setConfig] = useState<ChatbotConfig>(DEFAULT_CONFIG);
-  const [activeChoices, setActiveChoices] = useState<ChatChoiceNode[]>([]);
+  /** Keep in sync with `config` defaults so the first open after refresh isn’t chip-empty. */
+  const [activeChoices, setActiveChoices] = useState<ChatChoiceNode[]>(
+    () => DEFAULT_CONFIG.rootChoices,
+  );
   const [error, setError] = useState<string | null>(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -191,7 +194,7 @@ export default function ChatBot() {
       const next = normalizeConfig(json.data?.sections);
       setConfig(next);
       setActiveChoices(next.rootChoices);
-    } catch (e) {
+    } catch {
       setConfig(DEFAULT_CONFIG);
       setActiveChoices(DEFAULT_CONFIG.rootChoices);
     } finally {
@@ -246,11 +249,15 @@ export default function ChatBot() {
     }
   }, [base]);
 
+  /** Preload CMS chatbot config as soon as the widget mounts (not only when the panel opens). */
+  useEffect(() => {
+    void loadConfig();
+  }, [loadConfig]);
+
   useEffect(() => {
     if (!open) return;
-    void loadConfig();
     void bootstrapConversation();
-  }, [open, loadConfig, bootstrapConversation]);
+  }, [open, bootstrapConversation]);
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
@@ -431,6 +438,9 @@ export default function ChatBot() {
           <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4 flex flex-col gap-3 bg-gray-50">
             {error && (
               <p className="text-xs text-red-600 bg-red-50 rounded-lg px-2 py-1">{error}</p>
+            )}
+            {open && !ready && !error && (
+              <p className="text-center text-xs text-gray-500 py-6">Яриа ачаалж байна…</p>
             )}
             {messages.map((msg) => (
               <div

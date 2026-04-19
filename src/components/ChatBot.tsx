@@ -7,13 +7,25 @@ import { getApiBaseUrl, type ChatMessage } from "@/lib/api";
 const GUEST_KEY = "foodcity_guest_id";
 const CONV_KEY = "foodcity_conversation_id";
 
-function getOrCreateGuestId(): string {
-  let id = localStorage.getItem(GUEST_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(GUEST_KEY, id);
+/** `crypto.randomUUID` is only available in secure contexts (HTTPS or localhost). Plain HTTP sites crash if we call it. */
+function createGuestId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
   }
-  return id;
+  return `g_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
+}
+
+function getOrCreateGuestId(): string {
+  try {
+    let id = localStorage.getItem(GUEST_KEY);
+    if (!id) {
+      id = createGuestId();
+      localStorage.setItem(GUEST_KEY, id);
+    }
+    return id;
+  } catch {
+    return createGuestId();
+  }
 }
 
 export default function ChatBot() {
@@ -92,8 +104,15 @@ export default function ChatBot() {
   }, [messages, open, scrollBottom]);
 
   useEffect(() => {
-    const guestId = getOrCreateGuestId();
-    const s = io(base, { transports: ["websocket", "polling"] });
+    let s: Socket;
+    let guestId: string;
+    try {
+      guestId = getOrCreateGuestId();
+      s = io(base, { transports: ["websocket", "polling"] });
+    } catch (e) {
+      console.warn("[ChatBot] init failed", e);
+      return;
+    }
     socketRef.current = s;
 
     function onNew(payload: { conversationId?: string; message?: ChatMessage }) {

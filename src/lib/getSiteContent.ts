@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { mergeDeep } from "./mergeDeep";
 import {
   defaultAboutSections,
@@ -13,20 +14,41 @@ import type {
   HomeSections,
   ServicesSections,
 } from "./site-content-types";
+import { fetchWithTimeout, SERVER_FETCH_TIMEOUT_MS } from "./server-fetch";
 
-function getApiBase(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+/**
+ * Server-side CMS base (not necessarily the same as the browser’s NEXT_PUBLIC_API_URL).
+ * Falls back to loopback for local builds when env is unset.
+ */
+function getApiBaseForServer(): string {
+  return (
+    process.env.SITE_CONTENT_API_URL ??
+    process.env.API_INTERNAL_URL ??
+    process.env.NEXT_PUBLIC_API_URL ??
+    "http://127.0.0.1:4000"
+  );
+}
+
+function skipFetch(): boolean {
+  const v = process.env.SKIP_SITE_CONTENT_FETCH;
+  return v === "1" || v === "true";
 }
 
 type ApiSitePage = {
   sections?: unknown;
 };
 
-async function fetchSitePageSections(pageId: string): Promise<unknown> {
+const REVALIDATE_SECONDS = 30;
+
+const fetchSitePageSections = cache(async (pageId: string): Promise<unknown> => {
+  if (skipFetch()) return {};
+
   try {
-    const res = await fetch(`${getApiBase()}/api/v1/site-pages/${pageId}`, {
-      next: { revalidate: 30 },
-    });
+    const res = await fetchWithTimeout(
+      `${getApiBaseForServer()}/api/v1/site-pages/${pageId}`,
+      { next: { revalidate: REVALIDATE_SECONDS } },
+      SERVER_FETCH_TIMEOUT_MS,
+    );
     if (!res.ok) return {};
     const json = (await res.json()) as { data?: ApiSitePage };
     return json.data?.sections && typeof json.data.sections === "object"
@@ -35,7 +57,7 @@ async function fetchSitePageSections(pageId: string): Promise<unknown> {
   } catch {
     return {};
   }
-}
+});
 
 export async function getHomeSections(): Promise<HomeSections> {
   const patch = await fetchSitePageSections("home");

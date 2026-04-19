@@ -356,9 +356,9 @@ export default function ChatBot() {
       });
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as {
-        data: { userMsg: ChatMessage; botMsg: ChatMessage | null; humanMode?: boolean };
+        data: { userMsg: ChatMessage; botMsg: ChatMessage | null };
       };
-      const { userMsg, botMsg, humanMode } = json.data;
+      const { userMsg, botMsg } = json.data;
       setMessages((prev) => {
         const next = [...prev];
         if (!seenIds.current.has(userMsg.id)) {
@@ -368,7 +368,7 @@ export default function ChatBot() {
         if (botMsg?.text?.trim() && !seenIds.current.has(botMsg.id)) {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
-        } else if ((!botMsg || !botMsg.text?.trim()) && !humanMode) {
+        } else if (!botMsg?.text?.trim()) {
           next.push({
             id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             role: "bot",

@@ -1,7 +1,16 @@
 export const DEFAULT_API = "http://localhost:4000";
 
+/**
+ * Base URL for foodcity-back (no trailing slash, no trailing `/api`).
+ * All fetch calls already append `/api/v1/…`, so if the env var ends with
+ * `/api` (common reverse-proxy setup) we strip it automatically.
+ */
 export function getApiBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API;
+  let url = (process.env.NEXT_PUBLIC_API_URL ?? DEFAULT_API).trim().replace(/\/+$/, "");
+  if (url.endsWith("/api")) {
+    url = url.slice(0, -4);
+  }
+  return url;
 }
 
 /**

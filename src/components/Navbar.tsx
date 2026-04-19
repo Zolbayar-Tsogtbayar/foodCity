@@ -45,6 +45,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [zarmedeeOpen, setZarmedeeOpen] = useState(false);
+  /** Desktop “Зар мэдээ” — CSS-only hover stayed open after client navigation while cursor remained over the bar */
+  const [desktopZarmedeeOpen, setDesktopZarmedeeOpen] = useState(false);
   const pathname = usePathname();
 
   const isZarmedeeActive = zarmedeeLinks.some((l) => l.href === pathname);
@@ -66,6 +68,7 @@ export default function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
     setZarmedeeOpen(false);
+    setDesktopZarmedeeOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -78,13 +81,16 @@ export default function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-[200] isolate transition-all duration-300 ${
         scrolled ? "bg-brand-900 shadow-xl" : "bg-brand-900/85 backdrop-blur-sm"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between min-h-[4.25rem] sm:min-h-[5.25rem] py-2 sm:py-2.5">
-        {/* Logo */}
-        <Link href="/" className="flex shrink-0 items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 min-h-[4.25rem] sm:min-h-[5.25rem] py-2 sm:py-2.5">
+        {/* Logo — min-w-0 so it never squeezes the mobile controls off-screen */}
+        <Link
+          href="/"
+          className="flex min-w-0 flex-1 items-center lg:flex-initial lg:shrink-0"
+        >
           <Image
             src="/fclogo.png"
             alt="Food City"
@@ -112,22 +118,36 @@ export default function Navbar() {
             );
           })}
 
-          {/* Panel overlaps trigger slightly (-mt-2 + pt-2) so the cursor never crosses a dead zone where :hover is lost */}
-          <div className="group relative">
+          {/* Controlled dropdown so it closes after navigation (hover-only stayed open with client-side routing) */}
+          <div
+            className="relative"
+            onMouseEnter={() => setDesktopZarmedeeOpen(true)}
+            onMouseLeave={() => setDesktopZarmedeeOpen(false)}
+          >
             <button
               type="button"
               className={`flex items-center gap-1 text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                isZarmedeeActive ? "text-accent-500" : "text-gray-300 group-hover:text-accent-500"
+                isZarmedeeActive || desktopZarmedeeOpen
+                  ? "text-accent-500"
+                  : "text-gray-300 hover:text-accent-500"
               }`}
               aria-haspopup="menu"
+              aria-expanded={desktopZarmedeeOpen}
             >
               Зар мэдээ
-              <ChevronDown className="opacity-80 group-hover:translate-y-px transition-transform" />
+              <ChevronDown
+                className={`opacity-80 transition-transform ${desktopZarmedeeOpen ? "translate-y-px" : ""}`}
+              />
             </button>
             <div
-              className="absolute left-0 top-full z-[100] -mt-2 min-w-[220px] pt-2 opacity-0 invisible transition-opacity duration-150 group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible"
+              className={`absolute left-0 top-full z-[100] -mt-2 min-w-[220px] pt-2 transition-opacity duration-150 ${
+                desktopZarmedeeOpen
+                  ? "pointer-events-auto visible opacity-100"
+                  : "pointer-events-none invisible opacity-0"
+              }`}
               role="menu"
               aria-label="Зар мэдээ"
+              aria-hidden={!desktopZarmedeeOpen}
             >
               <div className="rounded-lg border border-brand-700 bg-brand-800/95 py-2 shadow-xl backdrop-blur-sm">
                 {zarmedeeLinks.map((item) => {
@@ -137,6 +157,7 @@ export default function Navbar() {
                       key={item.href}
                       href={item.href}
                       role="menuitem"
+                      onClick={() => setDesktopZarmedeeOpen(false)}
                       className={`block px-4 py-2.5 text-sm font-medium tracking-wide transition-colors ${
                         active
                           ? "bg-brand-900/80 text-accent-500"
@@ -184,11 +205,11 @@ export default function Navbar() {
           </a>
         </div>
 
-        {/* Mobile: phone icon + hamburger */}
-        <div className="flex items-center gap-3 lg:hidden">
+        {/* Mobile: phone icon + hamburger — shrink-0 keeps tap targets reachable */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:hidden">
           <a
             href="tel:+97611000000"
-            className="text-accent-500"
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-accent-500 touch-manipulation"
             aria-label="Утас"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -196,9 +217,11 @@ export default function Navbar() {
             </svg>
           </a>
           <button
-            className="text-white p-1"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Цэс нээх"
+            type="button"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-white touch-manipulation [-webkit-tap-highlight-color:transparent]"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-expanded={menuOpen}
+            aria-label={menuOpen ? "Цэс хаах" : "Цэс нээх"}
           >
             <svg
               className="w-6 h-6"
@@ -226,12 +249,12 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile / Tablet Menu — allow scroll when content is taller than the viewport */}
+      {/* Mobile / Tablet Menu — closed: pointer-events-none so nothing blocks the bar */}
       <div
         className={`lg:hidden transition-all duration-300 ease-in-out ${
           menuOpen
-            ? "max-h-[min(100vh,100dvh)] overflow-y-auto overflow-x-hidden opacity-100"
-            : "max-h-0 overflow-hidden opacity-0"
+            ? "max-h-[min(100vh,100dvh)] overflow-y-auto overflow-x-hidden opacity-100 pointer-events-auto"
+            : "max-h-0 overflow-hidden opacity-0 pointer-events-none"
         }`}
       >
         <div className="bg-brand-900 border-t border-brand-700 px-4 sm:px-6 pb-4">
@@ -241,6 +264,10 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => {
+                  setMenuOpen(false);
+                  setZarmedeeOpen(false);
+                }}
                 className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 transition-colors ${
                   isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
                 }`}
@@ -280,6 +307,10 @@ export default function Navbar() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setZarmedeeOpen(false);
+                      }}
                       className={`flex items-center py-2.5 pl-6 text-sm border-l-2 border-brand-700 transition-colors ${
                         active
                           ? "border-accent-500 text-accent-500"
@@ -300,6 +331,10 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
+                onClick={() => {
+                  setMenuOpen(false);
+                  setZarmedeeOpen(false);
+                }}
                 className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors ${
                   isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
                 }`}

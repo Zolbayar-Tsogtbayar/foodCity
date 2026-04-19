@@ -4,7 +4,7 @@
  */
 export const SERVER_FETCH_TIMEOUT_MS = 8_000;
 
-type NextFetchInit = RequestInit & {
+export type NextFetchInit = RequestInit & {
   next?: { revalidate?: number | false; tags?: string[] };
 };
 

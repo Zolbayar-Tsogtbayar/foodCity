@@ -14,7 +14,11 @@ import type {
   HomeSections,
   ServicesSections,
 } from "./site-content-types";
-import { fetchWithTimeout, SERVER_FETCH_TIMEOUT_MS } from "./server-fetch";
+import {
+  fetchWithTimeout,
+  SERVER_FETCH_TIMEOUT_MS,
+  type NextFetchInit,
+} from "./server-fetch";
 
 /**
  * Server-side CMS base (not necessarily the same as the browser’s NEXT_PUBLIC_API_URL).
@@ -38,15 +42,25 @@ type ApiSitePage = {
   sections?: unknown;
 };
 
-const REVALIDATE_SECONDS = 30;
+const REVALIDATE_SECONDS = 60;
 
 const fetchSitePageSections = cache(async (pageId: string): Promise<unknown> => {
   if (skipFetch()) return {};
 
+  const isDev = process.env.NODE_ENV === "development";
+  const fetchInit: NextFetchInit = isDev
+    ? { cache: "no-store" }
+    : {
+        next: {
+          revalidate: REVALIDATE_SECONDS,
+          tags: ["site-content"],
+        },
+      };
+
   try {
     const res = await fetchWithTimeout(
       `${getApiBaseForServer()}/api/v1/site-pages/${pageId}`,
-      { next: { revalidate: REVALIDATE_SECONDS } },
+      fetchInit,
       SERVER_FETCH_TIMEOUT_MS,
     );
     if (!res.ok) return {};

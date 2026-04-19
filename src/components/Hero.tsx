@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import CountUp from "@/components/CountUp";
+import { resolveMediaUrl } from "@/lib/media";
 import type { HomeSections } from "@/lib/site-content-types";
 
 export type HeroContent = HomeSections["hero"];
@@ -10,10 +11,10 @@ const HOLD = 5000;
 const SPEED = 900;
 
 export default function Hero({ hero }: { hero: HeroContent }) {
-  const slides =
-    hero.slideImages?.length > 0
-      ? hero.slideImages
-      : ["/images/baclground-image-1.jpg"];
+  const trimmed = (hero.slideImages ?? []).map((s) => s.trim()).filter(Boolean);
+  const slidesRaw =
+    trimmed.length > 0 ? trimmed : ["/images/baclground-image-1.jpg"];
+  const slides = slidesRaw.map((s) => resolveMediaUrl(s));
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);

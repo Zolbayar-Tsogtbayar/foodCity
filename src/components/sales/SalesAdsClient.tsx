@@ -179,7 +179,9 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               <div className="space-y-5 px-5 py-5 sm:px-6 sm:py-6">
                 {(formatDateMn(open.validFrom) ||
                   formatDateMn(open.validTo) ||
-                  formatDateMn(open.createdAt)) && (
+                  formatDateMn(open.createdAt) ||
+                  open.postedByDisplayName ||
+                  open.lastEditedByDisplayName) && (
                   <dl className="grid gap-3 rounded-xl bg-gray-50 p-4 text-sm sm:grid-cols-2">
                     {formatDateMn(open.validFrom) && (
                       <div>

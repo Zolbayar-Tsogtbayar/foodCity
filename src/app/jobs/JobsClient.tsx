@@ -10,6 +10,7 @@ import {
   X,
   Calendar,
   Banknote,
+  User,
 } from "lucide-react";
 import { resolvePublicMediaUrl } from "@/lib/api";
 
@@ -249,6 +250,26 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                         Нийтэлсэн
                       </dt>
                       <dd className="mt-0.5 break-words text-brand-900">{formatPosted(open.createdAt)}</dd>
+                    </div>
+                  </div>
+                )}
+                {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
+                  <div className="flex min-w-0 gap-3 rounded-xl bg-gray-50 px-3 py-3 sm:px-4">
+                    <User className="mt-0.5 h-5 w-5 shrink-0 text-gray-500" aria-hidden />
+                    <div className="min-w-0">
+                      <dt className="text-xs font-medium uppercase tracking-wide text-gray-500">
+                        Админ
+                      </dt>
+                      <dd className="mt-0.5 break-words text-brand-900">
+                        {open.postedByDisplayName && (
+                          <span>Нийтлэгч: {open.postedByDisplayName}</span>
+                        )}
+                        {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
+                        {open.lastEditedByDisplayName &&
+                        open.lastEditedByDisplayName !== open.postedByDisplayName ? (
+                          <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
+                        ) : null}
+                      </dd>
                     </div>
                   </div>
                 )}

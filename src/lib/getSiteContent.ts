@@ -5,16 +5,20 @@ import {
   defaultContactSections,
   defaultFooterSections,
   defaultHomeSections,
+  defaultJobsPageSections,
   defaultSalesPageSections,
   defaultServicesSections,
+  defaultTeamPageSections,
 } from "./site-content-defaults";
 import type {
   AboutSections,
   ContactSections,
   FooterSections,
   HomeSections,
+  JobsPageSections,
   SalesPageSections,
   ServicesSections,
+  TeamPageSections,
 } from "./site-content-types";
 import {
   fetchWithTimeout,
@@ -103,4 +107,14 @@ export async function getServicesSections(): Promise<ServicesSections> {
 export async function getSalesPageSections(): Promise<SalesPageSections> {
   const patch = await fetchSitePageSections("sales-page");
   return mergeDeep(defaultSalesPageSections, patch);
+}
+
+export async function getJobsPageSections(): Promise<JobsPageSections> {
+  const patch = await fetchSitePageSections("jobs-page");
+  return mergeDeep(defaultJobsPageSections, patch);
+}
+
+export async function getTeamPageSections(): Promise<TeamPageSections> {
+  const patch = await fetchSitePageSections("team");
+  return mergeDeep(defaultTeamPageSections, patch);
 }

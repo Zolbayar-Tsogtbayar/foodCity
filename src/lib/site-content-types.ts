@@ -83,3 +83,40 @@ export type SalesPageSections = {
     intro: string;
   };
 };
+
+/** /jobs listing page copy (site page id: `jobs-page`) */
+export type JobsPageSections = {
+  header: {
+    title: string;
+    intro: string;
+  };
+};
+
+export type TeamMember = {
+  name: string;
+  role: string;
+  initials: string;
+  /** Tailwind bg class, e.g. `bg-accent-500` */
+  color: string;
+  phone: string;
+  email: string;
+  bio: string;
+  projects: number;
+};
+
+/** /team — «Мэдээ мэдээлэл» (site page id: `team`) */
+export type TeamPageSections = {
+  header: {
+    eyebrow: string;
+    h2Line1: string;
+    h2Accent: string;
+    intro: string;
+  };
+  members: TeamMember[];
+  cta: {
+    title: string;
+    subtitle: string;
+    buttonLabel: string;
+    buttonHref: string;
+  };
+};

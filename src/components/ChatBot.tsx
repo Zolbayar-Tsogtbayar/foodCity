@@ -347,7 +347,6 @@ export default function ChatBot() {
     setTyping(true);
     setError(null);
     setInput("");
-    if (nextChoices) setActiveChoices(nextChoices);
     try {
       const res = await fetch(`${base}/api/v1/chat/conversations/${convId}/messages`, {
         method: "POST",
@@ -377,6 +376,7 @@ export default function ChatBot() {
         }
         return next;
       });
+      if (nextChoices) setActiveChoices(nextChoices);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Алдаа");
     } finally {

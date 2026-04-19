@@ -12,6 +12,8 @@ type ChatChoiceNode = {
 
 type ChatbotConfig = {
   rootChoices: ChatChoiceNode[];
+  /** Label for button that resets chip row to root (CMS `restartLabel`). */
+  restartLabel: string;
 };
 
 const GUEST_KEY = "foodcity_guest_id";
@@ -24,6 +26,7 @@ const DEFAULT_CONFIG: ChatbotConfig = {
     { id: "jobs", label: "Ажлын зар", choices: [] },
     { id: "connect", label: "Ажилтантай холбогдох", choices: [] },
   ],
+  restartLabel: "Эхлэл рүү буцах",
 };
 
 /** `crypto.randomUUID` is only available in secure contexts (HTTPS or localhost). */
@@ -70,8 +73,10 @@ function normalizeConfig(raw: unknown): ChatbotConfig {
   const rootChoices = rootChoicesRaw
     .map((n) => normalizeNode(n))
     .filter((n): n is ChatChoiceNode => Boolean(n));
+  const restartLabel = String(r.restartLabel ?? "").trim() || DEFAULT_CONFIG.restartLabel;
   return {
     rootChoices: rootChoices.length > 0 ? rootChoices : DEFAULT_CONFIG.rootChoices,
+    restartLabel,
   };
 }
 
@@ -337,6 +342,17 @@ export default function ChatBot() {
     return socketLive ? "Онлайн" : "Холбогдож байна…";
   }, [ready, socketLive, loadingConfig, error]);
 
+  const atRootChips = useMemo(() => {
+    if (activeChoices.length !== config.rootChoices.length) return false;
+    const a = activeChoices.map((c) => c.id).join("\0");
+    const b = config.rootChoices.map((c) => c.id).join("\0");
+    return a === b;
+  }, [activeChoices, config.rootChoices]);
+
+  function backToRootChips() {
+    setActiveChoices(config.rootChoices);
+  }
+
   async function send(text: string, nextChoices?: ChatChoiceNode[]) {
     const trimmed = text.trim();
     if (!trimmed || !ready) return;
@@ -480,7 +496,17 @@ export default function ChatBot() {
               </div>
             )}
             {activeChoices.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-1">
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {!atRootChips && config.restartLabel.trim() && (
+                  <button
+                    type="button"
+                    onClick={backToRootChips}
+                    disabled={!ready}
+                    className="rounded-full border border-dashed border-gray-300 bg-gray-50 px-3 py-1.5 text-xs font-medium text-gray-600 shadow-sm hover:border-accent-400 hover:bg-white hover:text-brand-900 disabled:opacity-50"
+                  >
+                    {config.restartLabel}
+                  </button>
+                )}
                 {activeChoices.map((c) => (
                   <button
                     key={c.id}

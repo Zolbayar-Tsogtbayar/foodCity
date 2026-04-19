@@ -2,10 +2,13 @@
   "name": "food-city-temp",
   "version": "0.1.0",
   "private": true,
+  "config": {
+    "port": "3000"
+  },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3000",
     "lint": "eslint"
   },
   "dependencies": {

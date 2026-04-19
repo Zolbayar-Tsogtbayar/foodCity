@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
-import { getApiBaseUrl, type ChatMessage } from "@/lib/api";
+import { getApiBaseUrl, getSocketBaseUrl, type ChatMessage } from "@/lib/api";
 
 const GUEST_KEY = "foodcity_guest_id";
 const CONV_KEY = "foodcity_conversation_id";
@@ -35,6 +35,7 @@ export default function ChatBot() {
   const [typing, setTyping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [socketLive, setSocketLive] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const socketRef = useRef<Socket | null>(null);
@@ -105,10 +106,8 @@ export default function ChatBot() {
 
   useEffect(() => {
     let s: Socket;
-    let guestId: string;
     try {
-      guestId = getOrCreateGuestId();
-      s = io(base, {
+      s = io(getSocketBaseUrl(), {
         transports: ["websocket", "polling"],
         withCredentials: true,
       });
@@ -117,6 +116,15 @@ export default function ChatBot() {
       return;
     }
     socketRef.current = s;
+
+    function emitJoin() {
+      const convId = localStorage.getItem(CONV_KEY);
+      const guestId = getOrCreateGuestId();
+      if (!convId || !s.connected) return;
+      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
+        if (err) console.warn("[ChatBot] join", err);
+      });
+    }
 
     function onNew(payload: { conversationId?: string; message?: ChatMessage }) {
       const convId = localStorage.getItem(CONV_KEY);
@@ -128,38 +136,37 @@ export default function ChatBot() {
     }
 
     s.on("message:new", onNew);
-
-    function joinRoom() {
-      const convId = localStorage.getItem(CONV_KEY);
-      if (!convId || !s.connected) return;
-      s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
-        if (err) console.warn(err);
-      });
-    }
-
-    s.on("connect", joinRoom);
+    s.on("connect", () => {
+      setSocketLive(true);
+      emitJoin();
+    });
+    s.on("disconnect", () => setSocketLive(false));
+    s.on("reconnect", emitJoin);
 
     return () => {
       s.off("message:new", onNew);
-      s.off("connect", joinRoom);
       s.disconnect();
       socketRef.current = null;
+      setSocketLive(false);
     };
-  }, [base]);
+  }, []);
 
+  /** Re-fetch history when opening; re-join socket room (connect/reopen/reconnect). */
   useEffect(() => {
-    if (!ready) return;
+    if (!open || !ready) return;
     const s = socketRef.current;
+    if (!s) return;
     const convId = localStorage.getItem(CONV_KEY);
     const guestId = getOrCreateGuestId();
-    if (!s || !convId) return;
-    const run = () =>
+    if (!convId) return;
+    const run = () => {
       s.emit("join", { conversationId: convId, guestId }, (err: Error | null) => {
-        if (err) console.warn(err);
+        if (err) console.warn("[ChatBot] join on open", err);
       });
+    };
     if (s.connected) run();
     else s.once("connect", run);
-  }, [ready]);
+  }, [open, ready]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -234,7 +241,7 @@ export default function ChatBot() {
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                 <span className="text-gray-400 text-xs">
-                  {ready ? "Онлайн" : "Холбогдож байна…"}
+                  {ready && socketLive ? "Онлайн" : "Холбогдож байна…"}
                 </span>
               </div>
             </div>

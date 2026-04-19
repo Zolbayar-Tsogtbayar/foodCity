@@ -19,7 +19,7 @@ export default async function Icon() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0f172a",
+          background: "transparent",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element -- satori / ImageResponse */}

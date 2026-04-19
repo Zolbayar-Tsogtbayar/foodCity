@@ -16,14 +16,29 @@ export function getSocketBaseUrl(): string {
   return u;
 }
 
-/** Resolves API-hosted uploads (`/upload/…`) to an absolute URL for `<img src>`. */
+/**
+ * URL for API-hosted uploads (`/upload/…`) in `<img src>`.
+ * Returns a **same-origin** path (`/upload/…`) so the browser loads the marketing site origin;
+ * `next.config.mjs` rewrites that to the real API (see `UPLOAD_PROXY_ORIGIN`).
+ * Normalizes stored absolute URLs on the API host to that path.
+ */
 export function resolvePublicMediaUrl(url: string | undefined | null): string | undefined {
   if (url == null) return undefined;
   const p = String(url).trim();
   if (!p) return undefined;
-  if (/^https?:\/\//i.test(p)) return p;
+  if (/^https?:\/\//i.test(p)) {
+    try {
+      const u = new URL(p);
+      if (u.pathname.startsWith("/upload/")) {
+        return `${u.pathname}${u.search}`;
+      }
+    } catch {
+      /* keep absolute */
+    }
+    return p;
+  }
   if (p.startsWith("/upload/")) {
-    return `${getSocketBaseUrl().replace(/\/$/, "")}${p}`;
+    return p;
   }
   return p;
 }

@@ -282,9 +282,16 @@ export default function ChatBot() {
     function onNew(payload: { conversationId?: string; message?: ChatMessage }) {
       const convId = localStorage.getItem(CONV_KEY);
       if (!payload?.message || payload.conversationId !== convId) return;
-      if (seenIds.current.has(payload.message.id)) return;
-      seenIds.current.add(payload.message.id);
-      setMessages((prev) => [...prev, payload.message!]);
+      const m = payload.message;
+      if (
+        (m.role === "bot" || m.role === "agent") &&
+        !m.text?.trim()
+      ) {
+        return;
+      }
+      if (seenIds.current.has(m.id)) return;
+      seenIds.current.add(m.id);
+      setMessages((prev) => [...prev, m]);
     }
 
     s.on("message:new", onNew);
@@ -351,10 +358,10 @@ export default function ChatBot() {
           seenIds.current.add(userMsg.id);
           next.push(userMsg);
         }
-        if (botMsg && !seenIds.current.has(botMsg.id)) {
+        if (botMsg?.text?.trim() && !seenIds.current.has(botMsg.id)) {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
-        } else if (!botMsg && !humanMode) {
+        } else if ((!botMsg || !botMsg.text?.trim()) && !humanMode) {
           next.push({
             id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             role: "bot",

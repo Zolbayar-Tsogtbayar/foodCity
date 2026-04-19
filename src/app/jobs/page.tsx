@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/api";
+import { fetchWithTimeout } from "@/lib/server-fetch";
 
 type Job = {
   id: string;
@@ -13,7 +14,9 @@ type Job = {
 async function loadJobs(): Promise<Job[]> {
   const base = getApiBaseUrl();
   try {
-    const res = await fetch(`${base}/api/v1/jobs`, { next: { revalidate: 30 } });
+    const res = await fetchWithTimeout(`${base}/api/v1/jobs`, {
+      next: { revalidate: 30 },
+    });
     if (!res.ok) return [];
     const json = (await res.json()) as { data: Job[] };
     return json.data ?? [];

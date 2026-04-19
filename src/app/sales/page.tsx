@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from "@/lib/api";
+import { fetchWithTimeout } from "@/lib/server-fetch";
 
 type Ad = {
   id: string;
@@ -13,7 +14,9 @@ type Ad = {
 async function loadAds(): Promise<Ad[]> {
   const base = getApiBaseUrl();
   try {
-    const res = await fetch(`${base}/api/v1/sales-ads`, { next: { revalidate: 30 } });
+    const res = await fetchWithTimeout(`${base}/api/v1/sales-ads`, {
+      next: { revalidate: 30 },
+    });
     if (!res.ok) return [];
     const json = (await res.json()) as { data: Ad[] };
     return json.data ?? [];

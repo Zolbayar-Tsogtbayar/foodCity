@@ -91,14 +91,15 @@ export default function Navbar() {
           href="/"
           className="flex min-w-0 flex-1 items-center lg:flex-initial lg:shrink-0"
         >
-          <span className="inline-flex rounded-lg bg-white px-2 py-1.5 shadow-sm ring-1 ring-black/10">
+          <span className="inline-flex shrink-0 items-center">
             <Image
               src="/fclogo.png"
               alt="Food City"
               width={320}
               height={114}
-              className="h-10 w-auto max-w-[180px] object-contain object-left sm:h-11 sm:max-w-[220px] lg:h-12 lg:max-w-[260px]"
+              className="h-11 w-auto object-contain object-left sm:h-12 lg:h-14"
               priority
+              unoptimized
             />
           </span>
         </Link>
@@ -112,7 +113,9 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
                 }`}
               >
                 {link.label}
@@ -181,7 +184,9 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
                 }`}
               >
                 {link.label}
@@ -271,7 +276,9 @@ export default function Navbar() {
                   setZarmedeeOpen(false);
                 }}
                 className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 transition-colors ${
-                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
                 }`}
               >
                 <span
@@ -338,7 +345,9 @@ export default function Navbar() {
                   setZarmedeeOpen(false);
                 }}
                 className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors ${
-                  isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"
+                  isActive
+                    ? "text-accent-500"
+                    : "text-gray-300 hover:text-accent-500"
                 }`}
               >
                 <span

@@ -2,8 +2,11 @@ import type { AboutSections } from "@/lib/site-content-types";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
   return (
-    <section id="about" className="py-16 sm:py-20 lg:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="about"
+      className="bg-white min-h-[100dvh] flex items-center py-20 sm:py-24 lg:py-28"
+    >
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
           {/* Image block */}
           <div

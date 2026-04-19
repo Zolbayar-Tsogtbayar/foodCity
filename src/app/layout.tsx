@@ -16,14 +16,17 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "FoodCity — Барилга & Оффис Түрээс",
+  title: "BukhBat — Барилга & Оффис Түрээс",
   description:
-    "FoodCity нь premium арилжааны орон зай болон оффис барьж, түрээслүүлдэг. Орчин үеийн барилга, ухаалаг дизайн, бизнест зориулсан уян хатан түрээсийн нөхцөл.",
+    "BukhBat нь premium арилжааны орон зай болон оффис барьж, түрээслүүлдэг. Орчин үеийн барилга, ухаалаг дизайн, бизнест зориулсан уян хатан түрээсийн нөхцөл.",
 };
 
 function FooterFallback() {
   return (
-    <footer className="min-h-[12rem] border-t border-brand-800 bg-brand-900" aria-hidden />
+    <footer
+      className="min-h-[12rem] border-t border-brand-800 bg-brand-900"
+      aria-hidden
+    />
   );
 }
 

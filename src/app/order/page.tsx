@@ -3,44 +3,19 @@
 import { useState } from "react";
 import { getApiBaseUrl } from "@/lib/api";
 
-type Line = { productName: string; quantity: number; unitPrice: number };
-
 export default function OrderPage() {
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
-  const [lines, setLines] = useState<Line[]>([
-    { productName: "", quantity: 1, unitPrice: 0 },
-  ]);
   const [status, setStatus] = useState<"idle" | "loading" | "ok" | "err">("idle");
   const [msg, setMsg] = useState<string | null>(null);
-
-  function addLine() {
-    setLines([...lines, { productName: "", quantity: 1, unitPrice: 0 }]);
-  }
-
-  function updateLine(i: number, patch: Partial<Line>) {
-    setLines(lines.map((l, j) => (j === i ? { ...l, ...patch } : l)));
-  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setStatus("loading");
     setMsg(null);
-    const items = lines
-      .filter((l) => l.productName.trim())
-      .map((l) => ({
-        productName: l.productName.trim(),
-        quantity: Number(l.quantity),
-        unitPrice: Number(l.unitPrice),
-      }));
-    if (items.length === 0) {
-      setStatus("err");
-      setMsg("Бараа нэмнэ үү.");
-      return;
-    }
     try {
       const res = await fetch(`${getApiBaseUrl()}/api/v1/orders`, {
         method: "POST",
@@ -51,13 +26,12 @@ export default function OrderPage() {
           email: email.trim() || undefined,
           address: address.trim() || undefined,
           notes: notes.trim() || undefined,
-          items,
+          items: [],
         }),
       });
       if (!res.ok) throw new Error(await res.text());
       setStatus("ok");
       setMsg("Захиалга амжилттай бүртгэгдлээ. Баярлалаа!");
-      setLines([{ productName: "", quantity: 1, unitPrice: 0 }]);
     } catch {
       setStatus("err");
       setMsg("Илгээхэд алдаа гарлаа. Дахин оролдоно уу.");
@@ -107,47 +81,6 @@ export default function OrderPage() {
             onChange={(e) => setAddress(e.target.value)}
             className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
           />
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-brand-900">Бараа / үйлчилгээ</span>
-            <button
-              type="button"
-              onClick={addLine}
-              className="text-sm text-accent-600 hover:text-accent-700"
-            >
-              + Мөр нэмэх
-            </button>
-          </div>
-          <div className="space-y-3">
-            {lines.map((line, i) => (
-              <div key={i} className="grid grid-cols-12 gap-2 items-end">
-                <input
-                  placeholder="Нэр"
-                  value={line.productName}
-                  onChange={(e) => updateLine(i, { productName: e.target.value })}
-                  className="col-span-12 sm:col-span-5 rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                />
-                <input
-                  type="number"
-                  min={1}
-                  placeholder="Тоо"
-                  value={line.quantity || ""}
-                  onChange={(e) => updateLine(i, { quantity: Number(e.target.value) })}
-                  className="col-span-4 sm:col-span-2 rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                />
-                <input
-                  type="number"
-                  min={0}
-                  placeholder="Нэгжийн үнэ (₮)"
-                  value={line.unitPrice || ""}
-                  onChange={(e) => updateLine(i, { unitPrice: Number(e.target.value) })}
-                  className="col-span-8 sm:col-span-5 rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                />
-              </div>
-            ))}
-          </div>
         </div>
 
         <div>

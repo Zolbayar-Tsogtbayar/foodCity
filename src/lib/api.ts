@@ -26,6 +26,11 @@ export function resolvePublicMediaUrl(url: string | undefined | null): string | 
   if (url == null) return undefined;
   const p = String(url).trim();
   if (!p) return undefined;
+  // Common CMS/API variants: `upload/x.jpg` should behave like `/upload/x.jpg`
+  // so Next rewrites can proxy it correctly from the marketing site origin.
+  if (p.startsWith("upload/")) {
+    return `/${p}`;
+  }
   if (/^https?:\/\//i.test(p)) {
     try {
       const u = new URL(p);

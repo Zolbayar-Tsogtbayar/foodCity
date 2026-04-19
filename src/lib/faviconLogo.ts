@@ -1,6 +1,25 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
 
+/** Same aspect as Navbar `Image` (`/fclogo.png`) so favicons maximize the mark in a square. */
+const LOGO_W = 180;
+const LOGO_H = 180;
+
+/**
+ * Pixel size for the logo inside a square `ImageResponse` canvas (wide asset → width-led fit).
+ * `insetRatio` is margin on each side as a fraction of canvas (e.g. 0.02 → 96% fill).
+ */
+export function logoDrawSizeForSquareCanvas(
+  canvas: number,
+  insetRatio = 0.02,
+): { width: number; height: number } {
+  const inset = Math.max(2, Math.round(canvas * insetRatio));
+  const inner = canvas - 2 * inset;
+  const width = inner;
+  const height = Math.max(1, Math.round((width * LOGO_H) / LOGO_W));
+  return { width, height };
+}
+
 /** PNG as data URL for OG/ImageResponse favicon generation (fills square canvas). */
 export async function getLogoDataUrlForFavicon(): Promise<string> {
   try {

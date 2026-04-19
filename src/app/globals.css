@@ -48,3 +48,28 @@ html {
     animation: none;
   }
 }
+
+/* ── Footer partner marquee ── */
+.partner-marquee {
+  animation: partnerMarquee 30s linear infinite;
+  will-change: transform;
+}
+
+.partner-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes partnerMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .partner-marquee {
+    animation: none;
+  }
+}

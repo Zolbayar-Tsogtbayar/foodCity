@@ -51,30 +51,37 @@ const socials = [
 
 export default function Footer({ content }: { content: FooterSections }) {
   const { partnersLabel, items: partners } = content.partners;
+  const marqueePartners = [...partners, ...partners];
+  const year = new Date().getFullYear();
   return (
     <footer className="bg-brand-900 text-white">
       {/* Partners */}
       <div className="border-b border-brand-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          <p className="text-center text-gray-500 text-xs uppercase tracking-widest mb-4 sm:mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
+          <p className="text-center text-gray-500 text-xs uppercase tracking-[0.16em] mb-4 sm:mb-6">
             {partnersLabel}
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-x-8 gap-y-6 sm:gap-x-12 sm:gap-y-8">
-            {partners.map((p) => (
-              <div
-                key={p.name}
-                className="flex h-10 max-h-10 min-w-0 max-w-[min(100%,220px)] items-center justify-center px-1 opacity-40 grayscale transition-opacity duration-200 hover:opacity-70 hover:grayscale-0 sm:h-11 sm:max-h-11 sm:max-w-[260px]"
-              >
-                <Image
-                  src={resolveMediaUrl(p.src)}
-                  alt={p.name}
-                  width={Math.max(p.width, 1)}
-                  height={Math.max(p.height, 1)}
-                  className="h-auto max-h-10 w-auto max-w-full object-contain object-center sm:max-h-11"
-                  sizes="(max-width: 640px) 42vw, 220px"
-                />
-              </div>
-            ))}
+          <div className="relative overflow-hidden rounded-2xl border border-brand-800/90 bg-brand-950/35 py-2">
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-14 bg-linear-to-r from-brand-900 to-transparent sm:w-20" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-14 bg-linear-to-l from-brand-900 to-transparent sm:w-20" />
+
+            <div className="partner-marquee flex w-max items-center gap-3 sm:gap-4">
+              {marqueePartners.map((p, i) => (
+                <div
+                  key={`${p.name}-${i}`}
+                  className="group flex h-14 min-w-[8.5rem] items-center justify-center rounded-xl border border-brand-800/70 bg-brand-900/45 px-4 sm:min-w-[10.5rem]"
+                >
+                  <Image
+                    src={resolveMediaUrl(p.src)}
+                    alt={p.name}
+                    width={Math.max(p.width, 1)}
+                    height={Math.max(p.height, 1)}
+                    className="h-auto max-h-9 w-auto max-w-full object-contain object-center opacity-65 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 sm:max-h-10"
+                    sizes="(max-width: 640px) 140px, 180px"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -85,18 +92,22 @@ export default function Footer({ content }: { content: FooterSections }) {
           {/* Brand */}
           <div className="col-span-2 sm:col-span-3 lg:col-span-1">
             <Link href="/" className="mb-4 sm:mb-5 inline-block">
-              <span className="inline-flex rounded-lg bg-white px-2.5 py-2 shadow-md ring-1 ring-black/10">
+              <span className="inline-flex shrink-0 items-center">
                 <Image
                   src="/fclogo.png"
                   alt="Food City"
-                  width={280}
-                  height={100}
-                  className="h-9 w-auto max-w-[180px] object-contain object-left sm:h-10 sm:max-w-[200px]"
+                  width={320}
+                  height={114}
+                  className="h-[4rem] w-auto object-contain object-left sm:h-[4.75rem] lg:h-[5.5rem]"
+                  unoptimized
                 />
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
               {content.brand.desc}
+            </p>
+            <p className="text-gray-500 text-xs leading-relaxed mb-5">
+              &copy; {year} FoodCity ХХК. Бүх эрх хуулиар хамгаалагдсан.
             </p>
             <div className="flex gap-3">
               {socials.map((s) => (
@@ -135,21 +146,6 @@ export default function Footer({ content }: { content: FooterSections }) {
               </ul>
             </div>
           ))}
-        </div>
-      </div>
-
-      {/* Bottom */}
-      <div className="border-t border-brand-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3 text-gray-500 text-xs sm:text-sm text-center sm:text-left">
-          <span>
-            &copy; {new Date().getFullYear()} FoodCity ХХК. Бүх эрх хуулиар
-            хамгаалагдсан.
-          </span>
-          <span className="flex items-center gap-1.5">
-            Next.js &amp; Tailwind CSS ашиглан бүтээсэн
-            <span className="text-accent-500">—</span>
-            Улаанбаатар, Монгол
-          </span>
         </div>
       </div>
     </footer>

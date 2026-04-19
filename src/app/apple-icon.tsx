@@ -1,14 +1,15 @@
 import { ImageResponse } from "next/og";
-import { getLogoDataUrlForFavicon } from "@/lib/faviconLogo";
+import { getLogoDataUrlForFavicon, logoDrawSizeForSquareCanvas } from "@/lib/faviconLogo";
 
 export const runtime = "nodejs";
 
 export const size = { width: 180, height: 180 };
 export const contentType = "image/png";
 
-/** Home-screen / Apple touch: same mark, sized for 180×180. */
+/** Home-screen / Apple touch: wide logo uses full width of 180² (minus small inset). */
 export default async function AppleIcon() {
   const src = await getLogoDataUrlForFavicon();
+  const { width, height } = logoDrawSizeForSquareCanvas(size.width);
 
   return new ImageResponse(
     (
@@ -23,13 +24,7 @@ export default async function AppleIcon() {
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={src}
-          alt=""
-          width={156}
-          height={156}
-          style={{ objectFit: "contain" }}
-        />
+        <img src={src} alt="" width={width} height={height} />
       </div>
     ),
     { ...size },

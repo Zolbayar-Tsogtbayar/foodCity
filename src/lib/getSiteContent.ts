@@ -5,6 +5,7 @@ import {
   defaultContactSections,
   defaultFooterSections,
   defaultHomeSections,
+  defaultSalesPageSections,
   defaultServicesSections,
 } from "./site-content-defaults";
 import type {
@@ -12,6 +13,7 @@ import type {
   ContactSections,
   FooterSections,
   HomeSections,
+  SalesPageSections,
   ServicesSections,
 } from "./site-content-types";
 import {
@@ -96,4 +98,9 @@ export async function getContactSections(): Promise<ContactSections> {
 export async function getServicesSections(): Promise<ServicesSections> {
   const patch = await fetchSitePageSections("services");
   return mergeDeep(defaultServicesSections, patch);
+}
+
+export async function getSalesPageSections(): Promise<SalesPageSections> {
+  const patch = await fetchSitePageSections("sales-page");
+  return mergeDeep(defaultSalesPageSections, patch);
 }

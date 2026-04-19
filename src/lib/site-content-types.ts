@@ -74,3 +74,12 @@ export type ServicesSections = {
   features: { title: string; desc: string }[];
   banner: { value: string; suffix: string; label: string }[];
 };
+
+/** /sales marketing header (site page id: `sales-page`) */
+export type SalesPageSections = {
+  header: {
+    eyebrow: string;
+    title: string;
+    intro: string;
+  };
+};

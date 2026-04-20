@@ -45,14 +45,44 @@ function previewText(ad: SalesAdItem, maxLen = 140): string {
 function MetaCell({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm ring-1 ring-slate-900/[0.03]">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold leading-snug text-brand-900">{value}</p>
+      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+        {label}
+      </p>
+      <p className="mt-1 text-sm font-semibold leading-snug text-brand-900">
+        {value}
+      </p>
     </div>
   );
 }
 
+const SM = 640;
+
+function usePageSize(mobile: number, desktop: number) {
+  const [size, setSize] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth >= SM ? desktop : mobile,
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(min-width: ${SM}px)`);
+    const handler = (e: MediaQueryListEvent) =>
+      setSize(e.matches ? desktop : mobile);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [mobile, desktop]);
+  return size;
+}
+
 export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const pageSize = usePageSize(4, 9);
+
+  const totalPages = Math.ceil(ads.length / pageSize);
+  const paged = ads.slice(page * pageSize, page * pageSize + pageSize);
+
+  useEffect(() => {
+    setPage(0);
+  }, [pageSize]);
+
   const open = ads.find((a) => a.id === openId) ?? null;
 
   const close = useCallback(() => setOpenId(null), []);
@@ -141,7 +171,9 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   <div className="aspect-[16/10] w-full lg:aspect-auto lg:max-h-[min(380px,42vh)] lg:min-h-[220px]">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl}
+                      src={
+                        resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl
+                      }
                       alt=""
                       className="h-full w-full object-cover object-center"
                     />
@@ -149,7 +181,10 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 ) : (
                   <div className="relative flex aspect-[16/10] min-h-[200px] flex-col items-center justify-center gap-3 bg-gradient-to-br from-brand-800 via-brand-900 to-brand-950 px-6 py-10 lg:aspect-auto lg:min-h-[min(320px,38vh)]">
                     <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(255,255,255,0.12),transparent)]" />
-                    <Megaphone className="relative h-14 w-14 text-white/30 sm:h-16 sm:w-16" strokeWidth={1.25} />
+                    <Megaphone
+                      className="relative h-14 w-14 text-white/30 sm:h-16 sm:w-16"
+                      strokeWidth={1.25}
+                    />
                     <p className="relative text-center text-xs font-medium uppercase tracking-widest text-white/40">
                       Зургийн зар
                     </p>
@@ -161,20 +196,33 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 {hasMeta ? (
                   <section className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/90 p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
                     <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                      <CalendarDays className="h-4 w-4 text-accent-600" aria-hidden />
+                      <CalendarDays
+                        className="h-4 w-4 text-accent-600"
+                        aria-hidden
+                      />
                       Хугацаа · нийтлэгч
                     </h3>
                     <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
                       {formatDateMn(open.validFrom) && (
-                        <MetaCell label="Эхлэх" value={formatDateMn(open.validFrom)} />
+                        <MetaCell
+                          label="Эхлэх"
+                          value={formatDateMn(open.validFrom)}
+                        />
                       )}
                       {formatDateMn(open.validTo) && (
-                        <MetaCell label="Дуусах" value={formatDateMn(open.validTo)} />
+                        <MetaCell
+                          label="Дуусах"
+                          value={formatDateMn(open.validTo)}
+                        />
                       )}
                       {formatDateMn(open.createdAt) && (
-                        <MetaCell label="Нийтлэгдсэн" value={formatDateMn(open.createdAt)} />
+                        <MetaCell
+                          label="Нийтлэгдсэн"
+                          value={formatDateMn(open.createdAt)}
+                        />
                       )}
-                      {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
+                      {(open.postedByDisplayName ||
+                        open.lastEditedByDisplayName) && (
                         <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
                           <p className="text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
                             Админ
@@ -183,10 +231,16 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                             {open.postedByDisplayName && (
                               <span>Нийтлэгч: {open.postedByDisplayName}</span>
                             )}
-                            {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
+                            {open.postedByDisplayName &&
+                            open.lastEditedByDisplayName
+                              ? " · "
+                              : null}
                             {open.lastEditedByDisplayName &&
-                            open.lastEditedByDisplayName !== open.postedByDisplayName ? (
-                              <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
+                            open.lastEditedByDisplayName !==
+                              open.postedByDisplayName ? (
+                              <span>
+                                Сүүлд зассан: {open.lastEditedByDisplayName}
+                              </span>
                             ) : null}
                           </p>
                         </div>
@@ -222,7 +276,12 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-accent-500/25 transition hover:from-accent-600 hover:to-accent-700 sm:w-auto sm:min-w-[240px]"
                     >
                       Дэлгэрэнгүй холбоос руу орох
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
@@ -254,7 +313,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
   return (
     <>
       <div className="grid gap-6 sm:grid-cols-2 lg:gap-8">
-        {ads.map((ad) => (
+        {paged.map((ad) => (
           <article
             key={ad.id}
             className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
@@ -274,7 +333,9 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900">
-                    <span className="text-4xl font-black text-white/20">FC</span>
+                    <span className="text-4xl font-black text-white/20">
+                      FC
+                    </span>
                   </div>
                 )}
               </div>
@@ -283,7 +344,9 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   {ad.title}
                 </h2>
                 {ad.summary && (
-                  <p className="mt-1.5 text-sm font-semibold text-accent-600">{ad.summary}</p>
+                  <p className="mt-1.5 text-sm font-semibold text-accent-600">
+                    {ad.summary}
+                  </p>
                 )}
                 <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-gray-600">
                   {previewText(ad, 220)}
@@ -293,7 +356,9 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                     {ad.postedByDisplayName && (
                       <span>Нийтлэгч: {ad.postedByDisplayName}</span>
                     )}
-                    {ad.postedByDisplayName && ad.lastEditedByDisplayName ? " · " : null}
+                    {ad.postedByDisplayName && ad.lastEditedByDisplayName
+                      ? " · "
+                      : null}
                     {ad.lastEditedByDisplayName &&
                     ad.lastEditedByDisplayName !== ad.postedByDisplayName ? (
                       <span>Сүүлд зассан: {ad.lastEditedByDisplayName}</span>
@@ -302,8 +367,18 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 )}
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600">
                   Дэлгэрэнгүй үзэх
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  <svg
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
                   </svg>
                 </span>
               </div>
@@ -311,6 +386,38 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
           </article>
         ))}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          <button
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page === 0}
+            className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ←
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => setPage(i)}
+              className={`w-8 h-8 rounded text-sm font-bold transition-colors ${
+                i === page
+                  ? "bg-accent-500 text-white"
+                  : "border border-gray-200 text-gray-600 hover:border-accent-400 hover:text-accent-500"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page === totalPages - 1}
+            className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            →
+          </button>
+        </div>
+      )}
 
       {modal}
     </>

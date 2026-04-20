@@ -14,6 +14,7 @@ import {
   User,
 } from "lucide-react";
 import { resolvePublicMediaUrl } from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export type JobItem = {
   id: string;
@@ -39,12 +40,12 @@ function excerpt(text: string, max = 140): string {
 /** Two columns × two rows per page */
 const JOBS_PAGE_SIZE = 4;
 
-function formatPosted(iso?: string): string | null {
+function formatPosted(iso?: string, lang = "mn"): string | null {
   if (!iso) return null;
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleDateString("mn-MN", {
+    return d.toLocaleDateString(lang === "mn" ? "mn-MN" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -64,6 +65,7 @@ function MetaCell({ label, value }: { label: string; value: ReactNode }) {
 }
 
 export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
+  const { lang, t } = useLanguage();
   const [open, setOpen] = useState<JobItem | null>(null);
   const [page, setPage] = useState(1);
 
@@ -98,7 +100,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
   if (jobs.length === 0) {
     return (
       <p className="py-12 text-center text-gray-500">
-        Одоогоор идэвхтэй зар байхгүй байна.
+        {t.jobs.noJobs}
       </p>
     );
   }
@@ -107,7 +109,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
     <>
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
         {pageJobs.map((job) => {
-          const posted = formatPosted(job.createdAt);
+          const posted = formatPosted(job.createdAt, lang);
           return (
             <li key={job.id} className="min-w-0">
               <button
@@ -153,21 +155,21 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     {excerpt(job.description, 160)}
                   </p>
                   <span className="mt-4 inline-flex text-sm font-medium text-accent-600">
-                    Дэлгэрэнгүй үзэх →
+                    {t.jobs.labels.viewMore}
                   </span>
                   {(posted || job.postedByDisplayName || job.lastEditedByDisplayName) && (
                     <p className="mt-2 line-clamp-2 text-xs text-gray-400">
-                      {posted ? <>Нийтэлсэн: {posted}</> : null}
+                      {posted ? <>{t.jobs.labels.published}: {posted}</> : null}
                       {posted && (job.postedByDisplayName || job.lastEditedByDisplayName)
                         ? " · "
                         : null}
                       {job.postedByDisplayName && (
-                        <span>Нийтлэгч: {job.postedByDisplayName}</span>
+                        <span>{t.jobs.labels.poster}: {job.postedByDisplayName}</span>
                       )}
                       {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
                       {job.lastEditedByDisplayName &&
                       job.lastEditedByDisplayName !== job.postedByDisplayName ? (
-                        <span>Сүүлд зассан: {job.lastEditedByDisplayName}</span>
+                        <span>{t.jobs.labels.lastEdited}: {job.lastEditedByDisplayName}</span>
                       ) : null}
                     </p>
                   )}
@@ -181,7 +183,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
       {totalPages > 1 && (
         <nav
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          aria-label="Хуудаслалт"
+          aria-label={t.jobs.labels.pagination}
         >
           <div className="flex flex-wrap items-center justify-center gap-2">
             <button
@@ -190,7 +192,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Өмнөх
+              {t.jobs.labels.prev}
             </button>
             <button
               type="button"
@@ -198,14 +200,14 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              Дараах
+              {t.jobs.labels.next}
             </button>
           </div>
           <p className="text-sm text-gray-500">
-            Хуудас <span className="font-medium text-brand-900">{currentPage}</span> /{" "}
+            {t.jobs.labels.page} <span className="font-medium text-brand-900">{currentPage}</span> /{" "}
             {totalPages}{" "}
             <span className="text-gray-400">
-              ({jobs.length} зар)
+              ({jobs.length} {t.jobs.labels.adsCount})
             </span>
           </p>
         </nav>
@@ -223,7 +225,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
             <button
               type="button"
               className="absolute inset-0 bg-brand-950/75 backdrop-blur-[3px] transition-opacity hover:bg-brand-950/80"
-              aria-label="Хаах"
+              aria-label={t.jobs.close}
               onClick={close}
             />
             <div
@@ -239,7 +241,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                   <div className="min-w-0 flex-1 space-y-2">
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-900">
                       <Briefcase className="h-3.5 w-3.5" aria-hidden />
-                      Ажлын зар
+                      {t.jobs.category}
                     </span>
                     <h2
                       id="job-modal-title"
@@ -252,7 +254,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     type="button"
                     onClick={close}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-brand-900"
-                    aria-label="Хаах"
+                    aria-label={t.jobs.close}
                   >
                     <X className="h-5 w-5" strokeWidth={2} />
                   </button>
@@ -280,7 +282,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                           aria-hidden
                         />
                         <p className="relative text-center text-xs font-medium uppercase tracking-widest text-white/40">
-                          Ажлын зар
+                          {t.jobs.imageJob}
                         </p>
                       </div>
                     )}
@@ -290,14 +292,14 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     <section className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/90 p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
                       <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
                         <LayoutList className="h-4 w-4 text-emerald-600" aria-hidden />
-                        Товч мэдээлэл
+                        {t.jobs.metaTitle}
                       </h3>
                       <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
                         <div className="col-span-2 flex gap-2 self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-emerald-50/50 px-3 py-2 sm:col-span-1">
                           <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
                           <div className="min-w-0">
                             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              Байгууллага
+                              {t.jobs.labels.company}
                             </p>
                             <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
                               {open.company}
@@ -308,7 +310,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                           <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
                           <div className="min-w-0">
                             <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              Байршил
+                              {t.jobs.labels.location}
                             </p>
                             <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
                               {open.location}
@@ -319,32 +321,33 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                           <div className="col-span-2 flex w-fit max-w-full flex-nowrap items-center gap-2 self-start rounded-lg border border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-white px-3 py-1.5 sm:col-span-1">
                             <Banknote className="h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden />
                             <span className="shrink-0 text-[10px] font-bold uppercase leading-none tracking-wide text-emerald-800">
-                              Цалин
+                              {t.jobs.labels.salary}
                             </span>
                             <span className="min-w-0 text-sm font-bold leading-none tabular-nums text-emerald-950">
                               {open.salary}
                             </span>
                           </div>
                         ) : null}
-                        {formatPosted(open.createdAt) ? (
-                          <MetaCell label="Нийтэлсэн" value={formatPosted(open.createdAt)} />
+                        {formatPosted(open.createdAt, lang) ? (
+                          <MetaCell label={t.jobs.labels.published} value={formatPosted(open.createdAt, lang)} />
                         ) : null}
                         {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
                           <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
                             <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
                               <User className="h-3.5 w-3.5" aria-hidden />
-                              Админ
+                              {t.jobs.labels.admin}
                             </p>
-                            <p className="mt-1 text-sm font-semibold text-brand-900">
+                            <div className="mt-1 text-sm font-semibold text-brand-900">
                               {open.postedByDisplayName && (
-                                <span>Нийтлэгч: {open.postedByDisplayName}</span>
+                                <div>{t.jobs.labels.poster}: {open.postedByDisplayName}</div>
                               )}
-                              {open.postedByDisplayName && open.lastEditedByDisplayName ? " · " : null}
                               {open.lastEditedByDisplayName &&
                               open.lastEditedByDisplayName !== open.postedByDisplayName ? (
-                                <span>Сүүлд зассан: {open.lastEditedByDisplayName}</span>
+                                <div className="mt-0.5 text-xs font-medium text-slate-500">
+                                  {t.jobs.labels.lastEdited}: {open.lastEditedByDisplayName}
+                                </div>
                               ) : null}
-                            </p>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -353,7 +356,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
                       <h3 className="mb-3 flex items-center gap-2 border-b border-slate-100 pb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
                         <CalendarDays className="h-4 w-4 text-accent-600" aria-hidden />
-                        Ажлын тайлбар
+                        {t.jobs.descriptionTitle}
                       </h3>
                       <div className="break-words whitespace-pre-wrap text-sm leading-relaxed text-slate-700 sm:text-[15px]">
                         {open.description}
@@ -363,19 +366,19 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     {open.contactEmail ? (
                       <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white p-4 sm:p-5">
                         <a
-                          href={`mailto:${open.contactEmail}?subject=${encodeURIComponent(`Ажлын зар: ${open.title}`)}`}
+                          href={`mailto:${open.contactEmail}?subject=${encodeURIComponent(`Job Inquiry: ${open.title}`)}`}
                           className="flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-4 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-accent-500/20 transition hover:from-accent-600 hover:to-accent-700 sm:inline-flex sm:flex-row sm:min-w-[260px] sm:px-5"
                         >
                           <span className="inline-flex items-center gap-2">
                             <Mail className="h-5 w-5 shrink-0" aria-hidden />
-                            Имэйл илгээх
+                            {t.jobs.labels.sendEmail}
                           </span>
                           <span className="max-w-full break-all text-xs font-normal opacity-95 sm:text-sm">
                             {open.contactEmail}
                           </span>
                         </a>
                         <p className="mt-3 text-center text-xs leading-relaxed text-slate-500 sm:text-left">
-                          Таны имэйл програмыг нээж, анхны захиалгыг бөглөх болно.
+                          {t.jobs.labels.emailHint}
                         </p>
                       </div>
                     ) : null}
@@ -389,7 +392,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                   onClick={close}
                   className="w-full rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[140px]"
                 >
-                  Хаах
+                  {t.jobs.close}
                 </button>
               </footer>
             </div>

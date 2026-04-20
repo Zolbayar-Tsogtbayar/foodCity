@@ -8,6 +8,8 @@ import FooterWithContent from "@/components/FooterWithContent";
 import PageWrapper from "@/components/PageWrapper";
 import ChatBotLoader from "@/components/ChatBotLoader";
 
+import { getLanguageServer } from "@/lib/i18n-server";
+
 const roboto = Roboto({
   variable: "--font-roboto",
   subsets: ["latin"],
@@ -30,13 +32,14 @@ function FooterFallback() {
   );
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const lang = await getLanguageServer();
   return (
-    <html lang="mn" className={`${roboto.variable} h-full antialiased`}>
+    <html lang={lang} className={`${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
           <Navbar />

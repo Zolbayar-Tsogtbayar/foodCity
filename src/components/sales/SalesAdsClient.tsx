@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { CalendarDays, Megaphone, X } from "lucide-react";
 import { resolvePublicMediaUrl } from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export type SalesAdItem = {
   id: string;
@@ -21,12 +22,12 @@ export type SalesAdItem = {
   lastEditedByDisplayName?: string;
 };
 
-function formatDateMn(iso?: string | null): string | null {
+function formatDate(iso?: string | null, lang = "mn"): string | null {
   if (!iso) return null;
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return null;
-    return d.toLocaleDateString("mn-MN", {
+    return d.toLocaleDateString(lang === "mn" ? "mn-MN" : "en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -72,6 +73,7 @@ function usePageSize(mobile: number, desktop: number) {
 }
 
 export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
+  const { lang, t } = useLanguage();
   const [openId, setOpenId] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const pageSize = usePageSize(4, 9);
@@ -102,16 +104,14 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
 
   if (ads.length === 0) {
     return (
-      <p className="text-gray-500 text-center py-16 text-base">
-        Одоогоор идэвхтэй зар байхгүй байна.
-      </p>
+      <p className="text-gray-500 text-center py-16 text-base">{t.sales.noAds}</p>
     );
   }
 
   const hasMeta =
-    formatDateMn(open?.validFrom) ||
-    formatDateMn(open?.validTo) ||
-    formatDateMn(open?.createdAt) ||
+    formatDate(open?.validFrom, lang) ||
+    formatDate(open?.validTo, lang) ||
+    formatDate(open?.createdAt, lang) ||
     open?.postedByDisplayName ||
     open?.lastEditedByDisplayName;
 
@@ -128,7 +128,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
         <button
           type="button"
           className="absolute inset-0 bg-brand-950/75 backdrop-blur-[3px] transition-opacity hover:bg-brand-950/80"
-          aria-label="Хаах"
+          aria-label={t.sales.close}
           onClick={close}
         />
         <div
@@ -144,7 +144,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               <div className="min-w-0 flex-1 space-y-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-accent-500/20 bg-accent-500/10 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-accent-800">
                   <Megaphone className="h-3.5 w-3.5" aria-hidden />
-                  Борлуулалт
+                  {t.sales.category}
                 </span>
                 <h2
                   id="sales-ad-modal-title"
@@ -157,7 +157,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 type="button"
                 onClick={close}
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/90 text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 hover:text-brand-900"
-                aria-label="Хаах"
+                aria-label={t.sales.close}
               >
                 <X className="h-5 w-5" strokeWidth={2} />
               </button>
@@ -186,7 +186,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                       strokeWidth={1.25}
                     />
                     <p className="relative text-center text-xs font-medium uppercase tracking-widest text-white/40">
-                      Зургийн зар
+                      {t.sales.imageAd}
                     </p>
                   </div>
                 )}
@@ -200,49 +200,47 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                         className="h-4 w-4 text-accent-600"
                         aria-hidden
                       />
-                      Хугацаа · нийтлэгч
+                      {t.sales.metaTitle}
                     </h3>
                     <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
-                      {formatDateMn(open.validFrom) && (
+                      {formatDate(open.validFrom, lang) && (
                         <MetaCell
-                          label="Эхлэх"
-                          value={formatDateMn(open.validFrom)}
+                          label={t.sales.labels.start}
+                          value={formatDate(open.validFrom, lang)}
                         />
                       )}
-                      {formatDateMn(open.validTo) && (
+                      {formatDate(open.validTo, lang) && (
                         <MetaCell
-                          label="Дуусах"
-                          value={formatDateMn(open.validTo)}
+                          label={t.sales.labels.end}
+                          value={formatDate(open.validTo, lang)}
                         />
                       )}
-                      {formatDateMn(open.createdAt) && (
+                      {formatDate(open.createdAt, lang) && (
                         <MetaCell
-                          label="Нийтлэгдсэн"
-                          value={formatDateMn(open.createdAt)}
+                          label={t.sales.labels.published}
+                          value={formatDate(open.createdAt, lang)}
                         />
                       )}
                       {(open.postedByDisplayName ||
                         open.lastEditedByDisplayName) && (
                         <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
                           <p className="text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
-                            Админ
+                            {t.sales.labels.admin}
                           </p>
-                          <p className="mt-1 text-sm font-semibold text-brand-900">
+                          <div className="mt-1 text-sm font-semibold text-brand-900">
                             {open.postedByDisplayName && (
-                              <span>Нийтлэгч: {open.postedByDisplayName}</span>
+                              <div>
+                                {t.sales.labels.poster}: {open.postedByDisplayName}
+                              </div>
                             )}
-                            {open.postedByDisplayName &&
-                            open.lastEditedByDisplayName
-                              ? " · "
-                              : null}
                             {open.lastEditedByDisplayName &&
                             open.lastEditedByDisplayName !==
                               open.postedByDisplayName ? (
-                              <span>
-                                Сүүлд зассан: {open.lastEditedByDisplayName}
-                              </span>
+                              <div className="mt-0.5 text-xs font-medium text-slate-500">
+                                {t.sales.labels.lastEdited}: {open.lastEditedByDisplayName}
+                              </div>
                             ) : null}
-                          </p>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -260,7 +258,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                     <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-brand-900/5 text-[10px] font-black text-brand-800">
                       FC
                     </span>
-                    Агуулга
+                    {t.sales.labels.content}
                   </h3>
                   <div className="prose prose-sm max-w-none text-slate-700 prose-p:leading-relaxed sm:prose-base">
                     <p className="whitespace-pre-wrap">{open.body}</p>
@@ -275,7 +273,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                       rel="noopener noreferrer"
                       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-accent-500/25 transition hover:from-accent-600 hover:to-accent-700 sm:w-auto sm:min-w-[240px]"
                     >
-                      Дэлгэрэнгүй холбоос руу орох
+                      {t.sales.labels.externalLink}
                       <svg
                         className="h-4 w-4"
                         fill="none"
@@ -302,7 +300,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               onClick={close}
               className="w-full rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[140px]"
             >
-              Хаах
+              {t.sales.close}
             </button>
           </footer>
         </div>
@@ -354,19 +352,19 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 {(ad.postedByDisplayName || ad.lastEditedByDisplayName) && (
                   <p className="mt-3 text-xs text-gray-500">
                     {ad.postedByDisplayName && (
-                      <span>Нийтлэгч: {ad.postedByDisplayName}</span>
+                      <span>{t.sales.labels.poster}: {ad.postedByDisplayName}</span>
                     )}
                     {ad.postedByDisplayName && ad.lastEditedByDisplayName
                       ? " · "
                       : null}
                     {ad.lastEditedByDisplayName &&
                     ad.lastEditedByDisplayName !== ad.postedByDisplayName ? (
-                      <span>Сүүлд зассан: {ad.lastEditedByDisplayName}</span>
+                      <span>{t.sales.labels.lastEdited}: {ad.lastEditedByDisplayName}</span>
                     ) : null}
                   </p>
                 )}
                 <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600">
-                  Дэлгэрэнгүй үзэх
+                  {t.sales.labels.viewMore}
                   <svg
                     className="h-4 w-4"
                     fill="none"

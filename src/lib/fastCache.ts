@@ -6,26 +6,27 @@ interface CacheEntry<T> {
 
 const cache = new Map<string, CacheEntry<unknown>>();
 
-export function createFastCache<T>(
-  key: string,
-  fetcher: () => Promise<T>,
-  ttl: number = 1000, // 1 second default
+export function createFastCache<T, Args extends unknown[]>(
+  baseKey: string,
+  fetcher: (...args: Args) => Promise<T>,
+  ttl: number = 1000, 
 ) {
-  return async (): Promise<T> => {
+  return async (...args: Args): Promise<T> => {
+    const fullKey = args.length > 0 ? `${baseKey}:${JSON.stringify(args)}` : baseKey;
     const now = Date.now();
-    const cached = cache.get(key);
+    const cached = cache.get(fullKey);
 
     if (cached && now - cached.timestamp < cached.ttl) {
       return cached.data as T;
     }
 
     try {
-      const data = await fetcher();
-      cache.set(key, { data, timestamp: now, ttl });
+      const data = await fetcher(...args);
+      cache.set(fullKey, { data, timestamp: now, ttl });
       return data;
     } catch (error) {
       if (cached) {
-        return cached.data as T; // Return stale cache on error
+        return cached.data as T;
       }
       throw error;
     }

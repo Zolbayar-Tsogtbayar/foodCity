@@ -3,15 +3,18 @@ export type Lang = "mn" | "en";
 export const translations = {
   mn: {
     nav: {
-      links: [
-        { label: "Нүүр", href: "#home" },
-        { label: "Бидний тухай", href: "#about" },
-        { label: "Үйл ажиллагаа", href: "#services" },
-        { label: "Хамтран ажиллах", href: "#properties" },
-        { label: "Мэдээ мэдээлэл", href: "#team" },
-        { label: "Холбоо барих", href: "#contact" },
-      ],
+      home: "Нүүр",
+      about: "Бидний тухай",
+      services: "Үйл ажиллагаа",
+      properties: "Хамтран ажиллах",
+      team: "Мэдээ мэдээлэл",
+      contact: "Холбоо барих",
+      newsAds: "Зар мэдээ",
+      order: "Захиалга",
+      sales: "Борлуулалтын зар",
+      jobs: "Ажлын зар",
       openMenu: "Цэс нээх",
+      closeMenu: "Цэс хаах",
       phone: "Утас",
     },
     hero: {
@@ -298,51 +301,157 @@ export const translations = {
         { title: "Ажлын цаг", value: "Даваа – Баасан: 09:00 – 18:00" },
       ],
     },
+    order: {
+      title: "Захиалга",
+      subtitle: "Мэдээллээ бөглөж илгээнэ үү. Бид тантай удахгүй холбогдоно.",
+      labels: {
+        name: "Овог нэр *",
+        phone: "Утас *",
+        email: "Имэйл",
+        address: "Хаяг",
+        notes: "Нэмэлт тэмдэглэл",
+      },
+      submit: "Захиалга илгээх",
+      submitting: "Илгээж байна…",
+      success: "Захиалга амжилттай бүртгэгдлээ. Баярлалаа!",
+      error: "Илгээхэд алдаа гарлаа. Дахин оролдоно уу.",
+    },
+    sales: {
+      noAds: "Одоогоор идэвхтэй зар байхгүй байна.",
+      close: "Хаах",
+      category: "Борлуулалт",
+      imageAd: "Зургийн зар",
+      metaTitle: "Хугацаа · нийтлэгч",
+      labels: {
+        start: "Эхлэх",
+        end: "Дуусах",
+        published: "Нийтлэгдсэн",
+        admin: "Админ",
+        poster: "Нийтлэгч",
+        lastEdited: "Сүүлд зассан",
+        content: "Агуулга",
+        externalLink: "Дэлгэрэнгүй холбоос руу орох",
+        viewMore: "Дэлгэрэнгүй үзэх",
+      },
+    },
+    jobs: {
+      noJobs: "Одоогоор идэвхтэй зар байхгүй байна.",
+      close: "Хаах",
+      category: "Ажлын зар",
+      imageJob: "Ажлын зар",
+      metaTitle: "Товч мэдээлэл",
+      descriptionTitle: "Ажлын тайлбар",
+      labels: {
+        company: "Байгууллага",
+        location: "Байршил",
+        salary: "Цалин",
+        published: "Нийтлэгдсэн",
+        admin: "Админ",
+        poster: "Нийтлэгч",
+        lastEdited: "Сүүлд зассан",
+        sendEmail: "Имэйл илгээх",
+        emailHint: "Таны имэйл програмыг нээж, анхны захиалгыг бөглөх болно.",
+        viewMore: "Дэлгэрэнгүй үзэх →",
+        pagination: "Хуудаслалт",
+        prev: "Өмнөх",
+        next: "Дараах",
+        page: "Хуудас",
+        adsCount: "зар",
+      },
+    },
     footer: {
       desc: "Улаанбаатарын тэргүүлэх барилга угсралт болон арилжааны оффис түрээслүүлэх групп. 2006 оноос ухаалаг орон зай бүтээж байна.",
       partnersLabel: "Салбарын тэргүүлэгч байгууллагуудын итгэлт түнш",
       links: {
-        Компани: [
-          "Бидний тухай",
-          "Манай төслүүд",
-          "Ажлын байр",
-          "Мэдээ & Хэвлэл",
-        ],
-        Үйлчилгээ: [
-          "Арилжааны барилга",
-          "Оффис түрээс",
-          "Интерьер тохижилт",
-          "Ухаалаг барилга",
-        ],
-        "Үл хөдлөх": [
-          "Түрээс",
-          "Худалдаа",
-          "Хамтын ажлын байр",
-          "Хөрөнгө оруулалт",
-        ],
-        "Хууль эрх зүй": [
-          "Нууцлалын бодлого",
-          "Үйлчилгээний нөхцөл",
-          "Күүкийн бодлого",
-        ],
+        company: {
+          label: "Компани",
+          items: ["Бидний тухай", "Манай төслүүд", "Ажлын байр", "Мэдээ & Хэвлэл"],
+        },
+        services: {
+          label: "Үйлчилгээ",
+          items: [
+            "Арилжааны барилга",
+            "Оффис түрээс",
+            "Интерьер тохижилт",
+            "Ухаалаг барилга",
+          ],
+        },
+        properties: {
+          label: "Үл хөдлөх",
+          items: ["Түрээс", "Худалдаа", "Хамтын ажлын байр", "Хөрөнгө оруулалт"],
+        },
+        legal: {
+          label: "Хууль эрх зүй",
+          items: ["Нууцлалын бодлого", "Үйлчилгээний нөхцөл", "Күүкийн бодлого"],
+        },
       },
       copyrightSuffix: "FoodCity ХХК. Бүх эрх хуулиар хамгаалагдсан.",
       builtWith: "Next.js & Tailwind CSS ашиглан бүтээсэн",
       location: "Улаанбаатар, Монгол",
     },
+    chatbot: {
+      title: "FoodCity Туслах",
+      status: {
+        online: "Онлайн",
+        connecting: "Холбогдож байна...",
+        offline: "Офлайн",
+        error: "Алдаа",
+      },
+      common: {
+        loading: "Яриа ачаалж байна...",
+        placeholder: "Асуулт бичих...",
+        send: "Илгээх",
+        close: "Хаах",
+        backToStart: "Эхлэл рүү буцах",
+        openChat: "Чат нээх",
+      },
+      errors: {
+        notReady:
+          "Чат хараахан холбогдоогүй байна. Түр хүлээгээд дахин оролдоно уу.",
+        fallback:
+          "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.",
+      },
+      defaults: {
+        order: "Захиалга",
+        sales: "Борлуулалтын зар",
+        jobs: "Ажлын зар",
+        connect: "Ажилтантай холбогдох",
+      },
+      fallbacks: {
+        thanks: "Тустай сайхан байна! Өөр асуулт байвал энд бичнэ үү.",
+        greeting:
+          "Сайн байна уу! Захиалга, борлуулалтын зар, ажлын зарын талаар асууж болно. Тодорхой зүйл хайвал доорх сонголтуудыг ашиглана уу.",
+        contact:
+          "Утас: +976 1100-0000\nИмэйл: info@foodcity.mn\nАжлын цаг: Даваа–Баасан 09:00–18:00",
+        about:
+          "«Бидний тухай» хэсгээс FoodCity-ийн туршлага, гүйцэтгэсэн төслүүд, багийн мэдээлэлтэй танилцана уу. Тодорхой асуулт байвал энд шууд бичээрэй.",
+        jobs: "Нээлттэй ажлын байрны заруудыг «Ажлын зар» хуудаснаас үзнэ үү.",
+        connect:
+          "Таны хүсэлтийг ажилтан руу дамжуулна. Түр хүлээнэ үү; шууд асуултанд хариулна.",
+        price:
+          "Үнэ, хямдралын мэдээллийг «Борлуулалтын зар» хэсэгт нийтэлдэг. Тодорхой бүтээгдэхүүнээс хамаарч өөр өөр байна.",
+        order:
+          "Захиалга өгөх бол вэб дээрх «Захиалга» хэсгээс бөглөнө үү. Оффис болон үйлчилгээний талаар дэлгэрэнгүй мэдээллийг «Борлуулалтын зар»-аас үзнэ үү.",
+        location:
+          "Бид Улаанбаатар хотод үйл ажиллагаа явуулдаг. Хаягийн дэлгэрэнгүйг «Холбоо барих» хэсгээс үзнэ үү.",
+      },
+    },
   },
 
   en: {
     nav: {
-      links: [
-        { label: "Home", href: "#home" },
-        { label: "About Us", href: "#about" },
-        { label: "Services", href: "#services" },
-        { label: "Collaborate", href: "#properties" },
-        { label: "News", href: "#team" },
-        { label: "Contact", href: "#contact" },
-      ],
+      home: "Home",
+      about: "About Us",
+      services: "Services",
+      properties: "Collaborate",
+      team: "News",
+      contact: "Contact",
+      newsAds: "News & Ads",
+      order: "Order",
+      sales: "Sales",
+      jobs: "Jobs",
       openMenu: "Open Menu",
+      closeMenu: "Close Menu",
       phone: "Phone",
     },
     hero: {
@@ -628,23 +737,139 @@ export const translations = {
         { title: "Working Hours", value: "Monday – Friday: 09:00 – 18:00" },
       ],
     },
+    order: {
+      title: "Order",
+      subtitle: "Please fill out the form and we will contact you shortly.",
+      labels: {
+        name: "Full Name *",
+        phone: "Phone *",
+        email: "Email",
+        address: "Address",
+        notes: "Additional Notes",
+      },
+      submit: "Submit Order",
+      submitting: "Submitting...",
+      success: "Order submitted successfully. Thank you!",
+      error: "An error occurred. Please try again.",
+    },
+    sales: {
+      noAds: "No active announcements at the moment.",
+      close: "Close",
+      category: "Sales",
+      imageAd: "Image Ad",
+      metaTitle: "Timeline · Publisher",
+      labels: {
+        start: "Start",
+        end: "End",
+        published: "Published",
+        admin: "Admin",
+        poster: "Publisher",
+        lastEdited: "Last edited",
+        content: "Content",
+        externalLink: "Go to external link",
+        viewMore: "View details",
+      },
+    },
+    jobs: {
+      noJobs: "No active job openings at the moment.",
+      close: "Close",
+      category: "Job Ad",
+      imageJob: "Job Ad",
+      metaTitle: "Brief Information",
+      descriptionTitle: "Job Description",
+      labels: {
+        company: "Company",
+        location: "Location",
+        salary: "Salary",
+        published: "Published",
+        admin: "Admin",
+        poster: "Publisher",
+        lastEdited: "Last edited",
+        sendEmail: "Send Email",
+        emailHint: "This will open your email application to draft an inquiry.",
+        viewMore: "View details →",
+        pagination: "Pagination",
+        prev: "Previous",
+        next: "Next",
+        page: "Page",
+        adsCount: "ads",
+      },
+    },
     footer: {
       desc: "Ulaanbaatar's leading commercial construction and office leasing group. Building smart spaces since 2006.",
       partnersLabel: "Trusted by leading organizations",
       links: {
-        Company: ["About Us", "Our Projects", "Careers", "News & Press"],
-        Services: [
-          "Commercial Construction",
-          "Office Rental",
-          "Interior Fitout",
-          "Smart Building",
-        ],
-        "Real Estate": ["Lease", "Sale", "Co-working", "Investment"],
-        Legal: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+        company: {
+          label: "Company",
+          items: ["About Us", "Our Projects", "Careers", "News & Press"],
+        },
+        services: {
+          label: "Services",
+          items: [
+            "Commercial Construction",
+            "Office Rental",
+            "Interior Fitout",
+            "Smart Building",
+          ],
+        },
+        properties: {
+          label: "Real Estate",
+          items: ["Lease", "Sale", "Co-working", "Investment"],
+        },
+        legal: {
+          label: "Legal",
+          items: ["Privacy Policy", "Terms of Service", "Cookie Policy"],
+        },
       },
       copyrightSuffix: "FoodCity LLC. All rights reserved.",
       builtWith: "Built with Next.js & Tailwind CSS",
       location: "Ulaanbaatar, Mongolia",
+    },
+    chatbot: {
+      title: "FoodCity Assistant",
+      status: {
+        online: "Online",
+        connecting: "Connecting...",
+        offline: "Offline",
+        error: "Error",
+      },
+      common: {
+        loading: "Loading conversation...",
+        placeholder: "Type a message...",
+        send: "Send",
+        close: "Close",
+        backToStart: "Back to start",
+        openChat: "Open chat",
+      },
+      errors: {
+        notReady: "Chat is not ready yet. Please wait a moment and try again.",
+        fallback:
+          "Response is slightly delayed. Please try again or rephrase your question.",
+      },
+      defaults: {
+        order: "Order",
+        sales: "Sales Ads",
+        jobs: "Job Postings",
+        connect: "Connect with Staff",
+      },
+      fallbacks: {
+        thanks: "Glad I could help! Let me know if you have more questions.",
+        greeting:
+          "Hello! I can help with orders, sales ads, or job postings. Use the options below or ask me anything.",
+        contact:
+          "Phone: +976 1100-0000\nEmail: info@foodcity.mn\nHours: Mon–Fri 09:00–18:00",
+        about:
+          "Check the 'About Us' section for our history and projects. Feel free to ask more specific questions here.",
+        jobs: "You can find open positions in our 'Job Postings' page.",
+        connect:
+          "Forwarding your request to our staff. Please wait; they'll assist you shortly.",
+        price:
+          "Pricing and discounts vary. Please check the 'Sales Ads' section for current offers.",
+        order:
+          "To place an order, use the 'Order' form on the website. For property/office info, check 'Sales Ads'.",
+        location:
+          "We are located in Ulaanbaatar. See 'Contact' for our exact address.",
+      },
     },
   },
 };

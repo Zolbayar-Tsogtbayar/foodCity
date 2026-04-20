@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
 import { getApiBaseUrl, getSocketBaseUrl, type ChatMessage } from "@/lib/api";
+import { useLanguage } from "@/contexts/LanguageContext";
+import type { Translations } from "@/lib/translations";
 
 type ChatChoiceNode = {
   id: string;
@@ -19,15 +21,17 @@ type ChatbotConfig = {
 const GUEST_KEY = "foodcity_guest_id";
 const CONV_KEY = "foodcity_conversation_id";
 
-const DEFAULT_CONFIG: ChatbotConfig = {
-  rootChoices: [
-    { id: "order", label: "Захиалга", choices: [] },
-    { id: "sales", label: "Борлуулалтын зар", choices: [] },
-    { id: "jobs", label: "Ажлын зар", choices: [] },
-    { id: "connect", label: "Ажилтантай холбогдох", choices: [] },
-  ],
-  restartLabel: "Эхлэл рүү буцах",
-};
+function getDefaultConfig(t: Translations): ChatbotConfig {
+  return {
+    rootChoices: [
+      { id: "order", label: t.chatbot.defaults.order, choices: [] },
+      { id: "sales", label: t.chatbot.defaults.sales, choices: [] },
+      { id: "jobs", label: t.chatbot.defaults.jobs, choices: [] },
+      { id: "connect", label: t.chatbot.defaults.connect, choices: [] },
+    ],
+    restartLabel: t.chatbot.common.backToStart,
+  };
+}
 
 /** `crypto.randomUUID` is only available in secure contexts (HTTPS or localhost). */
 function createGuestId(): string {
@@ -66,16 +70,16 @@ function normalizeNode(node: unknown, depth = 0): ChatChoiceNode | null {
   };
 }
 
-function normalizeConfig(raw: unknown): ChatbotConfig {
-  if (!raw || typeof raw !== "object") return DEFAULT_CONFIG;
+function normalizeConfig(raw: unknown, fallback: ChatbotConfig): ChatbotConfig {
+  if (!raw || typeof raw !== "object") return fallback;
   const r = raw as Record<string, unknown>;
   const rootChoicesRaw = Array.isArray(r.rootChoices) ? r.rootChoices : [];
   const rootChoices = rootChoicesRaw
     .map((n) => normalizeNode(n))
     .filter((n): n is ChatChoiceNode => Boolean(n));
-  const restartLabel = String(r.restartLabel ?? "").trim() || DEFAULT_CONFIG.restartLabel;
+  const restartLabel = String(r.restartLabel ?? "").trim() || fallback.restartLabel;
   return {
-    rootChoices: rootChoices.length > 0 ? rootChoices : DEFAULT_CONFIG.rootChoices,
+    rootChoices: rootChoices.length > 0 ? rootChoices : fallback.rootChoices,
     restartLabel,
   };
 }
@@ -89,19 +93,17 @@ function normalizeUserText(text: string): string {
     .replace(/\s+/g, " ");
 }
 
-function getLocalBotFallback(userText: string): string {
+function getLocalBotFallback(
+  userText: string,
+  t: Translations,
+  lang: string,
+): string {
   const n = normalizeUserText(userText);
-  if (!n) {
-    return "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.";
-  }
-  if (
-    n.includes("баярлалаа") ||
-    n.includes("thanks") ||
-    n.includes("thank you") ||
-    n.includes("thankyou")
-  ) {
-    return "Тустай сайхан байна! Өөр асуулт байвал энд бичнэ үү.";
-  }
+  if (!n) return t.chatbot.errors.fallback;
+
+  const isMN = lang === "mn";
+
+  // Greeting
   if (
     n.startsWith("сайн байна") ||
     n.includes("сайн байна уу") ||
@@ -111,75 +113,119 @@ function getLocalBotFallback(userText: string): string {
     /^hi\b/.test(n) ||
     /^hey\b/.test(n)
   ) {
-    return "Сайн байна уу! Захиалга, борлуулалтын зар, ажлын зарын талаар асууж болно. Тодорхой зүйл хайвал доорх сонголтуудыг ашиглана уу.";
+    return t.chatbot.fallbacks.greeting;
   }
+
+  // Thanks
+  if (
+    n.includes("баярлалаа") ||
+    n.includes("thanks") ||
+    n.includes("thank you") ||
+    n.includes("thankyou")
+  ) {
+    return t.chatbot.fallbacks.thanks;
+  }
+
+  // Contact / Location
   if (
     n.includes("холбоо барих") ||
     n.includes("утасны дугаар") ||
-    (n.includes("утас") && (n.includes("дугаар") || n.includes("залгах"))) ||
-    (n.includes("имэйл") && n.includes("хаяг")) ||
-    n.includes("холбоо") ||
+    n.includes("contact") ||
+    n.includes("phone") ||
+    n.includes("email") ||
+    n.includes("address") ||
+    n.includes("location") ||
+    n.includes("хаяг") ||
     n.includes("утас") ||
-    n.includes("имэйл") ||
-    n.includes("дугаар") ||
-    n.includes("цагийн хуваарь") ||
-    n.includes("ажлын цаг") ||
-    (n.includes("ниээдэг") && n.includes("хаагддаг"))
+    n.includes("имэйл")
   ) {
-    return "Утас: +976 1100-0000\nИмэйл: info@foodcity.mn\nАжлын цаг: Даваа–Баасан 09:00–18:00";
+    return t.chatbot.fallbacks.contact;
   }
+
+  // About
   if (
     n.includes("бидний тухай") ||
     n.includes("танилцуулга") ||
-    n.includes("компани") ||
-    (n.includes("түүх") && n.includes("food"))
+    n.includes("about") ||
+    n.includes("company")
   ) {
-    return "«Бидний тухай» хэсгээс FoodCity-ийн туршлага, гүйцэтгэсэн төслүүд, багийн мэдээлэлтэй танилцана уу. Тодорхой асуулт байвал энд шууд бичээрэй.";
+    return t.chatbot.fallbacks.about;
   }
+
+  // Jobs
   if (
     n.includes("ажлын зар") ||
     n.includes("ажлын байр") ||
-    n.includes("нийцтэй ажил") ||
-    n.includes("карьер") ||
-    (n.includes("ажил") && (n.includes("зар") || n.includes("байр")))
+    n.includes("jobs") ||
+    n.includes("career") ||
+    n.includes("work")
   ) {
-    return "Нээлттэй ажлын байрны заруудыг «Ажлын зар» хуудаснаас үзнэ үү.";
+    return t.chatbot.fallbacks.jobs;
   }
-  if (n.includes("ажилтан") && (n.includes("холбогдох") || n.includes("оператор"))) {
-    return "Таны хүсэлтийг ажилтан руу дамжуулна. Түр хүлээнэ үү; шууд асуултанд хариулна.";
-  }
-  if (n.includes("үнэ") || n.includes("price") || n.includes("төлбөр") || n.includes("хямдрал") || n.includes("хөнгөлөлт")) {
-    return "Үнэ, хямдралын мэдээллийг «Борлуулалтын зар» хэсэгт нийтэлдэг. Тодорхой бүтээгдэхүүнээс хамаарч өөр өөр байна.";
-  }
+
+  // Price / Sales
   if (
-    n.includes("оффис") ||
-    n.includes("боломжит") ||
+    n.includes("үнэ") ||
+    n.includes("price") ||
+    n.includes("төлбөр") ||
+    n.includes("sales") ||
+    n.includes("ads") ||
+    n.includes("зар")
+  ) {
+    return t.chatbot.fallbacks.price;
+  }
+
+  // Orders
+  if (
     n.includes("захиалга") ||
-    n.includes("хоол") ||
-    n.includes("заавар") ||
-    n.includes("хэрхэн захиалах") ||
+    n.includes("order") ||
+    n.includes("booking") ||
     n.includes("захиалах")
   ) {
-    return "Захиалга өгөх бол вэб дээрх «Захиалга» хэсгээс бөглөнө үү. Оффис болон үйлчилгээний талаар дэлгэрэнгүй мэдээллийг «Борлуулалтын зар»-аас үзнэ үү.";
+    return t.chatbot.fallbacks.order;
   }
-  if (n.includes("байршил") || n.includes("хаана") || n.includes("хаяг") || n.includes("where")) {
-    return "Бид Улаанбаатар хотод үйл ажиллагаа явуулдаг. Хаягийн дэлгэрэнгүйг «Холбоо барих» хэсгээс үзнэ үү.";
+
+  // Connect staff
+  if (
+    n.includes("ажилтан") ||
+    n.includes("staff") ||
+    n.includes("operator") ||
+    n.includes("human") ||
+    n.includes("холбогдох")
+  ) {
+    return t.chatbot.fallbacks.connect;
   }
-  return "Хариу түр саатлаа. Дахин оролдоно уу эсвэл асуултаа тодруулж бичнэ үү.";
+
+  return t.chatbot.errors.fallback;
 }
 
 export default function ChatBot() {
+  const { lang, t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [typing, setTyping] = useState(false);
   const [ready, setReady] = useState(false);
   const [socketLive, setSocketLive] = useState(false);
-  const [config, setConfig] = useState<ChatbotConfig>(DEFAULT_CONFIG);
+
+  const defaultConfig = useMemo(() => getDefaultConfig(t), [t]);
+
+  const [config, setConfig] = useState<ChatbotConfig>(defaultConfig);
   /** Keep in sync with `config` defaults so the first open after refresh isn’t chip-empty. */
   const [activeChoices, setActiveChoices] = useState<ChatChoiceNode[]>(
-    () => DEFAULT_CONFIG.rootChoices,
+    () => defaultConfig.rootChoices,
   );
+
+  /** Reset config and choices when language changes if we don't have CMS data. */
+  useEffect(() => {
+    setConfig((prev) => ({
+      ...prev,
+      rootChoices: defaultConfig.rootChoices,
+      restartLabel: defaultConfig.restartLabel,
+    }));
+    setActiveChoices(defaultConfig.rootChoices);
+  }, [defaultConfig]);
+
   const [error, setError] = useState<string | null>(null);
   const [loadingConfig, setLoadingConfig] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -196,16 +242,16 @@ export default function ChatBot() {
       const json = (await res.json()) as {
         data?: { sections?: unknown };
       };
-      const next = normalizeConfig(json.data?.sections);
+      const next = normalizeConfig(json.data?.sections, defaultConfig);
       setConfig(next);
       setActiveChoices(next.rootChoices);
     } catch {
-      setConfig(DEFAULT_CONFIG);
-      setActiveChoices(DEFAULT_CONFIG.rootChoices);
+      setConfig(defaultConfig);
+      setActiveChoices(defaultConfig.rootChoices);
     } finally {
       setLoadingConfig(false);
     }
-  }, [base]);
+  }, [base, defaultConfig]);
 
   const bootstrapConversation = useCallback(async () => {
     setError(null);
@@ -249,10 +295,10 @@ export default function ChatBot() {
       setReady(true);
       setError(null);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Алдаа");
+      setError(e instanceof Error ? e.message : t.chatbot.status.error);
       setReady(false);
     }
-  }, [base]);
+  }, [base, t]);
 
   /** Preload CMS chatbot config as soon as the widget mounts (not only when the panel opens). */
   useEffect(() => {
@@ -337,10 +383,10 @@ export default function ChatBot() {
   }, [open, ready]);
 
   const statusText = useMemo(() => {
-    if (!ready || loadingConfig) return "Холбогдож байна…";
-    if (error) return "Алдаа";
-    return socketLive ? "Онлайн" : "Холбогдож байна…";
-  }, [ready, socketLive, loadingConfig, error]);
+    if (!ready || loadingConfig) return t.chatbot.status.connecting;
+    if (error) return t.chatbot.status.error;
+    return socketLive ? t.chatbot.status.online : t.chatbot.status.connecting;
+  }, [ready, socketLive, loadingConfig, error, t]);
 
   const atRootChips = useMemo(() => {
     if (activeChoices.length !== config.rootChoices.length) return false;
@@ -387,14 +433,14 @@ export default function ChatBot() {
           next.push({
             id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             role: "bot",
-            text: getLocalBotFallback(trimmed),
+            text: getLocalBotFallback(trimmed, t, lang),
           });
         }
         return next;
       });
       if (nextChoices) setActiveChoices(nextChoices);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Алдаа");
+      setError(e instanceof Error ? e.message : t.chatbot.status.error);
     } finally {
       setTyping(false);
     }
@@ -402,10 +448,13 @@ export default function ChatBot() {
 
   function choose(node: ChatChoiceNode) {
     if (!ready) {
-      setError("Чат хараахан холбогдоогүй байна. Түр хүлээгээд дахин оролдоно уу.");
+      setError(t.chatbot.errors.notReady);
       return;
     }
-    void send(node.label, node.choices.length > 0 ? node.choices : config.rootChoices);
+    void send(
+      node.label,
+      node.choices.length > 0 ? node.choices : config.rootChoices,
+    );
   }
 
   return (
@@ -433,7 +482,7 @@ export default function ChatBot() {
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-white font-bold text-sm">FoodCity Чат</div>
+              <div className="text-white font-bold text-sm">{t.chatbot.title}</div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-green-400 rounded-full" />
                 <span className="text-gray-400 text-xs">{statusText}</span>
@@ -442,7 +491,7 @@ export default function ChatBot() {
             <button
               onClick={() => setOpen(false)}
               className="text-gray-400 hover:text-white transition-colors p-1"
-              aria-label="Хаах"
+              aria-label={t.chatbot.common.close}
               type="button"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -456,7 +505,7 @@ export default function ChatBot() {
               <p className="text-xs text-red-600 bg-red-50 rounded-lg px-2 py-1">{error}</p>
             )}
             {open && !ready && !error && (
-              <p className="text-center text-xs text-gray-500 py-6">Яриа ачаалж байна…</p>
+              <p className="text-center text-xs text-gray-500 py-6">{t.chatbot.common.loading}</p>
             )}
             {messages.map((msg) => (
               <div
@@ -529,7 +578,7 @@ export default function ChatBot() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && void send(input)}
-              placeholder="Асуулт бичих…"
+              placeholder={t.chatbot.common.placeholder}
               disabled={!ready}
               className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition disabled:opacity-50"
             />
@@ -550,7 +599,7 @@ export default function ChatBot() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Чат нээх"
+        aria-label={t.chatbot.common.openChat}
         className="fixed bottom-6 right-4 sm:right-6 z-50 w-14 h-14 bg-accent-500 hover:bg-accent-600 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110"
       >
         {open ? (

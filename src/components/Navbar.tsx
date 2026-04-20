@@ -1,45 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const mainNavLinks = [{ label: "Нүүр", href: "/" }];
-
-/** Shown under “Зар мэдээ” */
-const zarmedeeLinks = [
-  { label: "Захиалга", href: "/order" },
-  { label: "Борлуулалтын зар", href: "/sales" },
-  { label: "Ажлын зар", href: "/jobs" },
-  { label: "Мэдээ мэдээлэл", href: "/team" },
-];
-
-const restNavLinks = [
-  { label: "Бидний тухай", href: "/about" },
-  { label: "Үйл ажиллагаа", href: "/services" },
-  { label: "Хамтран ажиллах", href: "/properties" },
-  { label: "Холбоо барих", href: "/contact" },
-];
-
-function ChevronDown({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      width="14"
-      height="14"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden
-    >
-      <path d="M6 9l6 6 6-6" />
-    </svg>
-  );
-}
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -48,6 +14,23 @@ export default function Navbar() {
   /** Desktop “Зар мэдээ” — CSS-only hover stayed open after client navigation while cursor remained over the bar */
   const [desktopZarmedeeOpen, setDesktopZarmedeeOpen] = useState(false);
   const pathname = usePathname();
+  const { lang, t, toggle } = useLanguage();
+
+  const mainNavLinks = [{ label: t.nav.home, href: "/" }];
+
+  const zarmedeeLinks = [
+    { label: t.nav.order, href: "/order" },
+    { label: t.nav.sales, href: "/sales" },
+    { label: t.nav.jobs, href: "/jobs" },
+    { label: t.nav.team, href: "/team" },
+  ];
+
+  const restNavLinks = [
+    { label: t.nav.about, href: "/about" },
+    { label: t.nav.services, href: "/services" },
+    { label: t.nav.properties, href: "/properties" },
+    { label: t.nav.contact, href: "/contact" },
+  ];
 
   const isZarmedeeActive = zarmedeeLinks.some((l) => l.href === pathname);
 
@@ -139,7 +122,7 @@ export default function Navbar() {
               aria-haspopup="menu"
               aria-expanded={desktopZarmedeeOpen}
             >
-              Зар мэдээ
+              {t.nav.newsAds}
               <ChevronDown
                 className={`opacity-80 transition-transform ${desktopZarmedeeOpen ? "translate-y-px" : ""}`}
               />
@@ -151,7 +134,7 @@ export default function Navbar() {
                   : "pointer-events-none invisible opacity-0"
               }`}
               role="menu"
-              aria-label="Зар мэдээ"
+              aria-label={t.nav.newsAds}
               aria-hidden={!desktopZarmedeeOpen}
             >
               <div className="rounded-lg border border-brand-700 bg-brand-800/95 py-2 shadow-xl backdrop-blur-sm">
@@ -210,10 +193,22 @@ export default function Navbar() {
             </svg>
             +976 1100-0000
           </a>
+          <button
+            onClick={toggle}
+            className="text-xs xl:text-sm font-bold uppercase tracking-wider text-gray-300 hover:text-white transition-colors"
+          >
+            {lang === "mn" ? "EN" : "MN"}
+          </button>
         </div>
 
         {/* Mobile: phone icon + hamburger — shrink-0 keeps tap targets reachable */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:hidden">
+          <button
+            onClick={toggle}
+            className="flex h-11 w-11 shrink-0 items-center justify-center text-sm font-bold text-gray-300 hover:text-white"
+          >
+            {lang === "mn" ? "EN" : "MN"}
+          </button>
           <a
             href="tel:+97611000000"
             className="flex h-11 w-11 shrink-0 items-center justify-center text-accent-500 touch-manipulation"
@@ -228,7 +223,7 @@ export default function Navbar() {
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-white touch-manipulation [-webkit-tap-highlight-color:transparent]"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
-            aria-label={menuOpen ? "Цэс хаах" : "Цэс нээх"}
+            aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
           >
             <svg
               className="w-6 h-6"
@@ -302,7 +297,7 @@ export default function Navbar() {
                 <span
                   className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isZarmedeeActive ? "bg-accent-500" : "bg-accent-500/50"}`}
                 />
-                Зар мэдээ
+                {t.nav.newsAds}
               </span>
               <ChevronDown
                 className={`shrink-0 transition-transform ${zarmedeeOpen ? "rotate-180" : ""}`}

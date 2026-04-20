@@ -1,4 +1,7 @@
+"use client";
+
 import type { ContactSections } from "@/lib/site-content-types";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const CONTACT_ICONS = [
   (
@@ -50,6 +53,7 @@ const CONTACT_ICONS = [
 ];
 
 export default function Contact({ content }: { content: ContactSections }) {
+  const { lang, t } = useLanguage();
   const { hero, items, agent, formTitle } = content;
 
   return (
@@ -126,53 +130,64 @@ export default function Contact({ content }: { content: ContactSections }) {
             <form className="flex flex-col gap-4 sm:gap-5">
               <div className="grid grid-cols-1 xs:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-brand-900 mb-1.5">Нэр</label>
+                  <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                    {t.contact.labels.firstName}
+                  </label>
                   <input
                     type="text"
-                    placeholder="Бат-Эрдэнэ"
+                    placeholder={t.contact.placeholders.firstName}
                     className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-brand-900 mb-1.5">Овог</label>
+                  <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                    {t.contact.labels.lastName}
+                  </label>
                   <input
                     type="text"
-                    placeholder="Гантулга"
+                    placeholder={t.contact.placeholders.lastName}
                     className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-brand-900 mb-1.5">Имэйл хаяг</label>
+                <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                  {t.contact.labels.email}
+                </label>
                 <input
                   type="email"
-                  placeholder="ta@company.mn"
+                  placeholder={t.contact.placeholders.email}
                   className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-brand-900 mb-1.5">Утасны дугаар</label>
+                <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                  {t.contact.labels.phone}
+                </label>
                 <input
                   type="tel"
-                  placeholder="+976 9000 0000"
+                  placeholder={t.contact.placeholders.phone}
                   className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-brand-900 mb-1.5">Лавлагааны төрөл</label>
+                <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                  {t.contact.labels.inquiryType}
+                </label>
                 <select className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition">
-                  <option value="">Лавлагааны төрөл сонгоно уу…</option>
-                  <option>Оффис түрээс</option>
-                  <option>Барилгын төсөл</option>
-                  <option>Үл хөдлөх худалдан авах</option>
-                  <option>Ерөнхий лавлагаа</option>
+                  <option value="">{t.contact.placeholders.inquiryTypeDefault}</option>
+                  {t.contact.inquiryTypes.map((type: string) => (
+                    <option key={type}>{type}</option>
+                  ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-brand-900 mb-1.5">Мессеж</label>
+                <label className="block text-sm font-medium text-brand-900 mb-1.5">
+                  {t.contact.labels.message}
+                </label>
                 <textarea
                   rows={4}
-                  placeholder="Шаардлагаа бичнэ үү — талбай, байршил, хугацаа…"
+                  placeholder={t.contact.placeholders.message}
                   className="w-full bg-white border border-gray-200 rounded px-4 py-3 text-sm text-brand-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent transition resize-none"
                 />
               </div>
@@ -180,7 +195,7 @@ export default function Contact({ content }: { content: ContactSections }) {
                 type="submit"
                 className="w-full bg-accent-500 hover:bg-accent-600 text-white font-bold py-3 sm:py-3.5 rounded transition-colors text-sm sm:text-base"
               >
-                Лавлагаа илгээх
+                {t.contact.submit}
               </button>
             </form>
           </div>

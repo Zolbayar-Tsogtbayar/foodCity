@@ -5,12 +5,13 @@ import SalesAdsClient, {
 import { getSalesPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
 import { createFastCache } from "@/lib/fastCache";
+import { getLanguageServer } from "@/lib/i18n-server";
 
 const cachedLoadAds = createFastCache(
   "sales-ads",
-  async (): Promise<SalesAdItem[]> => {
+  async (lang: string): Promise<SalesAdItem[]> => {
     const base = getApiBaseUrl();
-    const res = await fetchWithTimeout(`${base}/api/v1/sales-ads`, {
+    const res = await fetchWithTimeout(`${base}/api/v1/sales-ads?lang=${lang}`, {
       next: { revalidate: 1 },
     });
     if (!res.ok) return [];
@@ -20,16 +21,17 @@ const cachedLoadAds = createFastCache(
   1000, // 1 second cache
 );
 
-async function loadAds(): Promise<SalesAdItem[]> {
+async function loadAds(lang: string): Promise<SalesAdItem[]> {
   try {
-    return await cachedLoadAds();
+    return await cachedLoadAds(lang);
   } catch {
     return [];
   }
 }
 
 export default async function SalesPage() {
-  const [ads, header] = await Promise.all([loadAds(), getSalesPageSections()]);
+  const lang = await getLanguageServer();
+  const [ads, header] = await Promise.all([loadAds(lang), getSalesPageSections(lang)]);
 
   return (
     <section className="border-b border-gray-100 bg-gradient-to-b from-brand-900/[0.03] to-white pb-16 pt-24 sm:pt-28">

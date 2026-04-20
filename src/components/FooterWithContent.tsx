@@ -1,7 +1,11 @@
 import { getFooterSections } from "@/lib/getSiteContent";
 import Footer from "@/components/Footer";
+import { getLanguageServer } from "@/lib/i18n-server";
+import { translations } from "@/lib/translations";
 
 export default async function FooterWithContent() {
-  const content = await getFooterSections();
-  return <Footer content={content} />;
+  const lang = await getLanguageServer();
+  const content = await getFooterSections(lang);
+  const t = translations[lang];
+  return <Footer content={content} t={t} />;
 }

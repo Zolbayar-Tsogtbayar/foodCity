@@ -2,22 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { resolveMediaUrl } from "@/lib/media";
 import type { FooterSections } from "@/lib/site-content-types";
+import { Translations, translations } from "@/lib/translations";
 
-const footerLinks = {
-  Компани: ["Бидний тухай", "Манай төслүүд", "Ажлын байр", "Мэдээ & Хэвлэл"],
-  Үйлчилгээ: [
-    "Арилжааны барилга",
-    "Оффис түрээс",
-    "Интерьер тохижилт",
-    "Ухаалаг барилга",
-  ],
-  "Үл хөдлөх": ["Түрээс", "Худалдаа", "Хамтын ажлын байр", "Хөрөнгө оруулалт"],
-  "Хууль эрх зүй": [
-    "Нууцлалын бодлого",
-    "Үйлчилгээний нөхцөл",
-    "Күүкийн бодлого",
-  ],
-};
 
 const socials = [
   {
@@ -49,7 +35,13 @@ const socials = [
   },
 ];
 
-export default function Footer({ content }: { content: FooterSections }) {
+export default function Footer({ 
+  content, 
+  t 
+}: { 
+  content: FooterSections; 
+  t: Translations;
+}) {
   const { partnersLabel, items: partners } = content.partners;
   const marqueePartners = [...partners, ...partners];
   const year = new Date().getFullYear();
@@ -107,7 +99,7 @@ export default function Footer({ content }: { content: FooterSections }) {
               {content.brand.desc}
             </p>
             <p className="text-gray-500 text-xs leading-relaxed mb-5">
-              &copy; {year} FoodCity ХХК. Бүх эрх хуулиар хамгаалагдсан.
+              &copy; {year} {t.footer.copyrightSuffix}
             </p>
             <div className="flex gap-3">
               {socials.map((s) => (
@@ -127,13 +119,13 @@ export default function Footer({ content }: { content: FooterSections }) {
           </div>
 
           {/* Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
+          {Object.entries(t.footer.links).map(([key, section]) => (
+            <div key={key}>
               <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 mb-4">
-                {category}
+                {section.label}
               </h4>
               <ul className="flex flex-col gap-2.5">
-                {links.map((link) => (
+                {section.items.map((link) => (
                   <li key={link}>
                     <a
                       href="#"

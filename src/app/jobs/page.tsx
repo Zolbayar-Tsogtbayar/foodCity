@@ -3,12 +3,13 @@ import { getJobsPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
 import JobsClient, { type JobItem } from "./JobsClient";
 import { createFastCache } from "@/lib/fastCache";
+import { getLanguageServer } from "@/lib/i18n-server";
 
 const cachedLoadJobs = createFastCache(
   "jobs-data",
-  async (): Promise<JobItem[]> => {
+  async (lang: string): Promise<JobItem[]> => {
     const base = getApiBaseUrl();
-    const res = await fetchWithTimeout(`${base}/api/v1/jobs`, {
+    const res = await fetchWithTimeout(`${base}/api/v1/jobs?lang=${lang}`, {
       next: { revalidate: 1 },
     });
     if (!res.ok) return [];
@@ -18,16 +19,17 @@ const cachedLoadJobs = createFastCache(
   1000, // 1 second cache
 );
 
-async function loadJobs(): Promise<JobItem[]> {
+async function loadJobs(lang: string): Promise<JobItem[]> {
   try {
-    return await cachedLoadJobs();
+    return await cachedLoadJobs(lang);
   } catch {
     return [];
   }
 }
 
 export default async function JobsPage() {
-  const [jobs, header] = await Promise.all([loadJobs(), getJobsPageSections()]);
+  const lang = await getLanguageServer();
+  const [jobs, header] = await Promise.all([loadJobs(lang), getJobsPageSections(lang)]);
 
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-24 sm:pt-28">

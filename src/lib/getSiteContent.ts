@@ -107,7 +107,7 @@ const EMPTY_TEAM_PAGE: TeamPageSections = {
 
 const REVALIDATE_SECONDS = 60;
 
-const fetchSitePageSections = cache(async (pageId: string): Promise<unknown> => {
+const fetchSitePageSections = cache(async (pageId: string, lang: string = "mn"): Promise<unknown> => {
   if (skipFetch()) return {};
 
   const isDev = process.env.NODE_ENV === "development";
@@ -122,7 +122,7 @@ const fetchSitePageSections = cache(async (pageId: string): Promise<unknown> => 
 
   try {
     const res = await fetchWithTimeout(
-      `${getApiBaseForServer()}/api/v1/site-pages/${pageId}`,
+      `${getApiBaseForServer()}/api/v1/site-pages/${pageId}?lang=${lang}`,
       fetchInit,
       SERVER_FETCH_TIMEOUT_MS,
     );
@@ -142,8 +142,8 @@ function asRecord(v: unknown): Record<string, unknown> {
     : {};
 }
 
-export async function getHomeSections(): Promise<HomeSections> {
-  const patch = asRecord(await fetchSitePageSections("home"));
+export async function getHomeSections(lang: string = "mn"): Promise<HomeSections> {
+  const patch = asRecord(await fetchSitePageSections("home", lang));
   const hero = asRecord(patch.hero);
   return {
     hero: {
@@ -155,8 +155,8 @@ export async function getHomeSections(): Promise<HomeSections> {
   };
 }
 
-export async function getAboutSections(): Promise<AboutSections> {
-  const patch = asRecord(await fetchSitePageSections("about"));
+export async function getAboutSections(lang: string = "mn"): Promise<AboutSections> {
+  const patch = asRecord(await fetchSitePageSections("about", lang));
   const main = asRecord(patch.main);
   return {
     main: {
@@ -167,8 +167,8 @@ export async function getAboutSections(): Promise<AboutSections> {
   };
 }
 
-export async function getFooterSections(): Promise<FooterSections> {
-  const patch = asRecord(await fetchSitePageSections("footer"));
+export async function getFooterSections(lang: string = "mn"): Promise<FooterSections> {
+  const patch = asRecord(await fetchSitePageSections("footer", lang));
   const partners = asRecord(patch.partners);
   return {
     partners: {
@@ -180,8 +180,8 @@ export async function getFooterSections(): Promise<FooterSections> {
   };
 }
 
-export async function getContactSections(): Promise<ContactSections> {
-  const patch = asRecord(await fetchSitePageSections("contact"));
+export async function getContactSections(lang: string = "mn"): Promise<ContactSections> {
+  const patch = asRecord(await fetchSitePageSections("contact", lang));
   return {
     hero: { ...EMPTY_CONTACT.hero, ...asRecord(patch.hero) },
     items: Array.isArray(patch.items) ? (patch.items as ContactSections["items"]) : [],
@@ -190,8 +190,8 @@ export async function getContactSections(): Promise<ContactSections> {
   };
 }
 
-export async function getServicesSections(): Promise<ServicesSections> {
-  const patch = asRecord(await fetchSitePageSections("services"));
+export async function getServicesSections(lang: string = "mn"): Promise<ServicesSections> {
+  const patch = asRecord(await fetchSitePageSections("services", lang));
   return {
     header: { ...EMPTY_SERVICES.header, ...asRecord(patch.header) },
     features: Array.isArray(patch.features) ? (patch.features as ServicesSections["features"]) : [],
@@ -199,8 +199,8 @@ export async function getServicesSections(): Promise<ServicesSections> {
   };
 }
 
-export async function getPropertiesPageSections(): Promise<PropertiesPageSections> {
-  const patch = asRecord(await fetchSitePageSections("properties-page"));
+export async function getPropertiesPageSections(lang: string = "mn"): Promise<PropertiesPageSections> {
+  const patch = asRecord(await fetchSitePageSections("properties-page", lang));
   return {
     header: { ...EMPTY_PROPERTIES_PAGE.header, ...asRecord(patch.header) },
     categories: Array.isArray(patch.categories) ? (patch.categories as string[]) : [],
@@ -209,22 +209,22 @@ export async function getPropertiesPageSections(): Promise<PropertiesPageSection
   };
 }
 
-export async function getSalesPageSections(): Promise<SalesPageSections> {
-  const patch = asRecord(await fetchSitePageSections("sales-page"));
+export async function getSalesPageSections(lang: string = "mn"): Promise<SalesPageSections> {
+  const patch = asRecord(await fetchSitePageSections("sales-page", lang));
   return {
     header: { ...EMPTY_SALES_PAGE.header, ...asRecord(patch.header) },
   };
 }
 
-export async function getJobsPageSections(): Promise<JobsPageSections> {
-  const patch = asRecord(await fetchSitePageSections("jobs-page"));
+export async function getJobsPageSections(lang: string = "mn"): Promise<JobsPageSections> {
+  const patch = asRecord(await fetchSitePageSections("jobs-page", lang));
   return {
     header: { ...EMPTY_JOBS_PAGE.header, ...asRecord(patch.header) },
   };
 }
 
-export async function getTeamPageSections(): Promise<TeamPageSections> {
-  const patch = asRecord(await fetchSitePageSections("team"));
+export async function getTeamPageSections(lang: string = "mn"): Promise<TeamPageSections> {
+  const patch = asRecord(await fetchSitePageSections("team", lang));
   return {
     header: { ...EMPTY_TEAM_PAGE.header, ...asRecord(patch.header) },
     members: Array.isArray(patch.members) ? (patch.members as TeamPageSections["members"]) : [],

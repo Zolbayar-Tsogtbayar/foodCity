@@ -4,16 +4,25 @@ import SalesAdsClient, {
 } from "@/components/sales/SalesAdsClient";
 import { getSalesPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
+import { createFastCache } from "@/lib/fastCache";
 
-async function loadAds(): Promise<SalesAdItem[]> {
-  const base = getApiBaseUrl();
-  try {
+const cachedLoadAds = createFastCache(
+  "sales-ads",
+  async (): Promise<SalesAdItem[]> => {
+    const base = getApiBaseUrl();
     const res = await fetchWithTimeout(`${base}/api/v1/sales-ads`, {
-      next: { revalidate: 5 },
+      next: { revalidate: 1 },
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data: SalesAdItem[] };
     return json.data ?? [];
+  },
+  1000, // 1 second cache
+);
+
+async function loadAds(): Promise<SalesAdItem[]> {
+  try {
+    return await cachedLoadAds();
   } catch {
     return [];
   }

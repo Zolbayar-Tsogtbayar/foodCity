@@ -32,9 +32,28 @@ const nextConfig = {
     remotePatterns: [
       { protocol: "http", hostname: "bukhbatllc.mn", pathname: "/upload/**" },
       { protocol: "https", hostname: "bukhbatllc.mn", pathname: "/upload/**" },
-      { protocol: "http", hostname: "localhost", port: "4000", pathname: "/upload/**" },
-      { protocol: "http", hostname: "127.0.0.1", port: "4000", pathname: "/upload/**" },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "4000",
+        pathname: "/upload/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "4000",
+        pathname: "/upload/**",
+      },
     ],
+    formats: ["image/webp", "image/avif"],
+    minimumCacheTTL: 60,
+  },
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ["lucide-react"],
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
   },
 };
 

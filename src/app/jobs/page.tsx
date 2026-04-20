@@ -2,16 +2,25 @@ import { getApiBaseUrl } from "@/lib/api";
 import { getJobsPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
 import JobsClient, { type JobItem } from "./JobsClient";
+import { createFastCache } from "@/lib/fastCache";
 
-async function loadJobs(): Promise<JobItem[]> {
-  const base = getApiBaseUrl();
-  try {
+const cachedLoadJobs = createFastCache(
+  "jobs-data",
+  async (): Promise<JobItem[]> => {
+    const base = getApiBaseUrl();
     const res = await fetchWithTimeout(`${base}/api/v1/jobs`, {
-      next: { revalidate: 5 },
+      next: { revalidate: 1 },
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data: JobItem[] };
     return json.data ?? [];
+  },
+  1000, // 1 second cache
+);
+
+async function loadJobs(): Promise<JobItem[]> {
+  try {
+    return await cachedLoadJobs();
   } catch {
     return [];
   }

@@ -4,13 +4,23 @@ import { useState } from "react";
 import type { PropertiesPageSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
 
-export default function Properties({ content }: { content: PropertiesPageSections }) {
+export default function Properties({
+  content,
+}: {
+  content: PropertiesPageSections;
+}) {
   const categories = content.categories;
   const [active, setActive] = useState("Бүгд");
+  const [page, setPage] = useState(0);
+
   const filtered =
     active === "Бүгд"
       ? content.items
       : content.items.filter((p) => p.category === active);
+
+  const PAGE_SIZE = 9;
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
   return (
     <section id="properties" className="py-16 sm:py-20 lg:py-24 bg-white">
@@ -27,7 +37,9 @@ export default function Properties({ content }: { content: PropertiesPageSection
             style={{ animationDelay: "0.25s" }}
           >
             {content.header.titleLine1}{" "}
-            <span className="text-accent-500">{content.header.titleAccent}</span>
+            <span className="text-accent-500">
+              {content.header.titleAccent}
+            </span>
           </h2>
           <p
             className="hero-reveal text-gray-500 text-base sm:text-lg"
@@ -45,7 +57,10 @@ export default function Properties({ content }: { content: PropertiesPageSection
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setActive(cat)}
+              onClick={() => {
+                setActive(cat);
+                setPage(0);
+              }}
               className={`px-4 sm:px-5 py-2 rounded text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all whitespace-nowrap shrink-0 ${
                 active === cat
                   ? "bg-brand-900 text-white"
@@ -62,7 +77,7 @@ export default function Properties({ content }: { content: PropertiesPageSection
           className="hero-reveal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           style={{ animationDelay: "0.6s" }}
         >
-          {filtered.map((p) => (
+          {paged.map((p) => (
             <div
               key={p.id}
               className="group bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -120,8 +135,12 @@ export default function Properties({ content }: { content: PropertiesPageSection
               </div>
 
               <div className="p-4 sm:p-6">
-                <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1">{p.name}</h3>
-                <p className="text-gray-400 text-sm mb-4 leading-relaxed">{p.description}</p>
+                <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1">
+                  {p.name}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                  {p.description}
+                </p>
 
                 <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border-y border-gray-100">
                   {[
@@ -130,16 +149,24 @@ export default function Properties({ content }: { content: PropertiesPageSection
                     { icon: "⊡", label: p.parking },
                   ].map((spec) => (
                     <div key={spec.label} className="text-center">
-                      <div className="text-accent-500 text-xs mb-0.5">{spec.icon}</div>
-                      <div className="text-gray-600 text-xs font-medium leading-tight">{spec.label}</div>
+                      <div className="text-accent-500 text-xs mb-0.5">
+                        {spec.icon}
+                      </div>
+                      <div className="text-gray-600 text-xs font-medium leading-tight">
+                        {spec.label}
+                      </div>
                     </div>
                   ))}
                 </div>
 
                 <div className="flex items-center justify-between gap-2">
                   <div>
-                    <div className="text-xs text-gray-400 uppercase tracking-wide">Эхлэх үнэ</div>
-                    <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">{p.price}</div>
+                    <div className="text-xs text-gray-400 uppercase tracking-wide">
+                      Эхлэх үнэ
+                    </div>
+                    <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">
+                      {p.price}
+                    </div>
                   </div>
                   <a
                     href="/contact"
@@ -153,6 +180,38 @@ export default function Properties({ content }: { content: PropertiesPageSection
           ))}
         </div>
 
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 mt-10">
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 0}
+              className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              ←
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setPage(i)}
+                className={`w-8 h-8 rounded text-sm font-bold transition-colors ${
+                  i === page
+                    ? "bg-brand-900 text-white"
+                    : "border border-gray-200 text-gray-600 hover:border-gray-400 hover:text-brand-900"
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === totalPages - 1}
+              className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            >
+              →
+            </button>
+          </div>
+        )}
+
         <div className="text-center mt-8 sm:mt-12">
           <a
             href={content.cta.href}
@@ -160,8 +219,18 @@ export default function Properties({ content }: { content: PropertiesPageSection
             style={{ animationDelay: "0.7s" }}
           >
             {content.cta.label}
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2.5}
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
             </svg>
           </a>
         </div>

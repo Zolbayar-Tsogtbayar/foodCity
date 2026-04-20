@@ -2,7 +2,7 @@
  * Bounded wait for upstream APIs during `next build` / SSR when the API is down.
  * Without this, TCP to 127.0.0.1 can stall until the OS timeout (~60s) and fails static generation.
  */
-export const SERVER_FETCH_TIMEOUT_MS = 8_000;
+export const SERVER_FETCH_TIMEOUT_MS = 1_00;
 
 export type NextFetchInit = RequestInit & {
   next?: { revalidate?: number | false; tags?: string[] };

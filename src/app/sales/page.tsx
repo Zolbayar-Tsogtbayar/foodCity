@@ -9,7 +9,7 @@ async function loadAds(): Promise<SalesAdItem[]> {
   const base = getApiBaseUrl();
   try {
     const res = await fetchWithTimeout(`${base}/api/v1/sales-ads`, {
-      next: { revalidate: 30 },
+      next: { revalidate: 5 },
     });
     if (!res.ok) return [];
     const json = (await res.json()) as { data: SalesAdItem[] };

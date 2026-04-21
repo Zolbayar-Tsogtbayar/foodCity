@@ -107,7 +107,7 @@ const EMPTY_TEAM_PAGE: TeamPageSections = {
 
 const REVALIDATE_SECONDS = 60;
 
-const fetchSitePageSections = cache(async (pageId: string, lang: string = "mn"): Promise<unknown> => {
+const fetchSitePageSectionsRaw = cache(async (pageId: string, lang: string = "mn"): Promise<unknown> => {
   if (skipFetch()) return {};
 
   const isDev = process.env.NODE_ENV === "development";
@@ -135,6 +135,23 @@ const fetchSitePageSections = cache(async (pageId: string, lang: string = "mn"):
     return {};
   }
 });
+
+/**
+ * Fetches sections for the given lang. If the result is empty (no MN data yet),
+ * automatically falls back to the other language so pages are never blank.
+ */
+function isEmptySections(v: unknown): boolean {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return true;
+  return Object.keys(v as object).length === 0;
+}
+
+async function fetchSitePageSections(pageId: string, lang: string = "mn"): Promise<unknown> {
+  const primary = await fetchSitePageSectionsRaw(pageId, lang);
+  if (!isEmptySections(primary)) return primary;
+  // Fallback to the other language
+  const fallbackLang = lang === "mn" ? "en" : "mn";
+  return fetchSitePageSectionsRaw(pageId, fallbackLang);
+}
 
 function asRecord(v: unknown): Record<string, unknown> {
   return v && typeof v === "object" && !Array.isArray(v)

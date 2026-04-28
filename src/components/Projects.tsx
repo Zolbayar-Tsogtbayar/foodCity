@@ -1,32 +1,43 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
 
-const SLIDE_SPEED = 400;
+const SPEED = 900;
 
 function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
   const images = project.images.length > 0 ? project.images : [project.coverImage];
   const [current, setCurrent] = useState(0);
-  const [dir, setDir] = useState<"left" | "right" | null>(null);
-  const [animating, setAnimating] = useState(false);
+  const [incoming, setIncoming] = useState<number | null>(null);
+  const [entered, setEntered] = useState(false);
+  // "left" = next (incoming slides in from right), "right" = prev (incoming slides in from left)
+  const [dir, setDir] = useState<"left" | "right">("left");
 
-  const go = useCallback((next: number, direction: "left" | "right") => {
-    if (animating) return;
+  const goTo = (next: number, direction: "left" | "right") => {
+    if (next === current || incoming !== null) return;
     setDir(direction);
-    setAnimating(true);
-    setTimeout(() => {
-      setCurrent(next);
-      setDir(null);
-      setAnimating(false);
-    }, SLIDE_SPEED);
-  }, [animating]);
+    setIncoming(next);
+    setEntered(false);
+    requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
+  };
 
-  const prev = () => go((current - 1 + images.length) % images.length, "right");
-  const next = () => go((current + 1) % images.length, "left");
+  const prev = () => goTo((current - 1 + images.length) % images.length, "right");
+  const next = () => goTo((current + 1) % images.length, "left");
 
+  // After transition: commit incoming as current
+  useEffect(() => {
+    if (!entered || incoming === null) return;
+    const id = setTimeout(() => {
+      setCurrent(incoming);
+      setIncoming(null);
+      setEntered(false);
+    }, SPEED);
+    return () => clearTimeout(id);
+  }, [entered, incoming]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -35,18 +46,15 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [current, animating]);
+  }, [current, incoming]);
 
+  // Lock body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  const slideStyle = dir === "left"
-    ? { transform: "translateX(-100%)", transition: `transform ${SLIDE_SPEED}ms ease` }
-    : dir === "right"
-    ? { transform: "translateX(100%)", transition: `transform ${SLIDE_SPEED}ms ease` }
-    : {};
+  const displayIndex = incoming !== null ? incoming : current;
 
   return (
     <div
@@ -60,16 +68,26 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
+          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* Image area */}
+        {/* Slideshow */}
         <div className="relative aspect-[16/9] overflow-hidden bg-brand-800">
-          <div className="absolute inset-0" style={slideStyle}>
+
+          {/* Current image — slides out */}
+          <div
+            className="absolute inset-0 will-change-transform"
+            style={{
+              transform: entered
+                ? dir === "left" ? "translateX(-100%)" : "translateX(100%)"
+                : "translateX(0)",
+              transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+            }}
+          >
             <Image
               src={resolveMediaUrl(images[current])}
               alt={`${project.name} ${current + 1}`}
@@ -79,19 +97,42 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
             />
           </div>
 
+          {/* Incoming image — slides in */}
+          {incoming !== null && (
+            <div
+              className="absolute inset-0 will-change-transform"
+              style={{
+                transform: entered
+                  ? "translateX(0)"
+                  : dir === "left" ? "translateX(100%)" : "translateX(-100%)",
+                transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+              }}
+            >
+              <Image
+                src={resolveMediaUrl(images[incoming])}
+                alt={`${project.name} ${incoming + 1}`}
+                fill
+                className="object-cover"
+                unoptimized
+              />
+            </div>
+          )}
+
           {images.length > 1 && (
             <>
+              {/* Prev button */}
               <button
                 onClick={prev}
-                className="absolute left-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
+                className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
+              {/* Next button */}
               <button
                 onClick={next}
-                className="absolute right-3 top-1/2 -translate-y-1/2 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -99,25 +140,23 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               </button>
 
               {/* Dots */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
                 {images.map((_, i) => (
                   <button
                     key={i}
-                    onClick={() => go(i, i > current ? "left" : "right")}
+                    onClick={() => goTo(i, i > current ? "left" : "right")}
                     className={`rounded-full transition-all duration-300 ${
-                      i === current ? "w-6 h-2 bg-accent-500" : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                      i === displayIndex ? "w-6 h-2 bg-accent-500" : "w-2 h-2 bg-white/50 hover:bg-white/80"
                     }`}
                   />
                 ))}
               </div>
-            </>
-          )}
 
-          {/* Counter */}
-          {images.length > 1 && (
-            <span className="absolute top-3 left-3 text-xs text-white bg-black/50 rounded px-2 py-1">
-              {current + 1} / {images.length}
-            </span>
+              {/* Counter */}
+              <span className="absolute top-3 left-3 z-10 text-xs text-white bg-black/50 rounded px-2 py-1">
+                {displayIndex + 1} / {images.length}
+              </span>
+            </>
           )}
         </div>
 

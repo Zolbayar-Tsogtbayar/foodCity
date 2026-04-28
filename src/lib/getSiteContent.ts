@@ -219,6 +219,7 @@ export async function getServicesSections(lang: string = "mn"): Promise<Services
     header: { ...EMPTY_SERVICES.header, ...asRecord(patch.header) },
     features: Array.isArray(patch.features) ? (patch.features as ServicesSections["features"]) : [],
     banner: Array.isArray(patch.banner) ? (patch.banner as ServicesSections["banner"]) : [],
+    slides: Array.isArray(patch.slides) ? (patch.slides as string[]) : [],
   };
 }
 

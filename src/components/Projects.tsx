@@ -110,13 +110,13 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-4xl bg-brand-900 rounded-xl overflow-hidden shadow-2xl"
+        className="relative w-full max-w-4xl bg-white rounded overflow-hidden shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
+          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-brand-900 hover:bg-white shadow transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -124,7 +124,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
         </button>
 
         {/* Slideshow */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-brand-800">
+        <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
           {/* Current slide — slides out */}
           <div
             className="absolute inset-0 will-change-transform"
@@ -213,9 +213,9 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               {project.category}
             </span>
           )}
-          <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">{project.name}</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-brand-900 mb-2">{project.name}</h2>
           {project.description && (
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed">{project.description}</p>
+            <p className="text-gray-500 text-sm sm:text-base leading-relaxed">{project.description}</p>
           )}
         </div>
       </div>

@@ -74,6 +74,7 @@ export type ServicesSections = {
   };
   features: { title: string; desc: string }[];
   banner: { value: string; suffix: string; label: string }[];
+  slides: string[];
 };
 
 /** /properties listing page copy (site page id: `properties-page`) */

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
@@ -8,13 +8,60 @@ import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types
 const SPEED = 900;
 const HOLD = 4000;
 
+function isVideo(url: string): boolean {
+  return /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i.test(url);
+}
+
+function MediaSlide({
+  src,
+  alt,
+  active,
+}: {
+  src: string;
+  alt: string;
+  active: boolean;
+}) {
+  const url = resolveMediaUrl(src);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Play/pause video based on whether this slide is active
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (active) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play().catch(() => {});
+    } else {
+      videoRef.current.pause();
+    }
+  }, [active]);
+
+  if (isVideo(url)) {
+    return (
+      <video
+        ref={videoRef}
+        src={url}
+        className="absolute inset-0 w-full h-full object-cover"
+        controls
+        playsInline
+        loop
+      />
+    );
+  }
+
+  return (
+    <Image src={url} alt={alt} fill className="object-cover" unoptimized />
+  );
+}
+
 function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
-  const images = project.images.length > 0 ? project.images : [project.coverImage];
+  const media = project.images.length > 0 ? project.images : [project.coverImage];
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
   const [dir, setDir] = useState<"left" | "right">("left");
   const [paused, setPaused] = useState(false);
+
+  const currentIsVideo = isVideo(resolveMediaUrl(media[current]));
 
   const goTo = (next: number, direction: "left" | "right") => {
     if (next === current || incoming !== null) return;
@@ -24,19 +71,17 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
   };
 
-  const prev = () => goTo((current - 1 + images.length) % images.length, "right");
-  const next = () => goTo((current + 1) % images.length, "left");
+  const prev = () => goTo((current - 1 + media.length) % media.length, "right");
+  const next = () => goTo((current + 1) % media.length, "left");
 
-  // Auto-slide
+  // Auto-slide — pauses when hovered, held, or current item is a video
   useEffect(() => {
-    if (images.length <= 1 || paused) return;
-    const id = setTimeout(() => {
-      goTo((current + 1) % images.length, "left");
-    }, HOLD);
+    if (media.length <= 1 || paused || currentIsVideo || incoming !== null) return;
+    const id = setTimeout(() => goTo((current + 1) % media.length, "left"), HOLD);
     return () => clearTimeout(id);
-  }, [current, paused, incoming]);
+  }, [current, paused, incoming, currentIsVideo]);
 
-  // After transition: commit incoming as current
+  // Commit incoming → current after transition
   useEffect(() => {
     if (!entered || incoming === null) return;
     const id = setTimeout(() => {
@@ -47,7 +92,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     return () => clearTimeout(id);
   }, [entered, incoming]);
 
-  // Keyboard navigation
+  // Keyboard
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -58,7 +103,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     return () => window.removeEventListener("keydown", handler);
   }, [current, incoming]);
 
-  // Lock body scroll
+  // Lock scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
@@ -87,14 +132,13 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
 
         {/* Slideshow */}
         <div
-          className="relative aspect-[16/9] overflow-hidden bg-brand-800 cursor-grab active:cursor-grabbing"
+          className={`relative aspect-[16/9] overflow-hidden bg-brand-800 ${currentIsVideo ? "" : "cursor-grab active:cursor-grabbing"}`}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
           onMouseDown={() => setPaused(true)}
           onMouseUp={() => setPaused(false)}
         >
-
-          {/* Current image — slides out */}
+          {/* Current — slides out */}
           <div
             className="absolute inset-0 will-change-transform"
             style={{
@@ -104,16 +148,14 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
             }}
           >
-            <Image
-              src={resolveMediaUrl(images[current])}
+            <MediaSlide
+              src={media[current]}
               alt={`${project.name} ${current + 1}`}
-              fill
-              className="object-cover"
-              unoptimized
+              active={!entered}
             />
           </div>
 
-          {/* Incoming image — slides in */}
+          {/* Incoming — slides in */}
           {incoming !== null && (
             <div
               className="absolute inset-0 will-change-transform"
@@ -124,19 +166,16 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                 transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
               }}
             >
-              <Image
-                src={resolveMediaUrl(images[incoming])}
+              <MediaSlide
+                src={media[incoming]}
                 alt={`${project.name} ${incoming + 1}`}
-                fill
-                className="object-cover"
-                unoptimized
+                active={entered}
               />
             </div>
           )}
 
-          {images.length > 1 && (
+          {media.length > 1 && (
             <>
-              {/* Prev button */}
               <button
                 onClick={prev}
                 className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
@@ -145,7 +184,6 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
-              {/* Next button */}
               <button
                 onClick={next}
                 className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
@@ -155,23 +193,34 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                 </svg>
               </button>
 
-              {/* Dots */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-                {images.map((_, i) => (
+              {/* Dots — video items show a play icon dot */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+                {media.map((src, i) => (
                   <button
                     key={i}
                     onClick={() => goTo(i, i > current ? "left" : "right")}
-                    className={`rounded-full transition-all duration-300 ${
-                      i === displayIndex ? "w-6 h-2 bg-accent-500" : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                    className={`rounded-full transition-all duration-300 flex items-center justify-center ${
+                      i === displayIndex
+                        ? "w-6 h-2 bg-accent-500"
+                        : "w-2 h-2 bg-white/50 hover:bg-white/80"
                     }`}
                   />
                 ))}
               </div>
 
-              {/* Counter */}
               <span className="absolute top-3 left-3 z-10 text-xs text-white bg-black/50 rounded px-2 py-1">
-                {displayIndex + 1} / {images.length}
+                {displayIndex + 1} / {media.length}
               </span>
+
+              {/* Video badge on current slide */}
+              {currentIsVideo && (
+                <span className="absolute top-3 right-14 z-10 flex items-center gap-1 text-xs text-white bg-black/60 rounded px-2 py-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  Видео
+                </span>
+              )}
             </>
           )}
         </div>
@@ -191,6 +240,17 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
       </div>
     </div>
   );
+}
+
+function mediaBadge(project: ProjectItem): string | null {
+  const all = project.images.length > 0 ? project.images : [];
+  if (all.length === 0) return null;
+  const videos = all.filter((s) => isVideo(s)).length;
+  const imgs = all.length - videos;
+  if (videos > 0 && imgs > 0) return `${imgs} зураг · ${videos} видео`;
+  if (videos > 0) return `${videos} видео`;
+  if (all.length > 1) return `${all.length} зураг`;
+  return null;
 }
 
 export default function Projects({ content }: { content: ProjectsPageSections }) {
@@ -220,49 +280,63 @@ export default function Projects({ content }: { content: ProjectsPageSections })
           <p className="text-gray-400 text-center py-20">Одоогоор төсөл байхгүй байна.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {content.items.map((project) => (
-              <button
-                key={project.id}
-                onClick={() => setSelected(project)}
-                className="group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                  {project.coverImage ? (
-                    <Image
-                      src={resolveMediaUrl(project.coverImage)}
-                      alt={project.name}
-                      fill
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                  )}
-                  {project.images.length > 1 && (
-                    <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5">
-                      {project.images.length} зураг
-                    </span>
-                  )}
-                </div>
-                <div className="p-5">
-                  {project.category && (
-                    <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
-                      {project.category}
-                    </span>
-                  )}
-                  <h3 className="mt-1 text-base font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
-                    {project.name}
-                  </h3>
-                  {project.description && (
-                    <p className="mt-1.5 text-gray-400 text-sm line-clamp-2">{project.description}</p>
-                  )}
-                </div>
-              </button>
-            ))}
+            {content.items.map((project) => {
+              const badge = mediaBadge(project);
+              return (
+                <button
+                  key={project.id}
+                  onClick={() => setSelected(project)}
+                  className="group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                    {project.coverImage ? (
+                      isVideo(resolveMediaUrl(project.coverImage)) ? (
+                        <video
+                          src={resolveMediaUrl(project.coverImage)}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          muted
+                          playsInline
+                          loop
+                          autoPlay
+                        />
+                      ) : (
+                        <Image
+                          src={resolveMediaUrl(project.coverImage)}
+                          alt={project.name}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          unoptimized
+                        />
+                      )
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center text-gray-300">
+                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
+                    {badge && (
+                      <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5">
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                  <div className="p-5">
+                    {project.category && (
+                      <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
+                        {project.category}
+                      </span>
+                    )}
+                    <h3 className="mt-1 text-base font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
+                      {project.name}
+                    </h3>
+                    {project.description && (
+                      <p className="mt-1.5 text-gray-400 text-sm line-clamp-2">{project.description}</p>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>

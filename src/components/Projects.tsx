@@ -6,14 +6,15 @@ import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
 
 const SPEED = 900;
+const HOLD = 4000;
 
 function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
   const images = project.images.length > 0 ? project.images : [project.coverImage];
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
-  // "left" = next (incoming slides in from right), "right" = prev (incoming slides in from left)
   const [dir, setDir] = useState<"left" | "right">("left");
+  const [paused, setPaused] = useState(false);
 
   const goTo = (next: number, direction: "left" | "right") => {
     if (next === current || incoming !== null) return;
@@ -25,6 +26,15 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
 
   const prev = () => goTo((current - 1 + images.length) % images.length, "right");
   const next = () => goTo((current + 1) % images.length, "left");
+
+  // Auto-slide
+  useEffect(() => {
+    if (images.length <= 1 || paused) return;
+    const id = setTimeout(() => {
+      goTo((current + 1) % images.length, "left");
+    }, HOLD);
+    return () => clearTimeout(id);
+  }, [current, paused, incoming]);
 
   // After transition: commit incoming as current
   useEffect(() => {
@@ -76,7 +86,13 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
         </button>
 
         {/* Slideshow */}
-        <div className="relative aspect-[16/9] overflow-hidden bg-brand-800">
+        <div
+          className="relative aspect-[16/9] overflow-hidden bg-brand-800 cursor-grab active:cursor-grabbing"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onMouseDown={() => setPaused(true)}
+          onMouseUp={() => setPaused(false)}
+        >
 
           {/* Current image — slides out */}
           <div

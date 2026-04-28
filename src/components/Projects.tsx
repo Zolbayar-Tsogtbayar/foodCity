@@ -5,63 +5,66 @@ import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
 
-const SPEED = 900;
-const HOLD = 4000;
-
-function isVideo(url: string): boolean {
-  return /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i.test(url);
-}
+const SPEED = 500;
+const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
+function isVideo(src: string) { return VIDEO_EXTS.test(src); }
 
 function MediaSlide({
   src,
   alt,
+  onVideoPlay,
+  onVideoPause,
   active,
 }: {
   src: string;
   alt: string;
+  onVideoPlay?: () => void;
+  onVideoPause?: () => void;
   active: boolean;
 }) {
-  const url = resolveMediaUrl(src);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Play/pause video based on whether this slide is active
   useEffect(() => {
     if (!videoRef.current) return;
     if (active) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play().catch(() => {});
+      void videoRef.current.play().catch(() => undefined);
     } else {
       videoRef.current.pause();
+      videoRef.current.currentTime = 0;
     }
   }, [active]);
 
-  if (isVideo(url)) {
+  if (isVideo(src)) {
     return (
       <video
         ref={videoRef}
-        src={url}
-        className="absolute inset-0 w-full h-full object-cover"
-        controls
+        src={resolveMediaUrl(src)}
+        className="h-full w-full object-cover"
         playsInline
-        loop
+        onPlay={onVideoPlay}
+        onPause={onVideoPause}
+        onEnded={onVideoPause}
       />
     );
   }
-
   return (
-    <Image src={url} alt={alt} fill className="object-cover" unoptimized />
+    <Image
+      src={resolveMediaUrl(src)}
+      alt={alt}
+      fill
+      className="object-cover"
+      unoptimized
+    />
   );
 }
 
 function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void }) {
-  const media = project.images.length > 0 ? project.images : [project.coverImage];
+  const images = project.images.length > 0 ? project.images : [project.coverImage];
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
   const [dir, setDir] = useState<"left" | "right">("left");
-  const [paused, setPaused] = useState(false);
-
-  const currentIsVideo = isVideo(resolveMediaUrl(media[current]));
+  const [videoPlaying, setVideoPlaying] = useState(false);
 
   const goTo = (next: number, direction: "left" | "right") => {
     if (next === current || incoming !== null) return;
@@ -71,17 +74,9 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
   };
 
-  const prev = () => goTo((current - 1 + media.length) % media.length, "right");
-  const next = () => goTo((current + 1) % media.length, "left");
+  const prev = () => goTo((current - 1 + images.length) % images.length, "right");
+  const next = () => goTo((current + 1) % images.length, "left");
 
-  // Auto-slide — pauses when hovered, held, or current item is a video
-  useEffect(() => {
-    if (media.length <= 1 || paused || currentIsVideo || incoming !== null) return;
-    const id = setTimeout(() => goTo((current + 1) % media.length, "left"), HOLD);
-    return () => clearTimeout(id);
-  }, [current, paused, incoming, currentIsVideo]);
-
-  // Commit incoming → current after transition
   useEffect(() => {
     if (!entered || incoming === null) return;
     const id = setTimeout(() => {
@@ -92,18 +87,16 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     return () => clearTimeout(id);
   }, [entered, incoming]);
 
-  // Keyboard
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft" && !videoPlaying) prev();
+      if (e.key === "ArrowRight" && !videoPlaying) next();
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [current, incoming]);
+  }, [current, incoming, videoPlaying]);
 
-  // Lock scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
@@ -131,14 +124,8 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
         </button>
 
         {/* Slideshow */}
-        <div
-          className={`relative aspect-[16/9] overflow-hidden bg-brand-800 ${currentIsVideo ? "" : "cursor-grab active:cursor-grabbing"}`}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
-          onMouseDown={() => setPaused(true)}
-          onMouseUp={() => setPaused(false)}
-        >
-          {/* Current — slides out */}
+        <div className="relative aspect-[16/9] overflow-hidden bg-brand-800">
+          {/* Current slide — slides out */}
           <div
             className="absolute inset-0 will-change-transform"
             style={{
@@ -149,13 +136,15 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
             }}
           >
             <MediaSlide
-              src={media[current]}
+              src={images[current]}
               alt={`${project.name} ${current + 1}`}
-              active={!entered}
+              active={incoming === null}
+              onVideoPlay={() => setVideoPlaying(true)}
+              onVideoPause={() => setVideoPlaying(false)}
             />
           </div>
 
-          {/* Incoming — slides in */}
+          {/* Incoming slide — slides in */}
           {incoming !== null && (
             <div
               className="absolute inset-0 will-change-transform"
@@ -167,14 +156,14 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               }}
             >
               <MediaSlide
-                src={media[incoming]}
+                src={images[incoming]}
                 alt={`${project.name} ${incoming + 1}`}
-                active={entered}
+                active={false}
               />
             </div>
           )}
 
-          {media.length > 1 && (
+          {images.length > 1 && (
             <>
               <button
                 onClick={prev}
@@ -193,34 +182,26 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                 </svg>
               </button>
 
-              {/* Dots — video items show a play icon dot */}
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
-                {media.map((src, i) => (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+                {images.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => goTo(i, i > current ? "left" : "right")}
-                    className={`rounded-full transition-all duration-300 flex items-center justify-center ${
-                      i === displayIndex
-                        ? "w-6 h-2 bg-accent-500"
-                        : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                    className={`rounded-full transition-all duration-300 ${
+                      i === displayIndex ? "w-6 h-2 bg-accent-500" : "w-2 h-2 bg-white/50 hover:bg-white/80"
                     }`}
                   />
                 ))}
               </div>
 
-              <span className="absolute top-3 left-3 z-10 text-xs text-white bg-black/50 rounded px-2 py-1">
-                {displayIndex + 1} / {media.length}
-              </span>
-
-              {/* Video badge on current slide */}
-              {currentIsVideo && (
-                <span className="absolute top-3 right-14 z-10 flex items-center gap-1 text-xs text-white bg-black/60 rounded px-2 py-1">
-                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+              <span className="absolute top-3 left-3 z-10 flex items-center gap-1.5 text-xs text-white bg-black/50 rounded px-2 py-1">
+                {isVideo(images[displayIndex]) && (
+                  <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  Видео
-                </span>
-              )}
+                )}
+                {displayIndex + 1} / {images.length}
+              </span>
             </>
           )}
         </div>
@@ -242,33 +223,25 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
   );
 }
 
-function mediaBadge(project: ProjectItem): string | null {
-  const all = project.images.length > 0 ? project.images : [];
-  if (all.length === 0) return null;
-  const videos = all.filter((s) => isVideo(s)).length;
-  const imgs = all.length - videos;
-  if (videos > 0 && imgs > 0) return `${imgs} зураг · ${videos} видео`;
-  if (videos > 0) return `${videos} видео`;
-  if (all.length > 1) return `${all.length} зураг`;
-  return null;
-}
-
 export default function Projects({ content }: { content: ProjectsPageSections }) {
   const [selected, setSelected] = useState<ProjectItem | null>(null);
 
   return (
-    <main className="min-h-screen bg-brand-50 pt-28 pb-20">
+    <main className="min-h-screen bg-brand-950 pt-28 pb-20">
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
-        <span className="inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
-          {content.header.badge}
-        </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+        <div className="inline-flex items-center gap-2 border border-accent-500/40 bg-accent-500/10 rounded px-3 py-1.5 mb-5">
+          <div className="w-1.5 h-1.5 bg-accent-500 rounded-full shrink-0" />
+          <span className="text-accent-400 text-xs font-semibold uppercase tracking-widest">
+            {content.header.badge}
+          </span>
+        </div>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
           {content.header.titleLine1}{" "}
           <span className="text-accent-500">{content.header.titleAccent}</span>
         </h1>
         {content.header.intro && (
-          <p className="mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-gray-300 text-base sm:text-lg max-w-2xl leading-relaxed">
             {content.header.intro}
           </p>
         )}
@@ -280,63 +253,60 @@ export default function Projects({ content }: { content: ProjectsPageSections })
           <p className="text-gray-400 text-center py-20">Одоогоор төсөл байхгүй байна.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {content.items.map((project) => {
-              const badge = mediaBadge(project);
-              return (
-                <button
-                  key={project.id}
-                  onClick={() => setSelected(project)}
-                  className="group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                    {project.coverImage ? (
-                      isVideo(resolveMediaUrl(project.coverImage)) ? (
-                        <video
-                          src={resolveMediaUrl(project.coverImage)}
-                          className="absolute inset-0 w-full h-full object-cover"
-                          muted
-                          playsInline
-                          loop
-                          autoPlay
-                        />
-                      ) : (
-                        <Image
-                          src={resolveMediaUrl(project.coverImage)}
-                          alt={project.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          unoptimized
-                        />
-                      )
+            {content.items.map((project) => (
+              <button
+                key={project.id}
+                onClick={() => setSelected(project)}
+                className="group text-left rounded-xl overflow-hidden bg-brand-900 border border-brand-700 hover:border-accent-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-accent-500/10"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-brand-800">
+                  {project.coverImage ? (
+                    isVideo(project.coverImage) ? (
+                      <video
+                        src={resolveMediaUrl(project.coverImage)}
+                        muted
+                        loop
+                        autoPlay
+                        playsInline
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                        <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
-                    {badge && (
-                      <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5">
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5">
-                    {project.category && (
-                      <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
-                        {project.category}
-                      </span>
-                    )}
-                    <h3 className="mt-1 text-base font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
-                      {project.name}
-                    </h3>
-                    {project.description && (
-                      <p className="mt-1.5 text-gray-400 text-sm line-clamp-2">{project.description}</p>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
+                      <Image
+                        src={resolveMediaUrl(project.coverImage)}
+                        alt={project.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                      />
+                    )
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center text-brand-700">
+                      <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
+                  {project.images.length > 1 && (
+                    <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5">
+                      {project.images.length} медиа
+                    </span>
+                  )}
+                </div>
+                <div className="p-4">
+                  {project.category && (
+                    <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
+                      {project.category}
+                    </span>
+                  )}
+                  <h3 className="mt-1 text-base font-bold text-white group-hover:text-accent-400 transition-colors">
+                    {project.name}
+                  </h3>
+                  {project.description && (
+                    <p className="mt-1.5 text-gray-400 text-sm line-clamp-2">{project.description}</p>
+                  )}
+                </div>
+              </button>
+            ))}
           </div>
         )}
       </div>

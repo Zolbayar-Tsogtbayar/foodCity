@@ -136,6 +136,7 @@ export const defaultServicesSections: ServicesSections = {
     { value: "1,200+", suffix: "", label: "Байрлуулсан бизнес" },
     { value: "4.8", suffix: "/5", label: "Үйлчлүүлэгчийн үнэлгээ" },
   ],
+  slides: [],
 };
 
 export const defaultPropertiesPageSections: PropertiesPageSections = {

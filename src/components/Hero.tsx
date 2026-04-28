@@ -109,7 +109,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
           </h1>
 
           <p
-            className="hero-reveal text-gray-300 text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl"
+            className="hero-reveal text-white text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl"
             style={{ animationDelay: "0.45s" }}
           >
             {hero.desc}
@@ -140,7 +140,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
             </a>
             <a
               href="/contact"
-              className="inline-flex items-center justify-center gap-2 border border-gray-500 hover:border-accent-500 text-gray-300 hover:text-accent-500 font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
+              className="inline-flex items-center justify-center gap-2 border border-gray-400 hover:border-accent-500 text-white hover:text-accent-500 font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
               {hero.btn2}
             </a>
@@ -157,7 +157,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
                   value={stat.value}
                   className="text-2xl sm:text-3xl font-black text-accent-500"
                 />
-                <div className="text-gray-400 text-xs sm:text-sm mt-1 uppercase tracking-wide">
+                <div className="text-gray-200 text-xs sm:text-sm mt-1 uppercase tracking-wide">
                   {stat.label}
                 </div>
               </div>

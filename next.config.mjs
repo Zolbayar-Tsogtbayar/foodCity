@@ -51,6 +51,9 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  turbopack: {
+    root: import.meta.dirname,
+  },
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

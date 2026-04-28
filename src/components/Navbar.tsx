@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,29 +9,17 @@ import { useLanguage } from "@/contexts/LanguageContext";
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [zarmedeeOpen, setZarmedeeOpen] = useState(false);
-  /** Desktop “Зар мэдээ” — CSS-only hover stayed open after client navigation while cursor remained over the bar */
-  const [desktopZarmedeeOpen, setDesktopZarmedeeOpen] = useState(false);
   const pathname = usePathname();
   const { lang, t, toggle } = useLanguage();
 
-  const mainNavLinks = [{ label: t.nav.home, href: "/" }];
-
-  const zarmedeeLinks = [
-    { label: t.nav.order, href: "/order" },
-    { label: t.nav.sales, href: "/sales" },
-    { label: t.nav.jobs, href: "/jobs" },
-    { label: t.nav.team, href: "/team" },
-  ];
-
-  const restNavLinks = [
+  const navLinks = [
+    { label: t.nav.home, href: "/" },
     { label: t.nav.about, href: "/about" },
     { label: t.nav.services, href: "/services" },
+    { label: t.nav.projects, href: "/projects" },
     { label: t.nav.properties, href: "/properties" },
     { label: t.nav.contact, href: "/contact" },
   ];
-
-  const isZarmedeeActive = zarmedeeLinks.some((l) => l.href === pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -50,17 +37,7 @@ export default function Navbar() {
 
   useEffect(() => {
     setMenuOpen(false);
-    setZarmedeeOpen(false);
-    setDesktopZarmedeeOpen(false);
   }, [pathname]);
-
-  useEffect(() => {
-    if (!menuOpen) setZarmedeeOpen(false);
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (menuOpen && isZarmedeeActive) setZarmedeeOpen(true);
-  }, [menuOpen, isZarmedeeActive]);
 
   return (
     <header
@@ -69,7 +46,7 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-3 min-h-[4.25rem] sm:min-h-[5.25rem] py-2 sm:py-2.5">
-        {/* Logo — min-w-0 so it never squeezes the mobile controls off-screen */}
+        {/* Logo */}
         <Link
           href="/"
           className="flex min-w-0 flex-1 items-center lg:flex-initial lg:shrink-0"
@@ -89,78 +66,7 @@ export default function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden lg:flex items-center gap-5 xl:gap-7">
-          {mainNavLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                  isActive
-                    ? "text-accent-500"
-                    : "text-gray-300 hover:text-accent-500"
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-
-          {/* Controlled dropdown so it closes after navigation (hover-only stayed open with client-side routing) */}
-          <div
-            className="relative"
-            onMouseEnter={() => setDesktopZarmedeeOpen(true)}
-            onMouseLeave={() => setDesktopZarmedeeOpen(false)}
-          >
-            <button
-              type="button"
-              className={`flex items-center gap-1 text-xs xl:text-sm font-medium uppercase tracking-wider transition-colors duration-200 whitespace-nowrap ${
-                isZarmedeeActive || desktopZarmedeeOpen
-                  ? "text-accent-500"
-                  : "text-gray-300 hover:text-accent-500"
-              }`}
-              aria-haspopup="menu"
-              aria-expanded={desktopZarmedeeOpen}
-            >
-              {t.nav.newsAds}
-              <ChevronDown
-                className={`opacity-80 transition-transform ${desktopZarmedeeOpen ? "translate-y-px" : ""}`}
-              />
-            </button>
-            <div
-              className={`absolute left-0 top-full z-[100] -mt-2 min-w-[220px] pt-2 transition-opacity duration-150 ${
-                desktopZarmedeeOpen
-                  ? "pointer-events-auto visible opacity-100"
-                  : "pointer-events-none invisible opacity-0"
-              }`}
-              role="menu"
-              aria-label={t.nav.newsAds}
-              aria-hidden={!desktopZarmedeeOpen}
-            >
-              <div className="rounded-lg border border-brand-700 bg-brand-800/95 py-2 shadow-xl backdrop-blur-sm">
-                {zarmedeeLinks.map((item) => {
-                  const active = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      role="menuitem"
-                      onClick={() => setDesktopZarmedeeOpen(false)}
-                      className={`block px-4 py-2.5 text-sm font-medium tracking-wide transition-colors ${
-                        active
-                          ? "bg-brand-900/80 text-accent-500"
-                          : "text-gray-200 hover:bg-brand-900/60 hover:text-accent-400"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {restNavLinks.map((link) => {
+          {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
@@ -178,7 +84,7 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Phone — desktop only */}
+        {/* Phone + lang toggle — desktop only */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
           <a
             href="tel:+97611000000"
@@ -201,7 +107,7 @@ export default function Navbar() {
           </button>
         </div>
 
-        {/* Mobile: phone icon + hamburger — shrink-0 keeps tap targets reachable */}
+        {/* Mobile controls */}
         <div className="flex shrink-0 items-center gap-2 sm:gap-3 lg:hidden">
           <button
             onClick={toggle}
@@ -251,7 +157,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile / Tablet Menu — closed: pointer-events-none so nothing blocks the bar */}
+      {/* Mobile menu */}
       <div
         className={`lg:hidden transition-all duration-300 ease-in-out ${
           menuOpen
@@ -260,90 +166,16 @@ export default function Navbar() {
         }`}
       >
         <div className="bg-brand-900 border-t border-brand-700 px-4 sm:px-6 pb-4">
-          {mainNavLinks.map((link) => {
+          {navLinks.map((link, i) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => {
-                  setMenuOpen(false);
-                  setZarmedeeOpen(false);
-                }}
-                className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 transition-colors ${
-                  isActive
-                    ? "text-accent-500"
-                    : "text-gray-300 hover:text-accent-500"
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`}
-                />
-                {link.label}
-              </Link>
-            );
-          })}
-
-          <div className="border-b border-brand-800">
-            <button
-              type="button"
-              className={`flex w-full items-center justify-between py-3.5 text-sm font-medium text-left transition-colors ${
-                isZarmedeeActive ? "text-accent-500" : "text-gray-300"
-              }`}
-              onClick={() => setZarmedeeOpen(!zarmedeeOpen)}
-              aria-expanded={zarmedeeOpen}
-            >
-              <span className="flex items-center">
-                <span
-                  className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isZarmedeeActive ? "bg-accent-500" : "bg-accent-500/50"}`}
-                />
-                {t.nav.newsAds}
-              </span>
-              <ChevronDown
-                className={`shrink-0 transition-transform ${zarmedeeOpen ? "rotate-180" : ""}`}
-              />
-            </button>
-            {zarmedeeOpen && (
-              <div className="pb-2 pl-2">
-                {zarmedeeLinks.map((item) => {
-                  const active = pathname === item.href;
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => {
-                        setMenuOpen(false);
-                        setZarmedeeOpen(false);
-                      }}
-                      className={`flex items-center py-2.5 pl-6 text-sm border-l-2 border-brand-700 transition-colors ${
-                        active
-                          ? "border-accent-500 text-accent-500"
-                          : "border-transparent text-gray-400 hover:text-accent-400"
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {restNavLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => {
-                  setMenuOpen(false);
-                  setZarmedeeOpen(false);
-                }}
-                className={`flex items-center py-3.5 text-sm font-medium border-b border-brand-800 last:border-0 transition-colors ${
-                  isActive
-                    ? "text-accent-500"
-                    : "text-gray-300 hover:text-accent-500"
-                }`}
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center py-3.5 text-sm font-medium transition-colors ${
+                  i < navLinks.length - 1 ? "border-b border-brand-800" : ""
+                } ${isActive ? "text-accent-500" : "text-gray-300 hover:text-accent-500"}`}
               >
                 <span
                   className={`w-1.5 h-1.5 rounded-full mr-3 shrink-0 ${isActive ? "bg-accent-500" : "bg-accent-500/50"}`}

@@ -4,6 +4,7 @@ import type {
   FooterSections,
   HomeSections,
   JobsPageSections,
+  ProjectsPageSections,
   PropertiesPageSections,
   SalesPageSections,
   ServicesSections,
@@ -62,7 +63,12 @@ export const defaultFooterSections: FooterSections = {
       { name: "ING Банк", src: "/logos/ing.svg", width: 100, height: 36 },
       { name: "Голомт Банк", src: "/logos/golomt.svg", width: 130, height: 36 },
       { name: "MCS Групп", src: "/logos/mcs.svg", width: 110, height: 36 },
-      { name: "Ньюком Групп", src: "/logos/newcom.png", width: 120, height: 36 },
+      {
+        name: "Ньюком Групп",
+        src: "/logos/newcom.png",
+        width: 120,
+        height: 36,
+      },
       { name: "Хаан Банк", src: "/logos/khanbank.svg", width: 120, height: 36 },
       { name: "АПУ ХК", src: "/logos/apu.svg", width: 90, height: 36 },
     ],
@@ -140,7 +146,13 @@ export const defaultPropertiesPageSections: PropertiesPageSections = {
     intro:
       "Хамтын ажлын байрнаас бүтэн давхар хүртэл — багийнхаа хүсэл эрмэлзэлд тохирсон оффисийг түрээслэх эсвэл худалдаж авах боломжтой.",
   },
-  categories: ["Бүгд", "Түрээс", "Худалдаа", "Оффис Suite", "Хамтын ажлын байр"],
+  categories: [
+    "Бүгд",
+    "Түрээс",
+    "Худалдаа",
+    "Оффис Suite",
+    "Хамтын ажлын байр",
+  ],
   items: [
     {
       id: 1,
@@ -231,6 +243,17 @@ export const defaultPropertiesPageSections: PropertiesPageSections = {
     href: "/contact",
     label: "Бүх үл хөдлөхийг харах",
   },
+};
+
+export const defaultProjectsPageSections: ProjectsPageSections = {
+  header: {
+    badge: "Манай бүтээлүүд",
+    titleLine1: "Компанийн",
+    titleAccent: "Төслүүд",
+    intro:
+      "FoodCity-н хэрэгжүүлсэн төслүүдтэй танилцана уу. Картыг дарж дэлгэрэнгүй зурагнуудыг үзнэ үү.",
+  },
+  items: [],
 };
 
 export const defaultSalesPageSections: SalesPageSections = {

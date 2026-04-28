@@ -104,6 +104,26 @@ export type PropertiesPageSections = {
   };
 };
 
+export type ProjectItem = {
+  id: number;
+  name: string;
+  coverImage: string;
+  images: string[];
+  description: string;
+  category: string;
+};
+
+/** /projects listing page (site page id: `projects-page`) */
+export type ProjectsPageSections = {
+  header: {
+    badge: string;
+    titleLine1: string;
+    titleAccent: string;
+    intro: string;
+  };
+  items: ProjectItem[];
+};
+
 /** /sales marketing header (site page id: `sales-page`) */
 export type SalesPageSections = {
   header: {

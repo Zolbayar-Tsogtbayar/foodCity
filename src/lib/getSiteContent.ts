@@ -5,6 +5,7 @@ import type {
   FooterSections,
   HomeSections,
   JobsPageSections,
+  ProjectsPageSections,
   PropertiesPageSections,
   SalesPageSections,
   ServicesSections,
@@ -93,6 +94,11 @@ const EMPTY_PROPERTIES_PAGE: PropertiesPageSections = {
   items: [],
   cta: { href: "", label: "" },
 };
+const EMPTY_PROJECTS_PAGE: ProjectsPageSections = {
+  header: { badge: "", titleLine1: "", titleAccent: "", intro: "" },
+  items: [],
+};
+
 const EMPTY_SALES_PAGE: SalesPageSections = {
   header: { eyebrow: "", title: "", intro: "" },
 };
@@ -223,6 +229,14 @@ export async function getPropertiesPageSections(lang: string = "mn"): Promise<Pr
     categories: Array.isArray(patch.categories) ? (patch.categories as string[]) : [],
     items: Array.isArray(patch.items) ? (patch.items as PropertiesPageSections["items"]) : [],
     cta: { ...EMPTY_PROPERTIES_PAGE.cta, ...asRecord(patch.cta) },
+  };
+}
+
+export async function getProjectsPageSections(lang: string = "mn"): Promise<ProjectsPageSections> {
+  const patch = asRecord(await fetchSitePageSections("projects-page", lang));
+  return {
+    header: { ...EMPTY_PROJECTS_PAGE.header, ...asRecord(patch.header) },
+    items: Array.isArray(patch.items) ? (patch.items as ProjectsPageSections["items"]) : [],
   };
 }
 

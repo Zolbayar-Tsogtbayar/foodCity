@@ -218,7 +218,14 @@ export async function getServicesSections(lang: string = "mn"): Promise<Services
   const patch = asRecord(await fetchSitePageSections("services", lang));
   return {
     header: { ...EMPTY_SERVICES.header, ...asRecord(patch.header) },
-    features: Array.isArray(patch.features) ? (patch.features as ServicesSections["features"]) : [],
+    features: Array.isArray(patch.features)
+      ? (patch.features as Record<string, unknown>[]).map((f) => ({
+          title: typeof f.title === "string" ? f.title : "",
+          desc: typeof f.desc === "string" ? f.desc : "",
+          image: typeof f.image === "string" ? f.image : "",
+          images: Array.isArray(f.images) ? (f.images as string[]) : [],
+        }))
+      : [],
     banner: Array.isArray(patch.banner) ? (patch.banner as ServicesSections["banner"]) : [],
     slides: Array.isArray(patch.slides) ? (patch.slides as string[]) : [],
   };

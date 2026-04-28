@@ -72,7 +72,7 @@ export type ServicesSections = {
     h2Accent: string;
     intro: string;
   };
-  features: { title: string; desc: string }[];
+  features: { title: string; desc: string; image: string; images: string[] }[];
   banner: { value: string; suffix: string; label: string }[];
   slides: string[];
 };

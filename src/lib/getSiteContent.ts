@@ -87,6 +87,7 @@ const EMPTY_SERVICES: ServicesSections = {
   header: { badge: "", h2Line1: "", h2Accent: "", intro: "" },
   features: [],
   banner: [],
+  slides: [],
 };
 const EMPTY_PROPERTIES_PAGE: PropertiesPageSections = {
   header: { badge: "", titleLine1: "", titleAccent: "", intro: "" },

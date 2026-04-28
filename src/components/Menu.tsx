@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { PropertiesPageSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
+
+const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
+function isVideo(src: string) { return VIDEO_EXTS.test(src); }
 
 export default function Properties({
   content,
@@ -84,12 +87,23 @@ export default function Properties({
             >
               <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
                 {p.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- CMS-uploaded absolute/relative paths
-                  <img
-                    src={resolveMediaUrl(p.image)}
-                    alt={p.name}
-                    className="h-full w-full object-cover"
-                  />
+                  isVideo(p.image) ? (
+                    <video
+                      src={resolveMediaUrl(p.image)}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element -- CMS-uploaded absolute/relative paths
+                    <img
+                      src={resolveMediaUrl(p.image)}
+                      alt={p.name}
+                      className="h-full w-full object-cover"
+                    />
+                  )
                 ) : (
                   <>
                     <div

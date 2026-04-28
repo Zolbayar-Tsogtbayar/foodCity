@@ -9,13 +9,13 @@ export default function About({ main }: { main: AboutSections["main"] }) {
   return (
     <section
       id="about"
-      className="bg-white min-h-[100dvh] flex items-center py-20 sm:py-24 lg:py-28"
+      className="bg-white py-20 sm:py-24 lg:py-28"
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
           {/* Image/Video block */}
           <div
-            className="hero-reveal relative"
+            className="hero-reveal relative lg:sticky lg:top-28"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="relative rounded overflow-hidden aspect-[4/3]">
@@ -62,7 +62,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
           </div>
 
           {/* Copy */}
-          <div className="mt-8 sm:mt-10 lg:mt-0">
+          <div className="flex flex-col">
             <span
               className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
               style={{ animationDelay: "0.2s" }}
@@ -83,6 +83,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
             >
               {main.p1}
             </p>
+            <div className="flex-1" />
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-8 sm:mb-10"
               style={{ animationDelay: "0.6s" }}

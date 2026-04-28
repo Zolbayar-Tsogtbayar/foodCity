@@ -65,6 +65,16 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
   const [entered, setEntered] = useState(false);
   const [dir, setDir] = useState<"left" | "right">("left");
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    requestAnimationFrame(() => setVisible(true));
+  }, []);
+
+  function handleClose() {
+    setVisible(false);
+    setTimeout(onClose, 280);
+  }
 
   const goTo = (next: number, direction: "left" | "right") => {
     if (next === current || incoming !== null) return;
@@ -89,7 +99,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") handleClose();
       if (e.key === "ArrowLeft" && !videoPlaying) prev();
       if (e.key === "ArrowRight" && !videoPlaying) next();
     };
@@ -102,20 +112,26 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     return () => { document.body.style.overflow = ""; };
   }, []);
 
+  useEffect(() => {
+    if (images.length <= 1 || incoming !== null || videoPlaying) return;
+    const id = setTimeout(() => next(), 3000);
+    return () => clearTimeout(id);
+  }, [current, incoming, videoPlaying, images.length]);
+
   const displayIndex = incoming !== null ? incoming : current;
 
   return (
     <div
-      className="fixed inset-0 z-[500] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-      onClick={onClose}
+      className={`fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+      onClick={handleClose}
     >
       <div
-        className="relative w-full max-w-4xl bg-white rounded overflow-hidden shadow-2xl"
+        className={`relative w-full max-w-4xl bg-white rounded overflow-hidden shadow-2xl transition-all duration-300 ${visible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
         <button
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-brand-900 hover:bg-white shadow transition-colors"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

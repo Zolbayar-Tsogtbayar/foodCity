@@ -14,14 +14,15 @@ projects-page
 
 ### `header` — Хуудасны гарчиг
 
-| Талбар | Төрөл | Тайлбар | Жишээ |
-|--------|-------|---------|-------|
-| `badge` | string | Жижиг тэмдэглэгээ | `"Манай бүтээлүүд"` |
-| `titleLine1` | string | Гарчгийн эхний хэсэг | `"Компанийн"` |
-| `titleAccent` | string | Өнгөлөг хэсэг (ногоон өнгөтэй) | `"Төслүүд"` |
-| `intro` | string | Танилцуулга текст | `"FoodCity-н хэрэгжүүлсэн..."` |
+| Талбар        | Төрөл  | Тайлбар                        | Жишээ                          |
+| ------------- | ------ | ------------------------------ | ------------------------------ |
+| `badge`       | string | Жижиг тэмдэглэгээ              | `"Манай бүтээлүүд"`            |
+| `titleLine1`  | string | Гарчгийн эхний хэсэг           | `"Компанийн"`                  |
+| `titleAccent` | string | Өнгөлөг хэсэг (ногоон өнгөтэй) | `"Төслүүд"`                    |
+| `intro`       | string | Танилцуулга текст              | `"FoodCity-н хэрэгжүүлсэн..."` |
 
 **JSON жишээ:**
+
 ```json
 {
   "header": {
@@ -39,19 +40,34 @@ projects-page
 
 Төсөл бүр дараах талбаруудтай:
 
-| Талбар | Төрөл | Шаардлага | Тайлбар |
-|--------|-------|-----------|---------|
-| `id` | number | Заавал | Давтагдашгүй дугаар (1, 2, 3…) |
-| `name` | string | Заавал | Төслийн нэр |
-| `coverImage` | string | Заавал | Картанд харагдах үндсэн зураг |
-| `images` | string[] | Заавал | Modal-д харагдах зургуудын жагсаалт |
-| `description` | string | Заавалгүй | Товч тайлбар |
-| `category` | string | Заавалгүй | Ангилал (жишээ: "Барилга", "Оффис") |
+| Талбар        | Төрөл    | Шаардлага | Тайлбар                                   |
+| ------------- | -------- | --------- | ----------------------------------------- |
+| `id`          | number   | Заавал    | Давтагдашгүй дугаар (1, 2, 3…)            |
+| `name`        | string   | Заавал    | Төслийн нэр                               |
+| `coverImage`  | string   | Заавал    | Картанд харагдах үндсэн зураг эсвэл видео |
+| `images`      | string[] | Заавал    | Modal-д харагдах зураг/видео жагсаалт     |
+| `description` | string   | Заавалгүй | Товч тайлбар                              |
+| `category`    | string   | Заавалгүй | Ангилал (жишээ: "Барилга", "Оффис")       |
 
-> **Анхаар:** `coverImage` болон `images` талбарт зургийн URL эсвэл `/upload/...` замыг бичнэ.  
+> **Анхаар:** `coverImage` болон `images` талбарт зургийн URL эсвэл `/upload/...` замыг бичнэ.
 > `images` хоосон массив байвал `coverImage` автоматаар ашиглагдана.
 
-**JSON жишээ:**
+#### Дэмжигдэх файлын төрлүүд
+
+| Төрөл | Өргөтгөл                             |
+| ----- | ------------------------------------ |
+| Зураг | `.jpg` `.jpeg` `.png` `.webp` `.gif` |
+| Видео | `.mp4` `.webm` `.mov` `.ogg` `.avi`  |
+
+> **Видео онцлог:**
+>
+> - Modal-д нээгдэхэд **дуутайгаар** автоматаар тоглодог
+> - Видео тоглож байхад auto-slide **зогсдог** (дараагийн зураг руу шилждэггүй)
+> - `coverImage` нь видео байж болно — картанд **дуугүй, loop** тоглодог
+> - `images` массив дотор **зураг болон видеог хольж** оруулж болно
+
+**JSON жишээ (зураг + видео хольсон):**
+
 ```json
 {
   "items": [
@@ -61,8 +77,8 @@ projects-page
       "coverImage": "/upload/projects/tt-tower-cover.jpg",
       "images": [
         "/upload/projects/tt-tower-1.jpg",
-        "/upload/projects/tt-tower-2.jpg",
-        "/upload/projects/tt-tower-3.jpg"
+        "/upload/projects/tt-tower-video.mp4",
+        "/upload/projects/tt-tower-2.jpg"
       ],
       "description": "Улаанбаатарын төвд баригдсан 12 давхар арилжааны цамхаг.",
       "category": "Арилжааны барилга"
@@ -70,10 +86,10 @@ projects-page
     {
       "id": 2,
       "name": "Инновацийн Парк",
-      "coverImage": "/upload/projects/innovation-park-cover.jpg",
+      "coverImage": "/upload/projects/innovation-park-cover.mp4",
       "images": [
         "/upload/projects/innovation-park-1.jpg",
-        "/upload/projects/innovation-park-2.jpg"
+        "/upload/projects/innovation-park-tour.mp4"
       ],
       "description": "Технологийн компаниудад зориулсан олон зориулалттай цогцолбор.",
       "category": "Оффис цогцолбор"
@@ -101,6 +117,7 @@ projects-page
       "coverImage": "/upload/projects/cover.jpg",
       "images": [
         "/upload/projects/img1.jpg",
+        "/upload/projects/video.mp4",
         "/upload/projects/img2.jpg"
       ],
       "description": "Төслийн тайлбар",
@@ -120,5 +137,5 @@ https://тансайт.mn/projects
 
 ## Хэл (lang)
 
-Admin системд **mn** болон **en** хэлний sections тус тусад нь оруулах боломжтой.  
+Admin системд **mn** болон **en** хэлний sections тус тусад нь оруулах боломжтой.
 `mn` хэл хоосон байвал автоматаар `en` рүү буцна.

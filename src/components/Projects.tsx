@@ -227,21 +227,18 @@ export default function Projects({ content }: { content: ProjectsPageSections })
   const [selected, setSelected] = useState<ProjectItem | null>(null);
 
   return (
-    <main className="min-h-screen bg-brand-950 pt-28 pb-20">
+    <main className="min-h-screen bg-brand-50 pt-28 pb-20">
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-        <div className="inline-flex items-center gap-2 border border-accent-500/40 bg-accent-500/10 rounded px-3 py-1.5 mb-5">
-          <div className="w-1.5 h-1.5 bg-accent-500 rounded-full shrink-0" />
-          <span className="text-accent-400 text-xs font-semibold uppercase tracking-widest">
-            {content.header.badge}
-          </span>
-        </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+        <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+          {content.header.badge}
+        </span>
+        <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight">
           {content.header.titleLine1}{" "}
           <span className="text-accent-500">{content.header.titleAccent}</span>
         </h1>
         {content.header.intro && (
-          <p className="mt-4 text-gray-300 text-base sm:text-lg max-w-2xl leading-relaxed">
+          <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             {content.header.intro}
           </p>
         )}
@@ -252,14 +249,14 @@ export default function Projects({ content }: { content: ProjectsPageSections })
         {content.items.length === 0 ? (
           <p className="text-gray-400 text-center py-20">Одоогоор төсөл байхгүй байна.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {content.items.map((project) => (
               <button
                 key={project.id}
                 onClick={() => setSelected(project)}
-                className="group text-left rounded-xl overflow-hidden bg-brand-900 border border-brand-700 hover:border-accent-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-accent-500/10"
+                className="hero-reveal group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-brand-800">
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   {project.coverImage ? (
                     isVideo(project.coverImage) ? (
                       <video
@@ -280,7 +277,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                       />
                     )
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center text-brand-700">
+                    <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                       <svg className="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -292,17 +289,17 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     </span>
                   )}
                 </div>
-                <div className="p-4">
+                <div className="p-5 sm:p-6">
                   {project.category && (
                     <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
                       {project.category}
                     </span>
                   )}
-                  <h3 className="mt-1 text-base font-bold text-white group-hover:text-accent-400 transition-colors">
+                  <h3 className="mt-1 text-base font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
                     {project.name}
                   </h3>
                   {project.description && (
-                    <p className="mt-1.5 text-gray-400 text-sm line-clamp-2">{project.description}</p>
+                    <p className="mt-1.5 text-gray-400 text-sm leading-relaxed line-clamp-2">{project.description}</p>
                   )}
                 </div>
               </button>

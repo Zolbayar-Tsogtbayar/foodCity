@@ -80,7 +80,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
       </div>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-brand-900/65" />
+      <div className="absolute inset-0 bg-brand-900/20" />
       {/* Accent left strip */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-500 z-10" />
 

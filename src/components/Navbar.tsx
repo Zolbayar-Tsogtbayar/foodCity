@@ -80,7 +80,7 @@ export default function Navbar() {
               alt="Food City"
               width={320}
               height={114}
-              className="h-11 w-auto object-contain object-left sm:h-12 lg:h-14"
+              className="h-12 w-auto object-contain object-left sm:h-14 lg:h-16 brightness-150"
               priority
               unoptimized
             />

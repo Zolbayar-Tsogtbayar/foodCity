@@ -6,20 +6,20 @@ import type { Config } from "tailwindcss";
 //  accent = highlight color (orange)
 // ─────────────────────────────────────────────
 const brand = {
-  50:  "#f8fafc",  // lightest background tint
-  700: "#334155",  // borders, dividers
-  800: "#1e293b",  // secondary dark
-  900: "#0f172a",  // main dark / navbar
-  950: "#020617",  // deepest dark
+  50: "#f8fafc", // lightest background tint
+  700: "#334155", // borders, dividers
+  800: "#1e293b", // secondary dark
+  900: "#0f172a", // main dark / navbar
+  950: "#020617", // deepest dark
 };
 
 const accent = {
-  50:  "#fff7ed",  // very light tint
-  100: "#ffedd5",  // light tint
-  200: "#fed7aa",  // light border
-  400: "#fb923c",  // muted / dots
-  500: "#f97316",  // primary accent
-  600: "#ea580c",  // hover state
+  50: "#f0fdf4", // very light tint
+  100: "#dcfce7", // light tint
+  200: "#bbf7d0", // light border
+  400: "#4ade80", // muted / dots
+  500: "#22c55e", // primary accent
+  600: "#16a34a", // hover state
 };
 
 const config: Config = {

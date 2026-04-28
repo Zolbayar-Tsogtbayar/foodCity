@@ -2,9 +2,9 @@ import type { AboutSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
-  const imageUrl = resolveMediaUrl(
-    main.imageUrl?.trim() || "/images/baclground-image-1.jpg",
-  );
+  const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
+  const imageUrl = resolveMediaUrl(rawUrl);
+  const isVideo = rawUrl.match(/\.(mp4|webm|mov|ogg|avi)$/i);
 
   return (
     <section
@@ -13,16 +13,27 @@ export default function About({ main }: { main: AboutSections["main"] }) {
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Image block */}
+          {/* Image/Video block */}
           <div
             className="hero-reveal relative"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="relative rounded overflow-hidden aspect-[4/3]">
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url("${imageUrl}")` }}
-              />
+              {isVideo ? (
+                <video
+                  src={imageUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url("${imageUrl}")` }}
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-start p-6 sm:p-8">
                 <div
                   className="absolute inset-0 opacity-10"

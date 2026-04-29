@@ -63,7 +63,7 @@ export type ContactSections = {
     telLabel: string;
   };
   formTitle: string;
-  links: { type: string; href: string }[];
+  links: { type: string; href: string; title: string }[];
 };
 
 export type ServicesSections = {

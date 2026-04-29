@@ -216,6 +216,7 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
       ? (patch.links as Record<string, unknown>[]).map((l) => ({
           type: typeof l.type === "string" ? l.type : "",
           href: typeof l.href === "string" ? l.href : "",
+          title: typeof l.title === "string" ? l.title : "",
         }))
       : [],
   };

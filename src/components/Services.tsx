@@ -165,78 +165,86 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
     </>
   );
 
-  return (
-    <div
-      className={`fixed inset-0 z-[500] transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}
-        flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm
-        sm:flex-col sm:items-stretch sm:justify-start sm:p-0 sm:bg-black sm:backdrop-blur-none`}
-      onClick={handleClose}
-    >
-      {/* Close */}
-      <button
-        onClick={handleClose}
-        className="absolute top-3 right-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 sm:top-4 sm:right-4 sm:bg-white/10 sm:hover:bg-white/25 backdrop-blur-sm transition-colors"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
+  const closeBtn = (extraClass = "") => (
+    <button onClick={handleClose}
+      className={`flex h-10 w-10 items-center justify-center rounded-full text-white backdrop-blur-sm transition-colors ${extraClass}`}>
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  );
 
-      {/* ── MOBILE: white card ── */}
+  return (
+    <>
+      {/* ── MOBILE: centered card overlay ── hidden on sm+ ── */}
       <div
-        className={`sm:hidden w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 ${visible ? "scale-100" : "scale-95"}`}
-        onClick={(e) => e.stopPropagation()}
+        className={`fixed inset-0 z-[500] flex items-center justify-center p-4 sm:hidden transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+        onClick={handleClose}
       >
-        {images.length > 0 && (
-          <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
-            {slides}
-            {arrows}
-            {images.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
-                {images.map((_, i) => (
-                  <button key={i} onClick={() => goTo(i, i > current ? "left" : "right")}
-                    className={`rounded-full transition-all duration-300 ${i === displayIndex ? "w-5 h-1.5 bg-accent-500" : "w-1.5 h-1.5 bg-white/60"}`} />
-                ))}
-              </div>
-            )}
+        <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+        <div
+          className={`relative z-10 w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 ${visible ? "scale-100" : "scale-95"}`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="absolute top-2 right-2 z-20">
+            {closeBtn("bg-black/25 hover:bg-black/45")}
           </div>
-        )}
-        <div className="p-4">
-          <h2 className="text-lg font-bold text-brand-900 mb-1">{feature.title}</h2>
-          {feature.desc && <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>}
+          {images.length > 0 && (
+            <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+              {slides}
+              {arrows}
+              {images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+                  {images.map((_, i) => (
+                    <button key={i} onClick={() => goTo(i, i > current ? "left" : "right")}
+                      className={`rounded-full transition-all duration-300 ${i === displayIndex ? "w-5 h-1.5 bg-accent-500" : "w-1.5 h-1.5 bg-white/60"}`} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          <div className="p-4">
+            <h2 className="text-lg font-bold text-brand-900 mb-1">{feature.title}</h2>
+            {feature.desc && <p className="text-gray-500 text-sm leading-relaxed">{feature.desc}</p>}
+          </div>
         </div>
       </div>
 
-      {/* ── DESKTOP: full-screen lightbox ── */}
+      {/* ── DESKTOP: full-screen lightbox ── hidden below sm ── */}
       <div
-        className={`hidden sm:flex flex-col flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}
+        className={`fixed inset-0 z-[500] hidden sm:flex flex-col bg-black transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       >
-        {images.length > 0 ? (
-          <div className="relative flex-1 overflow-hidden">
-            {slides}
-            {arrows}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
-              <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
-                {displayIndex + 1} / {images.length}
-                {isVideo(images[displayIndex]) && (
-                  <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>Video
-                  </span>
-                )}
-              </p>
-              <h2 className="text-3xl font-bold text-white leading-tight">{feature.title}</h2>
-              {feature.desc && <p className="mt-1.5 text-base text-white/65 leading-relaxed line-clamp-2">{feature.desc}</p>}
+        <div className="absolute top-4 right-4 z-30">
+          {closeBtn("bg-white/10 hover:bg-white/25")}
+        </div>
+        <div className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}>
+          {images.length > 0 ? (
+            <>
+              {slides}
+              {arrows}
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
+                <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
+                  {displayIndex + 1} / {images.length}
+                  {isVideo(images[displayIndex]) && (
+                    <span className="flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>Video
+                    </span>
+                  )}
+                </p>
+                <h2 className="text-3xl font-bold text-white leading-tight">{feature.title}</h2>
+                {feature.desc && <p className="mt-1.5 text-base text-white/65 leading-relaxed line-clamp-2">{feature.desc}</p>}
+              </div>
+            </>
+          ) : (
+            <div className="flex h-full items-center justify-center">
+              <div className="text-center p-8">
+                <h2 className="text-3xl font-bold text-white mb-2">{feature.title}</h2>
+                {feature.desc && <p className="text-white/60 text-base">{feature.desc}</p>}
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-1 items-center justify-center">
-            <div className="text-center p-8">
-              <h2 className="text-3xl font-bold text-white mb-2">{feature.title}</h2>
-              {feature.desc && <p className="text-white/60 text-base">{feature.desc}</p>}
-            </div>
-          </div>
-        )}
+          )}
+        </div>
         {images.length > 1 && (
           <div className="shrink-0 bg-black/90 px-5 py-3" onClick={(e) => e.stopPropagation()}>
             <div ref={thumbsRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
@@ -257,7 +265,7 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

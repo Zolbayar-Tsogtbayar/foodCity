@@ -2,27 +2,39 @@ import type { AboutSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
-  const imageUrl = resolveMediaUrl(
-    main.imageUrl?.trim() || "/images/baclground-image-1.jpg",
-  );
+  const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
+  const imageUrl = resolveMediaUrl(rawUrl);
+  const isVideo = rawUrl.match(/\.(mp4|webm|mov|ogg|avi)$/i);
 
   return (
     <section
       id="about"
-      className="bg-white min-h-[100dvh] flex items-center py-20 sm:py-24 lg:py-28"
+      className="bg-white py-20 sm:py-24 lg:py-28"
     >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-          {/* Image block */}
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+          {/* Image/Video block */}
           <div
-            className="hero-reveal relative"
+            className="hero-reveal relative lg:sticky lg:top-28"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="relative rounded overflow-hidden aspect-[4/3]">
-              <div
-                className="absolute inset-0 bg-cover bg-center"
-                style={{ backgroundImage: `url("${imageUrl}")` }}
-              />
+              {isVideo ? (
+                <video
+                  src={imageUrl}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url("${imageUrl}")` }}
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-start p-6 sm:p-8">
                 <div
                   className="absolute inset-0 opacity-10"
@@ -51,7 +63,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
           </div>
 
           {/* Copy */}
-          <div className="mt-8 sm:mt-10 lg:mt-0">
+          <div className="flex flex-col">
             <span
               className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
               style={{ animationDelay: "0.2s" }}
@@ -72,6 +84,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
             >
               {main.p1}
             </p>
+            <div className="flex-1" />
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-8 sm:mb-10"
               style={{ animationDelay: "0.6s" }}

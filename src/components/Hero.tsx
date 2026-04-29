@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CountUp from "@/components/CountUp";
 import { resolveMediaUrl } from "@/lib/media";
 import type { HomeSections } from "@/lib/site-content-types";
+
+const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
+function isVideo(src: string) { return VIDEO_EXTS.test(src); }
 
 export type HeroContent = HomeSections["hero"];
 
@@ -18,6 +21,14 @@ export default function Hero({ hero }: { hero: HeroContent }) {
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (isVideo(slidesRaw[current])) {
+      void videoRef.current.play().catch(() => undefined);
+    }
+  }, [current]);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -45,8 +56,10 @@ export default function Hero({ hero }: { hero: HeroContent }) {
     if (index === current) return;
     setIncoming(index);
     setEntered(false);
-    requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)));
+    requestAnimationFrame(() => requestAnimationFrame(() => setEntered(true)))
   };
+
+  const isVideoSlide = isVideo(slidesRaw[current]);
 
   return (
     <section
@@ -55,27 +68,51 @@ export default function Hero({ hero }: { hero: HeroContent }) {
     >
       {/* Sliding backgrounds */}
       <div className="absolute inset-0">
-        <div
-          className="absolute inset-0 bg-cover bg-center will-change-transform"
-          style={{
-            backgroundImage: `url(${slides[current]})`,
-            transform: entered ? "translateX(-100%)" : "translateX(0)",
-            transition: entered
-              ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)`
-              : "none",
-          }}
-        />
-        {incoming !== null && (
+        {isVideoSlide ? (
+          <video
+            ref={videoRef}
+            src={slides[current]}
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
           <div
             className="absolute inset-0 bg-cover bg-center will-change-transform"
             style={{
-              backgroundImage: `url(${slides[incoming]})`,
-              transform: entered ? "translateX(0)" : "translateX(100%)",
+              backgroundImage: `url(${slides[current]})`,
+              transform: entered ? "translateX(-100%)" : "translateX(0)",
               transition: entered
                 ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)`
                 : "none",
             }}
           />
+        )}
+        {incoming !== null && (
+          isVideo(slidesRaw[incoming]) ? (
+            <video
+              key={incoming}
+              src={slides[incoming]}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center will-change-transform"
+              style={{
+                backgroundImage: `url(${slides[incoming]})`,
+                transform: entered ? "translateX(0)" : "translateX(100%)",
+                transition: entered
+                  ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)`
+                  : "none",
+              }}
+            />
+          )
         )}
       </div>
 

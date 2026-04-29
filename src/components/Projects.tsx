@@ -120,123 +120,141 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
 
   const displayIndex = incoming !== null ? incoming : current;
 
+  const slideNodes = (
+    <>
+      <div className="absolute inset-0 will-change-transform"
+        style={{
+          transform: entered ? (dir === "left" ? "translateX(-100%)" : "translateX(100%)") : "translateX(0)",
+          transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+        }}>
+        <MediaSlide src={images[current]} alt={`${project.name} ${current + 1}`} active={incoming === null}
+          onVideoPlay={() => setVideoPlaying(true)} onVideoPause={() => setVideoPlaying(false)} />
+      </div>
+      {incoming !== null && (
+        <div className="absolute inset-0 will-change-transform"
+          style={{
+            transform: entered ? "translateX(0)" : (dir === "left" ? "translateX(100%)" : "translateX(-100%)"),
+            transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
+          }}>
+          <MediaSlide src={images[incoming]} alt={`${project.name} ${incoming + 1}`} active={false} />
+        </div>
+      )}
+    </>
+  );
+
+  const arrowNodes = images.length > 1 && (
+    <>
+      <button onClick={(e) => { e.stopPropagation(); prev(); }}
+        className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/30 hover:bg-black/50 sm:bg-white/10 sm:hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button onClick={(e) => { e.stopPropagation(); next(); }}
+        className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-black/30 hover:bg-black/50 sm:bg-white/10 sm:hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </>
+  );
+
   return (
     <div
-      className={`fixed inset-0 z-[500] flex flex-col bg-black transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+      className={`fixed inset-0 z-[500] transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}
+        flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm
+        sm:flex-col sm:items-stretch sm:justify-start sm:p-0 sm:bg-black sm:backdrop-blur-none`}
+      onClick={handleClose}
     >
       {/* Close */}
-      <button
-        onClick={handleClose}
-        className="absolute top-4 right-4 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/25 backdrop-blur-sm transition-colors"
-      >
+      <button onClick={handleClose}
+        className="absolute top-3 right-3 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/20 text-white hover:bg-black/40 sm:top-4 sm:right-4 sm:bg-white/10 sm:hover:bg-white/25 backdrop-blur-sm transition-colors">
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
 
-      {/* Main image */}
+      {/* ── MOBILE: white card ── */}
       <div
-        className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}
+        className={`sm:hidden w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 ${visible ? "scale-100" : "scale-95"}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {images.length > 0 && (
+          <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+            {slideNodes}
+            {arrowNodes}
+            {images.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-1.5">
+                {images.map((_, i) => (
+                  <button key={i} onClick={() => goTo(i, i > current ? "left" : "right")}
+                    className={`rounded-full transition-all duration-300 ${i === displayIndex ? "w-5 h-1.5 bg-accent-500" : "w-1.5 h-1.5 bg-white/60"}`} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="p-4">
+          {project.category && (
+            <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">{project.category}</span>
+          )}
+          <h2 className="text-lg font-bold text-brand-900 mt-0.5 mb-1">{project.name}</h2>
+          {project.description && <p className="text-gray-500 text-sm leading-relaxed">{project.description}</p>}
+        </div>
+      </div>
+
+      {/* ── DESKTOP: full-screen lightbox ── */}
+      <div
+        className={`hidden sm:flex flex-col flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}
         onClick={handleClose}
       >
         {images.length > 0 ? (
-          <>
-            <div
-              className="absolute inset-0 will-change-transform"
-              style={{
-                transform: entered ? (dir === "left" ? "translateX(-100%)" : "translateX(100%)") : "translateX(0)",
-                transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
-              }}
-            >
-              <MediaSlide src={images[current]} alt={`${project.name} ${current + 1}`} active={incoming === null}
-                onVideoPlay={() => setVideoPlaying(true)} onVideoPause={() => setVideoPlaying(false)} />
-            </div>
-            {incoming !== null && (
-              <div
-                className="absolute inset-0 will-change-transform"
-                style={{
-                  transform: entered ? "translateX(0)" : (dir === "left" ? "translateX(100%)" : "translateX(-100%)"),
-                  transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
-                }}
-              >
-                <MediaSlide src={images[incoming]} alt={`${project.name} ${incoming + 1}`} active={false} />
-              </div>
-            )}
-
-            {images.length > 1 && (
-              <>
-                <button onClick={(e) => { e.stopPropagation(); prev(); }}
-                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button onClick={(e) => { e.stopPropagation(); next(); }}
-                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </>
-            )}
-
-            {/* Bottom gradient + info */}
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-5 pb-5 pt-20 sm:px-8 sm:pb-6">
+          <div className="relative flex-1 overflow-hidden">
+            {slideNodes}
+            {arrowNodes}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
               <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
                 {project.category && <span className="text-accent-400">{project.category}</span>}
                 {project.category && <span>·</span>}
                 {displayIndex + 1} / {images.length}
                 {isVideo(images[displayIndex]) && (
                   <span className="flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                    Video
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>Video
                   </span>
                 )}
               </p>
-              <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight">{project.name}</h2>
-              {project.description && (
-                <p className="mt-1.5 text-sm sm:text-base text-white/65 leading-relaxed line-clamp-2">{project.description}</p>
-              )}
+              <h2 className="text-3xl font-bold text-white leading-tight">{project.name}</h2>
+              {project.description && <p className="mt-1.5 text-base text-white/65 leading-relaxed line-clamp-2">{project.description}</p>}
             </div>
-          </>
+          </div>
         ) : (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <div className="text-center p-8">
               {project.category && <p className="text-accent-400 text-xs uppercase tracking-widest mb-2">{project.category}</p>}
-              <h2 className="text-2xl font-bold text-white mb-2">{project.name}</h2>
+              <h2 className="text-3xl font-bold text-white mb-2">{project.name}</h2>
               {project.description && <p className="text-white/60 text-base">{project.description}</p>}
             </div>
           </div>
         )}
-      </div>
-
-      {/* Thumbnail strip */}
-      {images.length > 1 && (
-        <div className="shrink-0 bg-black/90 px-3 py-2.5 sm:px-5 sm:py-3" onClick={(e) => e.stopPropagation()}>
-          <div ref={thumbsRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-            {images.map((src, i) => (
-              <button
-                key={i}
-                onClick={() => goTo(i, i > current ? "left" : "right")}
-                className={`relative shrink-0 h-14 w-20 sm:h-16 sm:w-24 rounded-lg overflow-hidden transition-all duration-200 ${
-                  i === displayIndex ? "ring-2 ring-accent-500 opacity-100" : "opacity-35 hover:opacity-65"
-                }`}
-              >
-                {isVideo(src) ? (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                    <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  </div>
-                ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={resolveMediaUrl(src)} alt="" className="absolute inset-0 h-full w-full object-cover" />
-                )}
-              </button>
-            ))}
+        {images.length > 1 && (
+          <div className="shrink-0 bg-black/90 px-5 py-3" onClick={(e) => e.stopPropagation()}>
+            <div ref={thumbsRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+              {images.map((src, i) => (
+                <button key={i} onClick={() => goTo(i, i > current ? "left" : "right")}
+                  className={`relative shrink-0 h-16 w-24 rounded-lg overflow-hidden transition-all duration-200 ${i === displayIndex ? "ring-2 ring-accent-500 opacity-100" : "opacity-35 hover:opacity-65"}`}>
+                  {isVideo(src) ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                      <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    </div>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={resolveMediaUrl(src)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

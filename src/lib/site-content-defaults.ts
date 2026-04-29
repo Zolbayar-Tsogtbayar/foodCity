@@ -102,6 +102,7 @@ export const defaultContactSections: ContactSections = {
     telLabel: "Одоо залгах",
   },
   formTitle: "Лавлагаа илгээх",
+  links: [],
 };
 
 export const defaultServicesSections: ServicesSections = {

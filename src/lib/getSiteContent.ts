@@ -82,6 +82,7 @@ const EMPTY_CONTACT: ContactSections = {
   items: [],
   agent: { initials: "", name: "", role: "", telHref: "", telLabel: "" },
   formTitle: "",
+  links: [],
 };
 const EMPTY_SERVICES: ServicesSections = {
   header: { badge: "", h2Line1: "", h2Accent: "", intro: "" },
@@ -211,6 +212,12 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
     items: Array.isArray(patch.items) ? (patch.items as ContactSections["items"]) : [],
     agent: { ...EMPTY_CONTACT.agent, ...asRecord(patch.agent) },
     formTitle: typeof patch.formTitle === "string" ? patch.formTitle : "",
+    links: Array.isArray(patch.links)
+      ? (patch.links as Record<string, unknown>[]).map((l) => ({
+          type: typeof l.type === "string" ? l.type : "",
+          href: typeof l.href === "string" ? l.href : "",
+        }))
+      : [],
   };
 }
 

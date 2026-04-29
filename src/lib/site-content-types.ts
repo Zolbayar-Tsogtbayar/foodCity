@@ -98,6 +98,7 @@ export type PropertiesPageSections = {
     price: string;
     tag: string;
     description: string;
+    images: string[];
   }[];
   cta: {
     href: string;

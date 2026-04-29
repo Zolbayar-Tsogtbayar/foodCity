@@ -236,7 +236,22 @@ export async function getPropertiesPageSections(lang: string = "mn"): Promise<Pr
   return {
     header: { ...EMPTY_PROPERTIES_PAGE.header, ...asRecord(patch.header) },
     categories: Array.isArray(patch.categories) ? (patch.categories as string[]) : [],
-    items: Array.isArray(patch.items) ? (patch.items as PropertiesPageSections["items"]) : [],
+    items: Array.isArray(patch.items)
+      ? (patch.items as Record<string, unknown>[]).map((item) => ({
+          id: typeof item.id === "number" ? item.id : 0,
+          name: typeof item.name === "string" ? item.name : "",
+          image: typeof item.image === "string" ? item.image : "",
+          category: typeof item.category === "string" ? item.category : "",
+          badge: typeof item.badge === "string" ? item.badge : null,
+          size: typeof item.size === "string" ? item.size : "",
+          floor: typeof item.floor === "string" ? item.floor : "",
+          parking: typeof item.parking === "string" ? item.parking : "",
+          price: typeof item.price === "string" ? item.price : "",
+          tag: typeof item.tag === "string" ? item.tag : "",
+          description: typeof item.description === "string" ? item.description : "",
+          images: Array.isArray(item.images) ? (item.images as string[]) : [],
+        }))
+      : [],
     cta: { ...EMPTY_PROPERTIES_PAGE.cta, ...asRecord(patch.cta) },
   };
 }

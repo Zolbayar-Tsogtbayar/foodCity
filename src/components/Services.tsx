@@ -178,12 +178,12 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
     <>
       {/* ── MOBILE: centered card overlay ── hidden on sm+ ── */}
       <div
-        className={`fixed inset-0 z-[500] flex items-center justify-center p-4 sm:hidden transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
+        className={`fixed inset-0 z-[500] sm:hidden transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       >
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
         <div
-          className={`relative z-10 w-full max-w-lg bg-white rounded-2xl overflow-hidden shadow-2xl transition-transform duration-300 ${visible ? "scale-100" : "scale-95"}`}
+          className={`absolute left-1/2 top-1/2 z-10 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 ${visible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="absolute top-2 right-2 z-20">

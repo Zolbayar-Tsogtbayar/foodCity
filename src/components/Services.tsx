@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ServicesSections } from "@/lib/site-content-types";
@@ -174,7 +175,7 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
     </button>
   );
 
-  return (
+  return createPortal(
     <>
       {/* ── MOBILE: centered card overlay ── hidden on sm+ ── */}
       <div
@@ -265,7 +266,8 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
           </div>
         )}
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 

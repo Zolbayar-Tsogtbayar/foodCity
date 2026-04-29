@@ -68,14 +68,13 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
   const [dir, setDir] = useState<"left" | "right">("left");
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [visible, setVisible] = useState(false);
+  const thumbsRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    requestAnimationFrame(() => setVisible(true));
-  }, []);
+  useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
 
   function handleClose() {
     setVisible(false);
-    setTimeout(onClose, 280);
+    setTimeout(onClose, 300);
   }
 
   const goTo = (next: number, direction: "left" | "right") => {
@@ -91,13 +90,14 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
 
   useEffect(() => {
     if (!entered || incoming === null) return;
-    const id = setTimeout(() => {
-      setCurrent(incoming);
-      setIncoming(null);
-      setEntered(false);
-    }, SPEED);
+    const id = setTimeout(() => { setCurrent(incoming); setIncoming(null); setEntered(false); }, SPEED);
     return () => clearTimeout(id);
   }, [entered, incoming]);
+
+  useEffect(() => {
+    const el = thumbsRef.current?.children[current] as HTMLElement | undefined;
+    el?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, [current]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -124,111 +124,119 @@ function Modal({ feature, onClose }: { feature: Feature; onClose: () => void }) 
 
   return (
     <div
-      className={`fixed inset-0 z-[500] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
-      onClick={handleClose}
+      className={`fixed inset-0 z-[500] flex flex-col bg-black transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
     >
-      <div
-        className={`relative w-full max-w-4xl bg-white rounded overflow-hidden shadow-2xl transition-all duration-300 ${visible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
-        onClick={(e) => e.stopPropagation()}
+      {/* Close */}
+      <button
+        onClick={handleClose}
+        className="absolute top-4 right-4 z-30 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/25 backdrop-blur-sm transition-colors"
       >
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-brand-900 hover:bg-white shadow transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
+      {/* Main image — fills remaining height */}
+      <div
+        className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}
+        onClick={handleClose}
+      >
         {images.length > 0 ? (
-          <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+          <>
             <div
               className="absolute inset-0 will-change-transform"
               style={{
-                transform: entered
-                  ? dir === "left" ? "translateX(-100%)" : "translateX(100%)"
-                  : "translateX(0)",
+                transform: entered ? (dir === "left" ? "translateX(-100%)" : "translateX(100%)") : "translateX(0)",
                 transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
               }}
             >
-              <MediaSlide
-                src={images[current]}
-                alt={`${feature.title} ${current + 1}`}
-                active={incoming === null}
-                onVideoPlay={() => setVideoPlaying(true)}
-                onVideoPause={() => setVideoPlaying(false)}
-              />
+              <MediaSlide src={images[current]} alt={`${feature.title} ${current + 1}`} active={incoming === null}
+                onVideoPlay={() => setVideoPlaying(true)} onVideoPause={() => setVideoPlaying(false)} />
             </div>
-
             {incoming !== null && (
               <div
                 className="absolute inset-0 will-change-transform"
                 style={{
-                  transform: entered
-                    ? "translateX(0)"
-                    : dir === "left" ? "translateX(100%)" : "translateX(-100%)",
+                  transform: entered ? "translateX(0)" : (dir === "left" ? "translateX(100%)" : "translateX(-100%)"),
                   transition: entered ? `transform ${SPEED}ms cubic-bezier(0.77,0,0.18,1)` : "none",
                 }}
               >
-                <MediaSlide
-                  src={images[incoming]}
-                  alt={`${feature.title} ${incoming + 1}`}
-                  active={false}
-                />
+                <MediaSlide src={images[incoming]} alt={`${feature.title} ${incoming + 1}`} active={false} />
               </div>
             )}
 
+            {/* Prev / Next */}
             {images.length > 1 && (
               <>
-                <button
-                  onClick={prev}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
-                >
+                <button onClick={(e) => { e.stopPropagation(); prev(); }}
+                  className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
-                <button
-                  onClick={next}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/80 transition-colors"
-                >
+                <button onClick={(e) => { e.stopPropagation(); next(); }}
+                  className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-10 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
-
-                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 flex gap-2">
-                  {images.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => goTo(i, i > current ? "left" : "right")}
-                      className={`rounded-full transition-all duration-300 ${
-                        i === displayIndex ? "w-6 h-2 bg-accent-500" : "w-2 h-2 bg-white/50 hover:bg-white/80"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <span className="absolute top-3 left-3 z-10 flex items-center gap-1.5 text-xs text-white bg-black/50 rounded px-2 py-1">
-                  {isVideo(images[displayIndex]) && (
-                    <svg className="w-3 h-3 shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                  )}
-                  {displayIndex + 1} / {images.length}
-                </span>
               </>
             )}
-          </div>
-        ) : null}
 
-        <div className="p-5 sm:p-6">
-          <h2 className="text-xl sm:text-2xl font-bold text-brand-900 mb-2">{feature.title}</h2>
-          {feature.desc && (
-            <p className="text-gray-500 text-sm sm:text-base leading-relaxed">{feature.desc}</p>
-          )}
-        </div>
+            {/* Bottom gradient + info */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-5 pb-5 pt-20 sm:px-8 sm:pb-6">
+              <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
+                {displayIndex + 1} / {images.length}
+                {isVideo(images[displayIndex]) && (
+                  <span className="flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                    Video
+                  </span>
+                )}
+              </p>
+              <h2 className="text-xl sm:text-3xl font-bold text-white leading-tight">{feature.title}</h2>
+              {feature.desc && (
+                <p className="mt-1.5 text-sm sm:text-base text-white/65 leading-relaxed line-clamp-2">{feature.desc}</p>
+              )}
+            </div>
+          </>
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <div className="text-center p-8">
+              <h2 className="text-2xl font-bold text-white mb-2">{feature.title}</h2>
+              {feature.desc && <p className="text-white/60 text-base">{feature.desc}</p>}
+            </div>
+          </div>
+        )}
       </div>
+
+      {/* Thumbnail strip */}
+      {images.length > 1 && (
+        <div className="shrink-0 bg-black/90 px-3 py-2.5 sm:px-5 sm:py-3" onClick={(e) => e.stopPropagation()}>
+          <div ref={thumbsRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+            {images.map((src, i) => (
+              <button
+                key={i}
+                onClick={() => goTo(i, i > current ? "left" : "right")}
+                className={`relative shrink-0 h-14 w-20 sm:h-16 sm:w-24 rounded-lg overflow-hidden transition-all duration-200 ${
+                  i === displayIndex ? "ring-2 ring-accent-500 opacity-100" : "opacity-35 hover:opacity-65"
+                }`}
+              >
+                {isVideo(src) ? (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                    <svg className="w-5 h-5 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={resolveMediaUrl(src)} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

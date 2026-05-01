@@ -303,7 +303,7 @@ export default function Services({ content }: { content: ServicesSections }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="flex flex-col gap-6 sm:gap-8">
           {features.map((f, i) => {
             const clickable = hasGallery(f);
             const Tag = clickable ? "button" : "div";
@@ -311,10 +311,10 @@ export default function Services({ content }: { content: ServicesSections }) {
               <Tag
                 key={i}
                 {...(clickable ? { onClick: () => setSelected(f) } : {})}
-                className={`hero-reveal group text-left bg-white border border-gray-100 rounded overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-accent-200 ${clickable ? "cursor-pointer" : ""}`}
+                className={`hero-reveal group text-left bg-white border border-gray-100 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-accent-200 flex flex-col md:flex-row ${clickable ? "cursor-pointer" : ""}`}
                 style={{ animationDelay: `${0.5 + i * 0.1}s` }}
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                <div className="relative w-full md:w-1/3 lg:w-[30%] shrink-0 aspect-[16/9] md:aspect-auto md:min-h-[240px] overflow-hidden bg-gray-100">
                   {f.image ? (
                     isVideo(f.image) ? (
                       <video
@@ -343,16 +343,16 @@ export default function Services({ content }: { content: ServicesSections }) {
                     </div>
                   )}
                   {f.images.length > 1 && (
-                    <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5">
+                    <span className="absolute bottom-2 right-2 text-xs bg-black/60 text-white rounded px-2 py-0.5 z-10">
                       {f.images.length} медиа
                     </span>
                   )}
                 </div>
-                <div className="p-5 sm:p-6">
-                  <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-2 group-hover:text-accent-500 transition-colors">
+                <div className="p-6 sm:p-8 flex flex-col justify-center flex-1">
+                  <h3 className="font-bold text-brand-900 text-xl sm:text-2xl mb-3 group-hover:text-accent-500 transition-colors">
                     {f.title}
                   </h3>
-                  <p className="text-gray-400 text-sm leading-relaxed line-clamp-2">{f.desc}</p>
+                  <p className="text-gray-500 text-base leading-relaxed whitespace-pre-wrap">{f.desc}</p>
                 </div>
               </Tag>
             );

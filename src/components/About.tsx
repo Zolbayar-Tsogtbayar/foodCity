@@ -24,7 +24,6 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                   src={imageUrl}
                   autoPlay
                   loop
-                  muted
                   playsInline
                   preload="auto"
                   className="absolute inset-0 w-full h-full object-cover"

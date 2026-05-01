@@ -5,7 +5,7 @@ export const translations = {
     nav: {
       home: "Нүүр",
       about: "Бидний тухай",
-      services: "ГАЛЛЕРЕЙ",
+      gallery: "ГАЛЛЕРЕЙ",
       properties: "Хамтран ажиллах",
       team: "Мэдээ мэдээлэл",
       contact: "Холбоо барих",
@@ -50,35 +50,7 @@ export const translations = {
         { value: "98%", label: "Үйлчлүүлэгчийн сэтгэл ханамж" },
         { value: "60+", label: "Мэргэжилтэн инженер" },
       ],
-      servicesLabel: "Бидний санал болгох зүйл",
-      servicesH2Line1: "Үндсэн",
-      servicesH2Accent: "Давуу талууд",
-      servicesDesc:
-        "Чанар, хурд, урт хугацааны үнэ цэнийг шаардсан бизнесүүдэд зориулсан иж бүрэн шийдлүүд.",
-      features: [
-        {
-          title: "Арилжааны барилга",
-          desc: "Суурь тавихаас эхлэн ашиглалтад өгөх хүртэлх бүрэн цогц барилгын ажил. Бид хяналт, ил тод байдлыг чухалчилдаг.",
-        },
-        {
-          title: "Уян хатан оффис түрээс",
-          desc: "Богино болон урт хугацааны түрээсийн сонголт. Тохижуулсан эсвэл гол бүтэцтэй хувилбар байдаг.",
-        },
-        {
-          title: "Интерьер дизайн & Тохижилт",
-          desc: "Таны брэндийн онцлогт тохирсон интерьерийн шийдлүүд. Нээлттэй, хаалттай болон хосолсон байршлын загвар.",
-        },
-        {
-          title: "Ухаалаг барилгын систем",
-          desc: "Орчин үеийн ажлын байрны агааржуулалт, гэрэлтүүлэг, нэвтрэлтийн хяналт болон эрчим хүчний менежментийн систем.",
-        },
-      ],
-      counters: [
-        { value: "120К", suffix: " м²", label: "Нийт хөгжүүлсэн талбай" },
-        { value: "85+", suffix: "", label: "Боломжтой оффисийн нэгж" },
-        { value: "1,200+", suffix: "", label: "Байрлуулсан бизнес" },
-        { value: "4.8", suffix: "/5", label: "Үйлчлүүлэгчийн үнэлгээ" },
-      ],
+
     },
     menu: {
       sectionLabel: "Боломжит орон зайнууд",
@@ -368,8 +340,8 @@ export const translations = {
           label: "Компани",
           items: ["Бидний тухай", "Манай төслүүд", "Ажлын байр", "Мэдээ & Хэвлэл"],
         },
-        services: {
-          label: "Үйлчилгээ",
+        gallery: {
+          label: "Галлерей",
           items: [
             "Арилжааны барилга",
             "Оффис түрээс",
@@ -443,7 +415,7 @@ export const translations = {
     nav: {
       home: "Home",
       about: "About Us",
-      services: "GALLERY",
+      gallery: "GALLERY",
       properties: "Collaborate",
       team: "News",
       contact: "Contact",
@@ -488,35 +460,7 @@ export const translations = {
         { value: "98%", label: "Client Satisfaction" },
         { value: "60+", label: "Expert Engineers" },
       ],
-      servicesLabel: "What We Offer",
-      servicesH2Line1: "Core",
-      servicesH2Accent: "Advantages",
-      servicesDesc:
-        "Comprehensive solutions for businesses that demand quality, speed, and long-term value.",
-      features: [
-        {
-          title: "Commercial Construction",
-          desc: "Full-cycle construction from foundation to handover. We prioritize oversight and transparency throughout.",
-        },
-        {
-          title: "Flexible Office Rental",
-          desc: "Short and long-term lease options. Available furnished or shell-and-core to match your needs.",
-        },
-        {
-          title: "Interior Design & Fitout",
-          desc: "Interior solutions tailored to your brand identity. Open-plan, private, or hybrid layout configurations.",
-        },
-        {
-          title: "Smart Building Systems",
-          desc: "Modern workplace HVAC, lighting, access control, and energy management systems throughout.",
-        },
-      ],
-      counters: [
-        { value: "120K", suffix: " m²", label: "Total Developed Area" },
-        { value: "85+", suffix: "", label: "Available Office Units" },
-        { value: "1,200+", suffix: "", label: "Businesses Housed" },
-        { value: "4.8", suffix: "/5", label: "Client Rating" },
-      ],
+
     },
     menu: {
       sectionLabel: "Available Spaces",
@@ -805,8 +749,8 @@ export const translations = {
           label: "Company",
           items: ["About Us", "Our Projects", "Careers", "News & Press"],
         },
-        services: {
-          label: "Services",
+        gallery: {
+          label: "Gallery",
           items: [
             "Commercial Construction",
             "Office Rental",

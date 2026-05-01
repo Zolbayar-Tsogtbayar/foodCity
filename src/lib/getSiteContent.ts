@@ -8,7 +8,7 @@ import type {
   ProjectsPageSections,
   PropertiesPageSections,
   SalesPageSections,
-  ServicesSections,
+  GallerySections,
   TeamPageSections,
 } from "./site-content-types";
 import {
@@ -84,7 +84,7 @@ const EMPTY_CONTACT: ContactSections = {
   formTitle: "",
   links: [],
 };
-const EMPTY_SERVICES: ServicesSections = {
+const EMPTY_SERVICES: GallerySections = {
   header: { badge: "", h2Line1: "", h2Accent: "", intro: "" },
   features: [],
   banner: [],
@@ -222,8 +222,8 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
   };
 }
 
-export async function getServicesSections(lang: string = "mn"): Promise<ServicesSections> {
-  const patch = asRecord(await fetchSitePageSections("services", lang));
+export async function getGallerySections(lang: string = "mn"): Promise<GallerySections> {
+  const patch = asRecord(await fetchSitePageSections("gallery", lang));
   return {
     header: { ...EMPTY_SERVICES.header, ...asRecord(patch.header) },
     features: Array.isArray(patch.features)
@@ -232,10 +232,11 @@ export async function getServicesSections(lang: string = "mn"): Promise<Services
           desc: typeof f.desc === "string" ? f.desc : "",
           image: typeof f.image === "string" ? f.image : "",
           images: Array.isArray(f.images) ? (f.images as string[]) : [],
+          videoUrl: typeof f.videoUrl === "string" ? f.videoUrl : undefined,
           date: typeof f.date === "string" ? f.date : undefined,
         }))
       : [],
-    banner: Array.isArray(patch.banner) ? (patch.banner as ServicesSections["banner"]) : [],
+    banner: Array.isArray(patch.banner) ? (patch.banner as GallerySections["banner"]) : [],
     slides: Array.isArray(patch.slides) ? (patch.slides as string[]) : [],
   };
 }

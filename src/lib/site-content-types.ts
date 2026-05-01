@@ -66,14 +66,14 @@ export type ContactSections = {
   links: { type: string; href: string; title: string }[];
 };
 
-export type ServicesSections = {
+export type GallerySections = {
   header: {
     badge: string;
     h2Line1: string;
     h2Accent: string;
     intro: string;
   };
-  features: { title: string; desc: string; image: string; images: string[]; date?: string }[];
+  features: { title: string; desc: string; image: string; images: string[]; videoUrl?: string; date?: string }[];
   banner: { value: string; suffix: string; label: string }[];
   slides: string[];
 };

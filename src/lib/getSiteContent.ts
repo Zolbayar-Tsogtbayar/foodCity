@@ -232,6 +232,7 @@ export async function getServicesSections(lang: string = "mn"): Promise<Services
           desc: typeof f.desc === "string" ? f.desc : "",
           image: typeof f.image === "string" ? f.image : "",
           images: Array.isArray(f.images) ? (f.images as string[]) : [],
+          date: typeof f.date === "string" ? f.date : undefined,
         }))
       : [],
     banner: Array.isArray(patch.banner) ? (patch.banner as ServicesSections["banner"]) : [],

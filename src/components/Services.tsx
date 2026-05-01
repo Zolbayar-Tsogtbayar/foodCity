@@ -349,6 +349,11 @@ export default function Services({ content }: { content: ServicesSections }) {
                   )}
                 </div>
                 <div className="p-6 sm:p-8 flex flex-col justify-center flex-1">
+                  {f.date && (
+                    <span className="text-accent-500 text-sm font-semibold tracking-wide mb-2 block">
+                      {f.date}
+                    </span>
+                  )}
                   <h3 className="font-bold text-brand-900 text-xl sm:text-2xl mb-3 group-hover:text-accent-500 transition-colors">
                     {f.title}
                   </h3>

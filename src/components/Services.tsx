@@ -303,7 +303,7 @@ export default function Services({ content }: { content: ServicesSections }) {
           </p>
         </div>
 
-        <div className="flex flex-col gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
           {features.map((f, i) => {
             const clickable = hasGallery(f);
             const Tag = clickable ? "button" : "div";
@@ -311,10 +311,10 @@ export default function Services({ content }: { content: ServicesSections }) {
               <Tag
                 key={i}
                 {...(clickable ? { onClick: () => setSelected(f) } : {})}
-                className={`hero-reveal group text-left bg-white border border-gray-100 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-accent-200 flex flex-col md:flex-row ${clickable ? "cursor-pointer" : ""}`}
+                className={`hero-reveal group flex h-full min-h-[320px] w-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40 ${clickable ? "cursor-pointer" : ""}`}
                 style={{ animationDelay: `${0.5 + i * 0.1}s` }}
               >
-                <div className="relative w-full md:w-1/3 lg:w-[30%] shrink-0 aspect-[16/9] md:aspect-auto md:min-h-[240px] overflow-hidden bg-gray-100">
+                <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-xl bg-brand-900/5">
                   {f.image ? (
                     isVideo(f.image) ? (
                       <video
@@ -335,8 +335,8 @@ export default function Services({ content }: { content: ServicesSections }) {
                       />
                     )
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-accent-50 group-hover:bg-accent-100 transition-colors duration-300">
-                      <svg className="w-12 h-12 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900 group-hover:from-brand-700 group-hover:to-brand-800 transition-colors duration-300">
+                      <svg className="h-12 w-12 text-white/25" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                           d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
@@ -348,16 +348,25 @@ export default function Services({ content }: { content: ServicesSections }) {
                     </span>
                   )}
                 </div>
-                <div className="p-6 sm:p-8 flex flex-col justify-center flex-1">
-                  {f.date && (
-                    <span className="text-accent-500 text-sm font-semibold tracking-wide mb-2 block">
-                      {f.date}
-                    </span>
-                  )}
-                  <h3 className="font-bold text-brand-900 text-xl sm:text-2xl mb-3 group-hover:text-accent-500 transition-colors">
+                <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
+                  <h3 className="line-clamp-2 break-words text-lg font-semibold leading-snug text-brand-900 group-hover:text-accent-500 transition-colors">
                     {f.title}
                   </h3>
-                  <p className="text-gray-500 text-base leading-relaxed whitespace-pre-wrap">{f.desc}</p>
+                  <p className="mt-3 line-clamp-3 flex-1 break-words text-sm leading-relaxed text-gray-700 whitespace-pre-wrap">
+                    {f.desc}
+                  </p>
+                  
+                  {clickable && (
+                    <span className="mt-4 flex items-center gap-1.5 text-sm font-medium text-accent-600">
+                      Дэлгэрэнгүй
+                      <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    </span>
+                  )}
+                  {f.date && (
+                    <p className="mt-3 line-clamp-1 text-xs font-medium text-gray-400">
+                      Нийтэлсэн: {f.date}
+                    </p>
+                  )}
                 </div>
               </Tag>
             );

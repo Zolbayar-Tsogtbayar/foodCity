@@ -78,6 +78,18 @@ export type GallerySections = {
   slides: string[];
 };
 
+export type ServicesSections = {
+  header: {
+    badge: string;
+    h2Line1: string;
+    h2Accent: string;
+    intro: string;
+  };
+  features: { title: string; desc: string; image: string; images: string[]; videoUrl?: string; date?: string }[];
+  banner: { value: string; suffix: string; label: string }[];
+  slides: string[];
+};
+
 /** /properties listing page copy (site page id: `properties-page`) */
 export type PropertiesPageSections = {
   header: {

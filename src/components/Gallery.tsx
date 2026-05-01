@@ -248,6 +248,9 @@ function GalleryPost({ item }: { item: GalleryItem }) {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-12 max-w-2xl mx-auto w-full">
       {/* Post Text */}
       <div className="p-5 sm:p-6">
+        {item.date && (
+          <p className="text-sm font-medium text-gray-500 mb-2">{item.date}</p>
+        )}
         <h3 className="text-xl sm:text-2xl font-black text-brand-900 mb-3">{item.title}</h3>
         {item.desc && <p className="text-gray-600 text-base leading-relaxed whitespace-pre-wrap">{item.desc}</p>}
       </div>

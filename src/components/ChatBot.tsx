@@ -267,9 +267,8 @@ export default function ChatBot() {
         body: JSON.stringify({ guestId }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const json = (await res.json()) as { data: { id: string; humanMode: boolean } };
+      const json = (await res.json()) as { data: { id: string } };
       convId = json.data.id;
-      setHumanMode(!!json.data.humanMode);
       localStorage.setItem(CONV_KEY, convId!);
     };
 
@@ -277,14 +276,11 @@ export default function ChatBot() {
       if (!convId) await ensureConv();
       else {
         const check = await fetch(
-          `${base}/api/v1/chat/conversations/${convId}?guestId=${encodeURIComponent(guestId)}`,
+          `${base}/api/v1/chat/conversations/${convId}/messages?guestId=${encodeURIComponent(guestId)}`,
         );
         if (!check.ok) {
           localStorage.removeItem(CONV_KEY);
           await ensureConv();
-        } else {
-          const json = await check.json();
-          setHumanMode(!!json.data?.humanMode);
         }
       }
 
@@ -298,6 +294,12 @@ export default function ChatBot() {
       const list = json.data ?? [];
       seenIds.current = new Set(list.map((m) => m.id));
       setMessages(list);
+
+      // Infer humanMode from history: if the most recent non-user message is from an agent
+      const lastOtherMsg = [...list].reverse().find(m => m.role !== "user");
+      if (lastOtherMsg?.role === "agent") setHumanMode(true);
+      else if (lastOtherMsg?.role === "bot") setHumanMode(false);
+
       setReady(true);
       setError(null);
     } catch (e) {

@@ -497,7 +497,7 @@ export default function Properties({
                       <FormattedText text={p.description} />
                     </p>
 
-                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border border-gray-100 rounded-lg">
+                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border border-gray-200 rounded-lg">
                       {[
                         { icon: "▭", label: p.size },
                         { icon: "≡", label: p.floor },
@@ -514,7 +514,7 @@ export default function Properties({
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
                       <div>
                         <div className="text-xs text-gray-400 uppercase tracking-wide">
                           Эхлэх үнэ

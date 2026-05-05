@@ -297,10 +297,10 @@ export default function Projects({ content }: { content: ProjectsPageSections })
   const [selected, setSelected] = useState<ProjectItem | null>(null);
 
   return (
-    <main className="min-h-screen bg-brand-50 pt-28 pb-20">
+    <main className="min-h-screen bg-brand-50 pt-20 pb-20">
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
-        <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+        <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-2">
           {stripHtmlAndDecode(content.header.badge)}
         </span>
         <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">

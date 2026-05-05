@@ -125,7 +125,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-500 z-10" />
 
       {/* Content */}
-      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 sm:pt-28 sm:pb-24 lg:py-0 lg:min-h-screen lg:flex lg:items-center">
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-20 sm:pt-20 sm:pb-24 lg:py-0 lg:min-h-screen lg:flex lg:items-center">
         <div className="w-full max-w-3xl">
           {/* Badge */}
           <div

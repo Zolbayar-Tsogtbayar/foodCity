@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { ContactSections } from "@/lib/site-content-types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FormattedText from "./FormattedText";
+import ContactForm from "./ContactForm";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 const SOCIAL_META: Record<string, { label: string; bg: string; icon: ReactNode }> = {
@@ -256,8 +257,13 @@ export default function Contact({ content }: { content: ContactSections }) {
               </div>
             )}
 
-
-          </div>
+            {/* Contact Form */}
+            <div className="space-y-3">
+              <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
+                {lang === "mn" ? "Холбоо барих маягт" : "Contact Form"}
+              </div>
+              <ContactForm />
+            </div>
         </div>
       </div>
     </section>

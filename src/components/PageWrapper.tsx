@@ -12,3 +12,4 @@ export default function PageWrapper({ children }: { children: ReactNode }) {
     </div>
   );
 }
+  

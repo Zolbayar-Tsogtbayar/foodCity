@@ -264,6 +264,7 @@ export default function Contact({ content }: { content: ContactSections }) {
               </div>
               <ContactForm />
             </div>
+          </div>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import { resolveMediaUrl } from "@/lib/media";
 import type { HomeSections } from "@/lib/site-content-types";
@@ -156,8 +157,8 @@ export default function Hero({ hero }: { hero: HeroContent }) {
             className="hero-reveal flex flex-col xs:flex-row gap-3 sm:gap-4 mb-12 sm:mb-16 sm:w-1/2"
             style={{ animationDelay: "0.6s" }}
           >
-            <a
-              href="/properties"
+            <Link
+              href={hero.btn1Href || "/projects"}
               className="inline-flex items-center justify-center gap-2 bg-accent-500 hover:bg-accent-600 text-white font-bold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
               {hero.btn1}
@@ -174,13 +175,13 @@ export default function Hero({ hero }: { hero: HeroContent }) {
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 />
               </svg>
-            </a>
-            <a
-              href="/contact"
+            </Link>
+            <Link
+              href={hero.btn2Href || "/contact"}
               className="inline-flex items-center justify-center gap-2 border border-gray-400 hover:border-accent-500 text-white hover:text-accent-500 font-semibold px-6 sm:px-8 py-3.5 sm:py-4 rounded transition-all duration-200 text-sm sm:text-base"
             >
               {hero.btn2}
-            </a>
+            </Link>
           </div>
 
           {/* Stats */}

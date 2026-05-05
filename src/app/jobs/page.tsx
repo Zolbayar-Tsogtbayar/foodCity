@@ -1,9 +1,12 @@
+import { Suspense } from "react";
 import { getApiBaseUrl } from "@/lib/api";
 import { getJobsPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
 import JobsClient, { type JobItem } from "./JobsClient";
 import { createFastCache } from "@/lib/fastCache";
 import { getLanguageServer } from "@/lib/i18n-server";
+
+export const unstable_instant = { prefetch: "static" };
 
 const cachedLoadJobs = createFastCache(
   "jobs-data",
@@ -29,6 +32,14 @@ async function loadJobs(lang: string): Promise<JobItem[]> {
 
 export default async function JobsPage() {
   const lang = await getLanguageServer();
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
+      <JobsContent lang={lang} />
+    </Suspense>
+  );
+}
+
+async function JobsContent({ lang }: { lang: string }) {
   const [jobs, header] = await Promise.all([loadJobs(lang), getJobsPageSections(lang)]);
 
   return (

@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import FooterWithContent from "@/components/FooterWithContent";
 import PageWrapper from "@/components/PageWrapper";
 import ChatBotLoader from "@/components/ChatBotLoader";
+import TopLoader from "@/components/TopLoader";
 
 import { getLanguageServer } from "@/lib/i18n-server";
 
@@ -42,6 +43,7 @@ export default async function RootLayout({
     <html lang={lang} className={`${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
+          <TopLoader />
           <Navbar />
           <PageWrapper>
             <main className="flex-1">{children}</main>

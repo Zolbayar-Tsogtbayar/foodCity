@@ -371,7 +371,7 @@ export const translations = {
         error: "Алдаа",
       },
       common: {
-        loading: "Яриа ачаалж байна...",
+        loading: "Ачаалж байна...",
         placeholder: "Асуулт бичих...",
         send: "Илгээх",
         close: "Хаах",
@@ -780,7 +780,7 @@ export const translations = {
         error: "Error",
       },
       common: {
-        loading: "Loading conversation...",
+        loading: "Loading...",
         placeholder: "Type a message...",
         send: "Send",
         close: "Close",

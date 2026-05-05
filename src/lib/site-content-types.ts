@@ -16,7 +16,9 @@ export type HomeSections = {
     titleLine2: string;
     desc: string;
     btn1: string;
+    btn1Href: string;
     btn2: string;
+    btn2Href: string;
     stats: StatItem[];
     slideLabel: string;
   };

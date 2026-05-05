@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getApiBaseUrl } from "@/lib/api";
 import SalesAdsClient, {
   type SalesAdItem,
@@ -6,6 +7,8 @@ import { getSalesPageSections } from "@/lib/getSiteContent";
 import { fetchWithTimeout } from "@/lib/server-fetch";
 import { createFastCache } from "@/lib/fastCache";
 import { getLanguageServer } from "@/lib/i18n-server";
+
+export const unstable_instant = { prefetch: "static" };
 
 const cachedLoadAds = createFastCache(
   "sales-ads",
@@ -31,6 +34,15 @@ async function loadAds(lang: string): Promise<SalesAdItem[]> {
 
 export default async function SalesPage() {
   const lang = await getLanguageServer();
+  
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
+      <SalesContent lang={lang} />
+    </Suspense>
+  );
+}
+
+async function SalesContent({ lang }: { lang: string }) {
   const [ads, header] = await Promise.all([loadAds(lang), getSalesPageSections(lang)]);
 
   return (

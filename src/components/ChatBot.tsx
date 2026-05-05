@@ -196,7 +196,7 @@ function getLocalBotFallback(
     return t.chatbot.fallbacks.connect;
   }
 
-  return t.chatbot.errors.fallback;
+  return "";
 }
 
 export default function ChatBot() {
@@ -438,11 +438,14 @@ export default function ChatBot() {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
         } else if (!botMsg?.text?.trim() && !humanMode) {
-          next.push({
-            id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-            role: "bot",
-            text: getLocalBotFallback(trimmed, t, lang),
-          });
+          const fallback = getLocalBotFallback(trimmed, t, lang);
+          if (fallback) {
+            next.push({
+              id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+              role: "bot",
+              text: fallback,
+            });
+          }
         }
         return next;
       });

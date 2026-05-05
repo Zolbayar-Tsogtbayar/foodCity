@@ -92,7 +92,7 @@ export const defaultFooterSections: FooterSections = {
       ],
     },
   ],
-  copyright: "FOOD CITY ТӨВ",
+  copyright: "© 2026 FoodCity ХХК. Бүх эрх хуулиар хамгаалагдсан.",
 };
 
 export const defaultContactSections: ContactSections = {

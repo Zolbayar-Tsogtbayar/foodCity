@@ -246,7 +246,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
   }
   
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-12 max-w-2xl mx-auto w-full">
+    <div className="bg-white rounded-xl border-2 border-black shadow-sm overflow-hidden mb-12 max-w-2xl mx-auto w-full">
       {/* Post Text */}
       <div className="p-5 sm:p-6">
         {item.date && (
@@ -289,7 +289,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
           ))}
         </div>
       )}
-      <div className="h-1 bg-accent-500 w-full" />
+
 
       {selected && <Modal item={item} onClose={() => setSelected(false)} />}
     </div>

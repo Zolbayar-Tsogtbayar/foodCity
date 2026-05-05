@@ -303,7 +303,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               {t.sales.close}
             </button>
           </footer>
-          <div className="h-1 bg-accent-500 w-full shrink-0" />
+
         </div>
       </div>,
       document.body,
@@ -315,7 +315,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
         {paged.map((ad) => (
           <article
             key={ad.id}
-            className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
+            className="group flex flex-col overflow-hidden rounded-2xl border-2 border-black bg-white shadow-sm transition-shadow hover:shadow-md"
           >
             <button
               type="button"
@@ -381,7 +381,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   </svg>
                 </span>
               </div>
-              <div className="h-1 bg-accent-500 w-full" />
+
             </button>
           </article>
         ))}

@@ -212,7 +212,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               </p>
             )}
           </div>
-          <div className="h-1 bg-accent-500 w-full" />
+
         </div>
       </div>
 
@@ -319,7 +319,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
               <button
                 key={project.id}
                 onClick={() => setSelected(project)}
-                className="hero-reveal group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="hero-reveal group text-left rounded overflow-hidden bg-white border-2 border-black transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   {project.coverImage ? (
@@ -369,7 +369,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     </p>
                   )}
                 </div>
-                <div className="h-1 bg-accent-500 w-full" />
+
               </button>
             ))}
           </div>

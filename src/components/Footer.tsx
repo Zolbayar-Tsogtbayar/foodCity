@@ -109,7 +109,7 @@ export default function Footer({
               <FormattedText text={content.brand.desc} />
             </p>
             <p className="text-gray-500 text-xs leading-relaxed mb-5">
-              &copy; {year} {content.copyright || t.footer.copyrightSuffix}
+              {content.copyright}
             </p>
             <div className="flex gap-3">
               {(content.socials || []).map((s) => (

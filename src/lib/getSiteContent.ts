@@ -85,7 +85,7 @@ const EMPTY_FOOTER: FooterSections = {
   brand: { desc: "" },
   socials: [],
   sections: [],
-  copyright: "",
+  copyright: "© 2026 FoodCity ХХК. Бүх эрх хуулиар хамгаалагдсан.",
 };
 
 const EMPTY_CONTACT: ContactSections = {

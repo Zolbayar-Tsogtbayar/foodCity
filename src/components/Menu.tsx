@@ -414,7 +414,7 @@ export default function Properties({
                 <Tag
                   key={p.id}
                   {...(clickable ? { onClick: () => setSelected(p) } : {})}
-                  className={`group bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
+                  className={`group bg-white border-2 border-black rounded overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
                 >
                   <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
                     {p.image ? (

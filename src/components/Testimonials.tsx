@@ -43,7 +43,7 @@ export default function Team({ content }: Props) {
           {paged.map((member, i) => (
             <div
               key={`${member.email}-${i}`}
-              className="hero-reveal bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-xl transition-all duration-300"
+              className="hero-reveal bg-white border-2 border-black rounded overflow-hidden hover:shadow-xl transition-all duration-300"
               style={{ animationDelay: `${0.5 + i * 0.1}s` }}
             >
               <div className="relative bg-brand-900 h-24 sm:h-28 flex items-end px-5 sm:px-6 pb-0">

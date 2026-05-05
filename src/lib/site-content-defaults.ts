@@ -59,6 +59,7 @@ export const defaultAboutSections: AboutSections = {
 };
 
 export const defaultFooterSections: FooterSections = {
+  logo: "/fclogo.png",
   partners: {
     partnersLabel: "Салбарын тэргүүлэгч байгууллагуудын итгэлт түнш",
     items: [
@@ -78,6 +79,20 @@ export const defaultFooterSections: FooterSections = {
   brand: {
     desc: "Улаанбаатарын тэргүүлэх барилга угсралт болон арилжааны оффис түрээслүүлэх групп. 2006 оноос ухаалаг орон зай бүтээж байна.",
   },
+  socials: [
+    { label: "Facebook", href: "https://facebook.com", iconType: "facebook" },
+    { label: "Instagram", href: "https://instagram.com", iconType: "instagram" },
+  ],
+  sections: [
+    {
+      label: "Үндсэн",
+      items: [
+        { label: "Бидний тухай", href: "/about" },
+        { label: "Төслүүд", href: "/projects" },
+      ],
+    },
+  ],
+  copyright: "FOOD CITY ТӨВ",
 };
 
 export const defaultContactSections: ContactSections = {

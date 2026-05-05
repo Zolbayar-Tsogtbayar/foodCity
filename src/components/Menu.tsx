@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import type { PropertiesPageSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
 import FormattedText from "./FormattedText";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 const SPEED = 500;
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
@@ -355,10 +356,10 @@ export default function Properties({
             className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
             style={{ animationDelay: "0.1s" }}
           >
-            {content.header.badge}
+            {stripHtmlAndDecode(content.header.badge)}
           </span>
           <h2
-            className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
+            className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4 [&_div]:inline [&_p]:inline"
             style={{ animationDelay: "0.25s" }}
           >
             <FormattedText text={content.header.titleLine1} />{" "}
@@ -366,12 +367,14 @@ export default function Properties({
               <FormattedText text={content.header.titleAccent} />
             </span>
           </h2>
-          <p
-            className="hero-reveal text-gray-500 text-base sm:text-lg"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <FormattedText text={content.header.intro} />
-          </p>
+          {content.header.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
+            <p
+              className="hero-reveal text-gray-500 text-base sm:text-lg"
+              style={{ animationDelay: "0.4s" }}
+            >
+              <FormattedText text={content.header.intro} />
+            </p>
+          )}
         </div>
 
         {/* Filters */}

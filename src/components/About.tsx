@@ -1,6 +1,7 @@
 import type { AboutSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
 import FormattedText from "./FormattedText";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
   const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
@@ -65,17 +66,16 @@ export default function About({ main }: { main: AboutSections["main"] }) {
           {/* Copy */}
           <div className="flex flex-col">
             <span
-              className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
+              className="hero-reveal inline-block text-accent-500 font-semibold text-[10px] sm:text-xs uppercase tracking-[0.2em] mb-4 sm:mb-5"
               style={{ animationDelay: "0.2s" }}
             >
-              {main.sectionLabel}
+              {stripHtmlAndDecode(main.sectionLabel)}
             </span>
             <h2
-              className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight mb-5 sm:mb-6"
+              className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight mb-5 sm:mb-6 [&_div]:inline [&_p]:inline"
               style={{ animationDelay: "0.35s" }}
             >
-              <FormattedText text={main.h2Line1} />
-              <br />
+              <FormattedText text={main.h2Line1} />{" "}
               <span className="text-accent-500">
                 <FormattedText text={main.h2Accent} />
               </span>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { TeamPageSections } from "@/lib/site-content-types";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 type Props = { content: TeamPageSections };
 
@@ -22,7 +23,7 @@ export default function Team({ content }: Props) {
             className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
             style={{ animationDelay: "0.1s" }}
           >
-            {header.eyebrow}
+            {stripHtmlAndDecode(header.eyebrow)}
           </span>
           <h2
             className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"

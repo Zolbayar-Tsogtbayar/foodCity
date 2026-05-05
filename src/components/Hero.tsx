@@ -6,6 +6,7 @@ import CountUp from "@/components/CountUp";
 import { resolveMediaUrl } from "@/lib/media";
 import type { HomeSections } from "@/lib/site-content-types";
 import FormattedText from "@/components/FormattedText";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
 function isVideo(src: string) { return VIDEO_EXTS.test(src); }
@@ -133,7 +134,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
           >
             <div className="w-1.5 h-1.5 bg-accent-500 rounded-full shrink-0" />
             <span className="text-accent-400 text-xs font-semibold uppercase tracking-widest">
-              {hero.badge}
+              {stripHtmlAndDecode(hero.badge)}
             </span>
           </div>
 

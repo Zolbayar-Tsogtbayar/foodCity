@@ -6,6 +6,7 @@ import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
 import FormattedText from "./FormattedText";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 const SPEED = 500;
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
@@ -298,17 +299,17 @@ export default function Projects({ content }: { content: ProjectsPageSections })
   return (
     <main className="min-h-screen bg-brand-50 pt-28 pb-20">
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 text-center">
         <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
-          {content.header.badge}
+          {stripHtmlAndDecode(content.header.badge)}
         </span>
-        <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight">
+        <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">
           <FormattedText text={content.header.titleLine1} />{" "}
           <span className="text-accent-500">
             <FormattedText text={content.header.titleAccent} />
           </span>
         </h1>
-        {content.header.intro && (
+        {content.header.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
           <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
             <FormattedText text={content.header.intro} />
           </p>

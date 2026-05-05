@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { ContactSections } from "@/lib/site-content-types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FormattedText from "./FormattedText";
+import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 const SOCIAL_META: Record<string, { label: string; bg: string; icon: ReactNode }> = {
   facebook: {
@@ -145,7 +146,7 @@ export default function Contact({ content }: { content: ContactSections }) {
             className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
             style={{ animationDelay: "0.1s" }}
           >
-            {hero.badge}
+            {stripHtmlAndDecode(hero.badge)}
           </span>
           <h2
             className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"

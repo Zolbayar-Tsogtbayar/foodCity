@@ -3,7 +3,7 @@ import Projects from "@/components/Projects";
 import { getProjectsPageSections } from "@/lib/getSiteContent";
 import { getLanguageServer } from "@/lib/i18n-server";
 
-export const unstable_instant = { prefetch: "static" };
+
 
 export default function ProjectsPage() {
   return (

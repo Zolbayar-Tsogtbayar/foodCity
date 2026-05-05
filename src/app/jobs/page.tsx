@@ -6,7 +6,7 @@ import JobsClient, { type JobItem } from "./JobsClient";
 import { createFastCache } from "@/lib/fastCache";
 import { getLanguageServer } from "@/lib/i18n-server";
 
-export const unstable_instant = { prefetch: "static" };
+
 
 const cachedLoadJobs = createFastCache(
   "jobs-data",

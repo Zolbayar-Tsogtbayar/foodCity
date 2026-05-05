@@ -7,7 +7,7 @@ import { getLanguageServer } from "@/lib/i18n-server";
  * Validation for instant navigation. 
  * This ensures the page produces a static shell and doesn't block transitions.
  */
-export const unstable_instant = { prefetch: "static" };
+
 
 export default function AboutPage() {
   return (

@@ -8,7 +8,7 @@ import { fetchWithTimeout } from "@/lib/server-fetch";
 import { createFastCache } from "@/lib/fastCache";
 import { getLanguageServer } from "@/lib/i18n-server";
 
-export const unstable_instant = { prefetch: "static" };
+
 
 const cachedLoadAds = createFastCache(
   "sales-ads",

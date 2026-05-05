@@ -3,7 +3,7 @@ import Gallery from "@/components/Gallery";
 import { getGallerySections } from "@/lib/getSiteContent";
 import { getLanguageServer } from "@/lib/i18n-server";
 
-export const unstable_instant = { prefetch: "static" };
+
 
 export default function GalleryPage() {
   return (

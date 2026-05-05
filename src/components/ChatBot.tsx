@@ -427,19 +427,24 @@ export default function ChatBot() {
       });
       if (!res.ok) throw new Error(await res.text());
       const json = (await res.json()) as {
-        data: { userMsg: ChatMessage; botMsg: ChatMessage | null };
+        data: { userMsg: ChatMessage; botMsg: ChatMessage | null; humanMode?: boolean };
       };
-      const { userMsg, botMsg } = json.data;
+      const { userMsg, botMsg, humanMode: nextHumanMode } = json.data;
+      
+      const isActuallyHuman = typeof nextHumanMode === "boolean" ? nextHumanMode : humanMode;
+      if (typeof nextHumanMode === "boolean") setHumanMode(nextHumanMode);
+
       setMessages((prev) => {
         const next = [...prev];
         if (!seenIds.current.has(userMsg.id)) {
           seenIds.current.add(userMsg.id);
           next.push(userMsg);
         }
-        if (botMsg?.text?.trim() && !seenIds.current.has(botMsg.id)) {
+        // If the backend incorrectly sends a botMsg during human mode, we ignore it
+        if (botMsg?.text?.trim() && !seenIds.current.has(botMsg.id) && !isActuallyHuman) {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
-        } else if (!botMsg?.text?.trim() && !humanMode) {
+        } else if (!botMsg?.text?.trim() && !isActuallyHuman) {
           const fallback = getLocalBotFallback(trimmed, t, lang);
           if (fallback) {
             next.push({

@@ -19,11 +19,8 @@ interface FormState {
 
 export default function ContactForm() {
   const { lang } = useLanguage();
-  const [formData, setFormData] = useState<FormData>({
-    name: "",
-    email: "",
+  const [formData, setFormData] = useState<Partial<FormData>>({
     phone: "",
-    subject: "",
     message: "",
   });
   const [state, setState] = useState<FormState>({
@@ -34,10 +31,7 @@ export default function ContactForm() {
 
   const labels = {
     mn: {
-      name: "Таны нэр",
-      email: "Имэйл хаяг",
       phone: "Утасны дугаар",
-      subject: "Сэдэв",
       message: "Мессеж",
       submit: "Илгээх",
       submitting: "Илгээж байна...",
@@ -46,10 +40,7 @@ export default function ContactForm() {
       required: "Заавал бөлөглөх ёстой",
     },
     en: {
-      name: "Your Name",
-      email: "Email Address",
       phone: "Phone Number",
-      subject: "Subject",
       message: "Message",
       submit: "Send",
       submitting: "Sending...",
@@ -90,7 +81,7 @@ export default function ContactForm() {
       }
 
       setState({ isSubmitting: false, isSuccess: true, error: null });
-      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
+      setFormData({ phone: "", message: "" });
 
       // Reset success message after 5 seconds
       setTimeout(() => {
@@ -107,40 +98,6 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Name */}
-      <div>
-        <label htmlFor="name" className="block text-sm font-semibold text-brand-900 mb-2">
-          {t.name}
-        </label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          placeholder={t.name}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
-        />
-      </div>
-
-      {/* Email */}
-      <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-brand-900 mb-2">
-          {t.email}
-        </label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          placeholder={t.email}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
-        />
-      </div>
-
       {/* Phone */}
       <div>
         <label htmlFor="phone" className="block text-sm font-semibold text-brand-900 mb-2">
@@ -154,23 +111,6 @@ export default function ContactForm() {
           onChange={handleChange}
           required
           placeholder={t.phone}
-          className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
-        />
-      </div>
-
-      {/* Subject */}
-      <div>
-        <label htmlFor="subject" className="block text-sm font-semibold text-brand-900 mb-2">
-          {t.subject}
-        </label>
-        <input
-          type="text"
-          id="subject"
-          name="subject"
-          value={formData.subject}
-          onChange={handleChange}
-          required
-          placeholder={t.subject}
           className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
         />
       </div>

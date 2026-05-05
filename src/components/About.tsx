@@ -20,7 +20,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
             className="hero-reveal relative lg:sticky lg:top-28"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="relative rounded overflow-hidden aspect-[4/3]">
+            <div className="relative rounded overflow-hidden aspect-[4/3] mb-8 sm:mb-0">
               {isVideo ? (
                 <video
                   src={imageUrl}
@@ -55,8 +55,14 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                 </div>
               </div>
             </div>
-            <div className="absolute -bottom-5 -right-3 sm:-bottom-6 sm:-right-6 bg-accent-500 text-white rounded px-4 sm:px-6 py-3 sm:py-4 shadow-xl">
+            <div className="hidden sm:block absolute -bottom-5 -right-3 sm:-bottom-6 sm:-right-6 bg-accent-500 text-white rounded px-4 sm:px-6 py-3 sm:py-4 shadow-xl">
               <div className="text-2xl sm:text-3xl font-black">{main.yearsBadgeValue}</div>
+              <div className="text-xs font-semibold opacity-90 uppercase tracking-wide">
+                {main.yearsLabel}
+              </div>
+            </div>
+            <div className="sm:hidden bg-accent-500 text-white rounded px-4 py-3 shadow-xl">
+              <div className="text-2xl font-black">{main.yearsBadgeValue}</div>
               <div className="text-xs font-semibold opacity-90 uppercase tracking-wide">
                 {main.yearsLabel}
               </div>
@@ -103,7 +109,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                   <div className="text-2xl sm:text-3xl font-black text-brand-900">
                     {s.value}
                   </div>
-                  <div className="text-gray-400 text-xs mt-1 uppercase tracking-wide leading-snug">
+                  <div className="text-gray-400 text-xs mt-1 uppercase tracking-wide leading-snug font-normal">
                     {s.label}
                   </div>
                 </div>

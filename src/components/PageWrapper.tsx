@@ -7,7 +7,7 @@ export default function PageWrapper({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div key={pathname} className="page-enter">
+    <div key={pathname} className="page-enter flex-1 flex flex-col">
       {children}
     </div>
   );

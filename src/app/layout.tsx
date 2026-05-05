@@ -41,10 +41,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="mn" className={`${roboto.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen flex flex-col">
         <Providers>
           <TopLoader />
-          <Navbar />
+          <Suspense fallback={<Navbar />}>
+            <NavbarWithContent />
+          </Suspense>
           <PageWrapper>
             <main className="flex-1">{children}</main>
           </PageWrapper>

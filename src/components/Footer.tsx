@@ -1,9 +1,11 @@
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import { resolveMediaUrl } from "@/lib/media";
 import type { FooterSections, FooterSocial } from "@/lib/site-content-types";
 import { Translations } from "@/lib/translations";
 import FormattedText from "./FormattedText";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const getSocialIcon = (type: FooterSocial["iconType"]) => {
   switch (type) {
@@ -44,21 +46,35 @@ const getSocialIcon = (type: FooterSocial["iconType"]) => {
 
 export default function Footer({ 
   content, 
-  t 
+  t,
+  hiddenPageIds = []
 }: { 
   content: FooterSections; 
   t: Translations;
+  hiddenPageIds?: string[];
 }) {
+  const { lang } = useLanguage();
   const { partnersLabel, items: partners } = content.partners;
   const marqueePartners = [...(partners || []), ...(partners || [])];
   const year = new Date().getFullYear();
+
+  const allLinks = [
+    { id: "home", label: t.nav.home, href: "/" },
+    { id: "about", label: t.nav.about, href: "/about" },
+    { id: "gallery", label: t.nav.gallery, href: "/gallery" },
+    { id: "projects-page", label: t.nav.projects, href: "/projects" },
+    { id: "properties-page", label: t.nav.properties, href: "/properties" },
+    { id: "contact", label: t.nav.contact, href: "/contact" },
+  ];
+
+  const navLinks = allLinks.filter(link => !hiddenPageIds.includes(link.id));
   
   return (
     <footer className="bg-brand-900 text-white">
       {/* Partners */}
       {partners && partners.length > 0 && (
         <div className="border-b border-brand-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 sm:py-9">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
             <p className="text-center text-gray-500 text-xs uppercase tracking-[0.16em] mb-4 sm:mb-6">
               {partnersLabel}
             </p>
@@ -89,28 +105,55 @@ export default function Footer({
       )}
 
       {/* Main */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-10">
-          {/* Brand */}
-          <div className="col-span-2 sm:col-span-3 lg:col-span-1">
-            <Link href="/" className="mb-4 sm:mb-5 inline-block">
-              <span className="inline-flex shrink-0 items-center">
-                <Image
-                  src={resolveMediaUrl(content.logo || "/fclogo.png")}
-                  alt="Food City"
-                  width={320}
-                  height={114}
-                  className="h-[4rem] w-auto object-contain object-left sm:h-[4.75rem] lg:h-[5.5rem]"
-                  unoptimized
-                />
-              </span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          {/* Left Side: Brand, Copyright, Socials */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+            <Link href="/" className="inline-block shrink-0">
+              <Image
+                src={resolveMediaUrl(content.logo || "/fclogo.png")}
+                alt="Food City"
+                width={160}
+                height={57}
+                className="h-[2.5rem] w-auto object-contain"
+                unoptimized
+              />
             </Link>
-            <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              <FormattedText text={content.brand.desc} />
-            </p>
-            <p className="text-gray-500 text-xs leading-relaxed mb-5">
+            <div className="hidden sm:block w-px h-6 bg-brand-800"></div>
+            <p className="text-gray-500 text-[11px] leading-relaxed text-center sm:text-left">
               {content.copyright}
             </p>
+          </div>
+
+          {/* Right Side: Links & Socials Inline */}
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-6 gap-y-3">
+            {/* Auto Sync Nav Links */}
+            {navLinks.map((link) => (
+              <Link
+                key={link.id}
+                href={link.href}
+                className="text-gray-400 hover:text-accent-400 text-[13px] font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+
+            {/* Additional Links */}
+            {(content.sections || []).flatMap(section => 
+              (section.items || []).filter(item => !item.hidden).map((link, lidx) => (
+                <Link
+                  key={`${section.label}-${lidx}`}
+                  href={link.href || "#"}
+                  className="text-gray-400 hover:text-accent-400 text-[13px] font-medium transition-colors"
+                >
+                  {link.label}
+                </Link>
+              ))
+            )}
+
+            <div className="hidden sm:block w-px h-4 bg-brand-800 mx-2"></div>
+
+            {/* Socials */}
             <div className="flex gap-3">
               {(content.socials || []).map((s) => (
                 <a
@@ -120,41 +163,13 @@ export default function Footer({
                   {...(s.href.startsWith("http")
                     ? { target: "_blank", rel: "noopener noreferrer" }
                     : {})}
-                  className="w-9 h-9 bg-brand-800 hover:bg-accent-500 rounded flex items-center justify-center transition-colors duration-200"
+                  className="text-gray-500 hover:text-accent-400 transition-colors duration-200"
                 >
                   {getSocialIcon(s.iconType)}
                 </a>
               ))}
             </div>
           </div>
-
-          {/* Links */}
-          {(content.sections || []).map((section, idx) => (
-            <div key={idx}>
-              <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 mb-4">
-                {section.href ? (
-                  <Link href={section.href} className="hover:text-accent-400 transition-colors">
-                    {section.label}
-                  </Link>
-                ) : (
-                  section.label
-                )}
-              </h4>
-
-              <ul className="flex flex-col gap-2.5">
-                {section.items.map((link, lidx) => (
-                  <li key={lidx}>
-                    <Link
-                      href={link.href || "#"}
-                      className="text-gray-400 hover:text-accent-400 text-sm transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
         </div>
       </div>
     </footer>

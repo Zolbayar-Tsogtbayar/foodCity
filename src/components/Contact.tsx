@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import type { ContactSections } from "@/lib/site-content-types";
 import { useLanguage } from "@/contexts/LanguageContext";
+import FormattedText from "./FormattedText";
 
 const SOCIAL_META: Record<string, { label: string; bg: string; icon: ReactNode }> = {
   facebook: {
@@ -129,7 +130,7 @@ const CONTACT_ICONS = [
 ];
 
 export default function Contact({ content }: { content: ContactSections }) {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
   const { hero, items, links } = content;
 
   const activeLinks = (links ?? []).filter((l) => l.href);
@@ -150,13 +151,15 @@ export default function Contact({ content }: { content: ContactSections }) {
             className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
             style={{ animationDelay: "0.25s" }}
           >
-            <span className="text-accent-500">{hero.h2Accent}</span>
+            <span className="text-accent-500">
+              <FormattedText text={hero.h2Accent} />
+            </span>
           </h2>
           <p
             className="hero-reveal text-gray-500 text-base sm:text-lg"
             style={{ animationDelay: "0.4s" }}
           >
-            {hero.intro}
+            <FormattedText text={hero.intro} />
           </p>
         </div>
 
@@ -174,52 +177,144 @@ export default function Contact({ content }: { content: ContactSections }) {
                 </div>
                 <div>
                   <div className="font-semibold text-brand-900 text-sm">{item.title}</div>
-                  <div className="text-gray-500 text-sm mt-0.5 leading-snug">{item.value}</div>
+                  <div className="text-gray-500 text-sm mt-0.5 leading-snug">
+                    <FormattedText text={item.value} />
+                  </div>
                 </div>
               </div>
             ))}
+
+            {/* Agent section */}
+            {content.agent && content.agent.name && (
+              <div className="mt-10 pt-10 border-t border-gray-100">
+                <div className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100">
+                  <div className="w-14 h-14 rounded-full bg-brand-900 flex items-center justify-center text-white text-xl font-bold shrink-0 shadow-lg">
+                    {content.agent.initials}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-gray-400 text-[10px] uppercase tracking-widest font-bold mb-1">
+                      {lang === "mn" ? "Холбоо барих ажилтан" : "Contact Agent"}
+                    </div>
+                    <div className="font-bold text-brand-900 text-base leading-tight truncate">
+                      {content.agent.name}
+                    </div>
+                    <div className="text-accent-500 text-xs font-medium mt-0.5">
+                      {content.agent.role}
+                    </div>
+                  </div>
+                  <a
+                    href={content.agent.telHref}
+                    className="h-10 px-4 bg-brand-900 hover:bg-accent-500 text-white rounded-lg flex items-center justify-center text-xs font-bold transition-all shrink-0 shadow-sm"
+                  >
+                    {content.agent.telLabel}
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right — social / platform links */}
-          {activeLinks.length > 0 && (
-            <div
-              className="hero-reveal space-y-3"
-              style={{ animationDelay: "0.6s" }}
-            >
-              {activeLinks.map((link, i) => {
-                const meta = SOCIAL_META[link.type];
-                const displayTitle = link.title || meta?.label || link.type;
-                const displayUrl = link.href.replace(/^https?:\/\//, "").replace(/\/$/, "");
+          {/* Right — platform links & Contact Form */}
+          <div
+            className="hero-reveal space-y-8"
+            style={{ animationDelay: "0.6s" }}
+          >
+            {/* Social Links */}
+            {activeLinks.length > 0 && (
+              <div className="space-y-3">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
+                  {lang === "mn" ? "Сошиал холбоосууд" : "Social Links"}
+                </div>
+                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+                  {activeLinks.map((link, i) => {
+                    const meta = SOCIAL_META[link.type];
+                    const displayTitle = link.title || meta?.label || link.type;
+                    return (
+                      <a
+                        key={i}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 border border-gray-100 rounded-xl p-3 bg-white hover:shadow-md hover:border-accent-200 transition-all duration-200 group"
+                      >
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0 ${meta?.bg ?? "bg-gray-400"}`}>
+                          {meta?.icon ?? (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="font-bold text-brand-900 text-xs group-hover:text-accent-500 transition-colors truncate">
+                            {displayTitle}
+                          </div>
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
-                return (
-                  <a
-                    key={i}
-                    href={link.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-4 border border-gray-100 rounded-xl p-4 bg-white hover:shadow-md hover:border-accent-200 transition-all duration-200 group"
-                  >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shrink-0 ${meta?.bg ?? "bg-gray-400"}`}>
-                      {meta?.icon ?? (
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-brand-900 text-sm group-hover:text-accent-500 transition-colors">
-                        {displayTitle}
-                      </div>
-                      <div className="text-gray-400 text-xs mt-0.5 truncate">{displayUrl}</div>
-                    </div>
-                    <svg className="w-4 h-4 text-gray-300 group-hover:text-accent-400 transition-colors shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                );
-              })}
+            {/* Contact Form */}
+            <div className="bg-gray-50 border border-gray-100 rounded-3xl p-6 sm:p-8">
+              <h3 className="text-xl font-bold text-brand-900 mb-6">
+                {content.formTitle || (lang === "mn" ? "Лавлагаа илгээх" : "Send an Inquiry")}
+              </h3>
+              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
+                      {lang === "mn" ? "Овог нэр" : "Full Name"}
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
+                      placeholder={lang === "mn" ? "Таны нэр..." : "Your name..."}
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
+                      {lang === "mn" ? "Утасны дугаар" : "Phone Number"}
+                    </label>
+                    <input
+                      type="tel"
+                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
+                      placeholder="+976"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
+                    {lang === "mn" ? "Имэйл хаяг" : "Email Address"}
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
+                    placeholder="example@mail.com"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
+                    {lang === "mn" ? "Лавлагааны агуулга" : "Message"}
+                  </label>
+                  <textarea
+                    rows={4}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all resize-none"
+                    placeholder={lang === "mn" ? "Та мессежээ энд бичнэ үү..." : "Type your message here..."}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-brand-900 hover:bg-accent-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-900/10 flex items-center justify-center gap-2 group"
+                >
+                  {lang === "mn" ? "Илгээх" : "Submit"}
+                  <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </form>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </section>

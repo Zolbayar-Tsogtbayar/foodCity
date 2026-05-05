@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
+import FormattedText from "./FormattedText";
 
 const SPEED = 500;
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
@@ -202,8 +203,14 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
             {project.category && (
               <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">{project.category}</span>
             )}
-            <h2 className="text-lg font-bold text-brand-900 mt-0.5 mb-1">{project.name}</h2>
-            {project.description && <p className="text-gray-500 text-sm leading-relaxed">{project.description}</p>}
+            <h2 className="text-lg font-bold text-brand-900 mt-0.5 mb-1">
+              <FormattedText text={project.name} />
+            </h2>
+            {project.description && (
+              <p className="text-gray-500 text-sm leading-relaxed">
+                <FormattedText text={project.description} />
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -234,8 +241,14 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                     </span>
                   )}
                 </p>
-                <h2 className="text-3xl font-bold text-white leading-tight">{project.name}</h2>
-                {project.description && <p className="mt-1.5 text-base text-white/65 leading-relaxed line-clamp-2">{project.description}</p>}
+                <h2 className="text-3xl font-bold text-white leading-tight">
+                  <FormattedText text={project.name} />
+                </h2>
+                {project.description && (
+                  <p className="mt-1.5 text-base text-white/65 leading-relaxed">
+                    <FormattedText text={project.description} />
+                  </p>
+                )}
               </div>
             </>
           ) : (
@@ -283,12 +296,14 @@ export default function Projects({ content }: { content: ProjectsPageSections })
           {content.header.badge}
         </span>
         <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight">
-          {content.header.titleLine1}{" "}
-          <span className="text-accent-500">{content.header.titleAccent}</span>
+          <FormattedText text={content.header.titleLine1} />{" "}
+          <span className="text-accent-500">
+            <FormattedText text={content.header.titleAccent} />
+          </span>
         </h1>
         {content.header.intro && (
           <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            {content.header.intro}
+            <FormattedText text={content.header.intro} />
           </p>
         )}
       </div>
@@ -345,10 +360,12 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     </span>
                   )}
                   <h3 className="mt-1 text-base font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
-                    {project.name}
+                    <FormattedText text={project.name} />
                   </h3>
                   {project.description && (
-                    <p className="mt-1.5 text-gray-400 text-sm leading-relaxed line-clamp-2">{project.description}</p>
+                    <p className="mt-1.5 text-gray-400 text-sm leading-relaxed">
+                      <FormattedText text={project.description} />
+                    </p>
                   )}
                 </div>
               </button>

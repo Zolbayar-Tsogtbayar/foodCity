@@ -1,5 +1,6 @@
 import type { AboutSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
+import FormattedText from "./FormattedText";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
   const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
@@ -73,22 +74,24 @@ export default function About({ main }: { main: AboutSections["main"] }) {
               className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight mb-5 sm:mb-6"
               style={{ animationDelay: "0.35s" }}
             >
-              {main.h2Line1}
+              <FormattedText text={main.h2Line1} />
               <br />
-              <span className="text-accent-500">{main.h2Accent}</span>
+              <span className="text-accent-500">
+                <FormattedText text={main.h2Accent} />
+              </span>
             </h2>
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-5"
               style={{ animationDelay: "0.5s" }}
             >
-              {main.p1}
+              <FormattedText text={main.p1} />
             </p>
             <div className="flex-1" />
             <p
               className="hero-reveal text-gray-500 leading-relaxed mb-8 sm:mb-10"
               style={{ animationDelay: "0.6s" }}
             >
-              {main.p2}
+              <FormattedText text={main.p2} />
             </p>
 
             <div

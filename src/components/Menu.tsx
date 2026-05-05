@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { PropertiesPageSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
+import FormattedText from "./FormattedText";
 
 const SPEED = 500;
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
@@ -202,12 +203,18 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
           )}
           <div className="p-4">
             <div className="flex items-start justify-between gap-2 mb-1">
-              <h2 className="text-lg font-bold text-brand-900">{item.name}</h2>
+              <h2 className="text-lg font-bold text-brand-900">
+                <FormattedText text={item.name} />
+              </h2>
               {item.badge && (
                 <span className="shrink-0 rounded bg-accent-500 px-2 py-0.5 text-xs font-bold text-white">{item.badge}</span>
               )}
             </div>
-            {item.description && <p className="text-gray-500 text-sm leading-relaxed mb-3">{item.description}</p>}
+            {item.description && (
+              <p className="text-gray-500 text-sm leading-relaxed mb-3">
+                <FormattedText text={item.description} />
+              </p>
+            )}
             <div className="grid grid-cols-3 gap-2 py-3 border-y border-gray-100">
               {[
                 { icon: "▭", label: item.size },
@@ -257,12 +264,18 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
                   )}
                 </p>
                 <div className="flex items-center gap-3 mb-1">
-                  <h2 className="text-3xl font-bold text-white leading-tight">{item.name}</h2>
+                  <h2 className="text-3xl font-bold text-white leading-tight">
+                    <FormattedText text={item.name} />
+                  </h2>
                   {item.badge && (
                     <span className="rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">{item.badge}</span>
                   )}
                 </div>
-                {item.description && <p className="mt-1 text-base text-white/65 leading-relaxed line-clamp-2">{item.description}</p>}
+                {item.description && (
+                  <p className="mt-1 text-base text-white/65 leading-relaxed">
+                    <FormattedText text={item.description} />
+                  </p>
+                )}
                 <div className="mt-3 flex items-center gap-6">
                   <span className="text-white/60 text-sm">{item.size}</span>
                   <span className="text-white/60 text-sm">{item.floor}</span>
@@ -471,10 +484,10 @@ export default function Properties({
 
                   <div className="p-4 sm:p-6">
                     <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1 group-hover:text-accent-500 transition-colors">
-                      {p.name}
+                      <FormattedText text={p.name} />
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">
-                      {p.description}
+                    <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                      <FormattedText text={p.description} />
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border-y border-gray-100">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import { resolveMediaUrl } from "@/lib/media";
 import type { HomeSections } from "@/lib/site-content-types";
+import FormattedText from "@/components/FormattedText";
 
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
 function isVideo(src: string) { return VIDEO_EXTS.test(src); }
@@ -140,17 +141,19 @@ export default function Hero({ hero }: { hero: HeroContent }) {
             className="hero-reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight mb-5 sm:mb-6"
             style={{ animationDelay: "0.25s" }}
           >
-            {hero.titleLine1}{" "}
-            <span className="text-accent-500">{hero.titleAccent}</span>
+            <FormattedText text={hero.titleLine1} />{" "}
+            <span className="text-accent-500">
+              <FormattedText text={hero.titleAccent} />
+            </span>
             <br />
-            {hero.titleLine2}
+            <FormattedText text={hero.titleLine2} />
           </h1>
 
           <p
             className="hero-reveal text-white text-base sm:text-lg lg:text-xl leading-relaxed mb-8 sm:mb-10 max-w-2xl"
             style={{ animationDelay: "0.45s" }}
           >
-            {hero.desc}
+            <FormattedText text={hero.desc} />
           </p>
 
           <div

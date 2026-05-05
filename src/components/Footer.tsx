@@ -3,6 +3,7 @@ import Link from "next/link";
 import { resolveMediaUrl } from "@/lib/media";
 import type { FooterSections, FooterSocial } from "@/lib/site-content-types";
 import { Translations } from "@/lib/translations";
+import FormattedText from "./FormattedText";
 
 const getSocialIcon = (type: FooterSocial["iconType"]) => {
   switch (type) {
@@ -105,7 +106,7 @@ export default function Footer({
               </span>
             </Link>
             <p className="text-gray-400 text-sm leading-relaxed mb-5">
-              {content.brand.desc}
+              <FormattedText text={content.brand.desc} />
             </p>
             <p className="text-gray-500 text-xs leading-relaxed mb-5">
               &copy; {year} {content.copyright || t.footer.copyrightSuffix}

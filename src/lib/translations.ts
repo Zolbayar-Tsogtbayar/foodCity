@@ -5,7 +5,7 @@ export const translations = {
     nav: {
       home: "Нүүр",
       about: "Бидний тухай",
-      gallery: "ГАЛЛЕРЕЙ",
+      gallery: "Галлерей",
       properties: "Хамтран ажиллах",
       team: "Мэдээ мэдээлэл",
       contact: "Холбоо барих",

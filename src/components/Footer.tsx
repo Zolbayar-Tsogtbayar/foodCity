@@ -93,7 +93,7 @@ export default function Footer({
                       alt={p.name}
                       width={Math.max(p.width, 1)}
                       height={Math.max(p.height, 1)}
-                      className="h-auto max-h-9 w-auto max-w-full object-contain object-center opacity-65 grayscale transition duration-300 group-hover:opacity-100 group-hover:grayscale-0 sm:max-h-10"
+                      className="h-auto max-h-9 w-auto max-w-full object-contain object-center sm:max-h-10"
                       sizes="(max-width: 640px) 140px, 180px"
                     />
                   </div>

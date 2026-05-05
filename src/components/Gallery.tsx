@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
+import FormattedText from "./FormattedText";
 import type { GallerySections } from "@/lib/site-content-types";
 
 const SPEED = 500;
@@ -305,6 +306,29 @@ export default function Gallery({ content }: { content: GallerySections }) {
 
   return (
     <section id="gallery" className="py-12 sm:py-16 lg:py-20 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+        {content.header?.badge && (
+          <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+            {content.header.badge}
+          </span>
+        )}
+        {(content.header?.h2Line1 || content.header?.h2Accent) && (
+          <h2 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight">
+            {content.header.h2Line1 && <FormattedText text={content.header.h2Line1} />}{" "}
+            {content.header.h2Accent && (
+              <span className="text-accent-500">
+                <FormattedText text={content.header.h2Accent} />
+              </span>
+            )}
+          </h2>
+        )}
+        {content.header?.intro && (
+          <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+            <FormattedText text={content.header.intro} />
+          </p>
+        )}
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center">
           {features.length > 0 ? (

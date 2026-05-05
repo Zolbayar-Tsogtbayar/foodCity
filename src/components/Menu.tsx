@@ -319,10 +319,13 @@ export default function Properties({
 }: {
   content: PropertiesPageSections;
 }) {
-  const allLabel = "Бүгд";
-  const displayCategories = [allLabel, ...content.categories.filter(c => c !== allLabel)];
+  const existingAll = content.categories.find(c => c.trim().toUpperCase() === 'ALL' || c.trim().toUpperCase() === 'БҮГД' || c.trim().toUpperCase() === 'БҮГД ');
+  const allLabel = existingAll || "Бүгд";
+  const displayCategories = existingAll 
+    ? content.categories 
+    : [allLabel, ...content.categories];
 
-  const [active, setActive] = useState(allLabel);
+  const [active, setActive] = useState(displayCategories[0] || allLabel);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<PropertyItem | null>(null);
 
@@ -358,16 +361,16 @@ export default function Properties({
             className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
             style={{ animationDelay: "0.25s" }}
           >
-            {content.header.titleLine1}{" "}
+            <FormattedText text={content.header.titleLine1} />{" "}
             <span className="text-accent-500">
-              {content.header.titleAccent}
+              <FormattedText text={content.header.titleAccent} />
             </span>
           </h2>
           <p
             className="hero-reveal text-gray-500 text-base sm:text-lg"
             style={{ animationDelay: "0.4s" }}
           >
-            {content.header.intro}
+            <FormattedText text={content.header.intro} />
           </p>
         </div>
 

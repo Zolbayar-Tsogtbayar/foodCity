@@ -503,24 +503,6 @@ export default function Properties({
                         </div>
                       ))}
                     </div>
-
-                    <div className="flex items-center justify-between gap-2">
-                      <div>
-                        <div className="text-xs text-gray-400 uppercase tracking-wide">
-                          Эхлэх үнэ
-                        </div>
-                        <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">
-                          {p.price}
-                        </div>
-                      </div>
-                      <a
-                        href="/contact"
-                        onClick={(e) => e.stopPropagation()}
-                        className="shrink-0 bg-brand-900 hover:bg-accent-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded transition-colors duration-200"
-                      >
-                        Лавлагаа авах
-                      </a>
-                    </div>
                   </div>
                   <div className="h-1 bg-accent-500 w-full" />
                 </Tag>

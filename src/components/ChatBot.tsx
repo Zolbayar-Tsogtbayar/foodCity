@@ -355,6 +355,10 @@ export default function ChatBot() {
       ) {
         return;
       }
+      
+      // BLOCK bot messages if we are in human mode (backend might emit them incorrectly)
+      if (m.role === "bot" && humanMode) return;
+
       if (seenIds.current.has(m.id)) return;
       seenIds.current.add(m.id);
       setMessages((prev) => [...prev, m]);

@@ -253,6 +253,8 @@ export default function ChatBot() {
     }
   }, [base, defaultConfig]);
 
+  const [humanMode, setHumanMode] = useState(false);
+
   const bootstrapConversation = useCallback(async () => {
     setError(null);
     const guestId = getOrCreateGuestId();
@@ -265,8 +267,9 @@ export default function ChatBot() {
         body: JSON.stringify({ guestId }),
       });
       if (!res.ok) throw new Error(await res.text());
-      const json = (await res.json()) as { data: { id: string } };
+      const json = (await res.json()) as { data: { id: string; humanMode: boolean } };
       convId = json.data.id;
+      setHumanMode(!!json.data.humanMode);
       localStorage.setItem(CONV_KEY, convId!);
     };
 
@@ -274,11 +277,14 @@ export default function ChatBot() {
       if (!convId) await ensureConv();
       else {
         const check = await fetch(
-          `${base}/api/v1/chat/conversations/${convId}/messages?guestId=${encodeURIComponent(guestId)}`,
+          `${base}/api/v1/chat/conversations/${convId}?guestId=${encodeURIComponent(guestId)}`,
         );
         if (!check.ok) {
           localStorage.removeItem(CONV_KEY);
           await ensureConv();
+        } else {
+          const json = await check.json();
+          setHumanMode(!!json.data?.humanMode);
         }
       }
 
@@ -350,6 +356,8 @@ export default function ChatBot() {
       if (seenIds.current.has(m.id)) return;
       seenIds.current.add(m.id);
       setMessages((prev) => [...prev, m]);
+      if (m.role === "agent") setHumanMode(true);
+      if (m.role === "bot") setHumanMode(false);
     }
 
     s.on("message:new", onNew);
@@ -429,7 +437,7 @@ export default function ChatBot() {
         if (botMsg?.text?.trim() && !seenIds.current.has(botMsg.id)) {
           seenIds.current.add(botMsg.id);
           next.push(botMsg);
-        } else if (!botMsg?.text?.trim()) {
+        } else if (!botMsg?.text?.trim() && !humanMode) {
           next.push({
             id: `bot-local-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
             role: "bot",
@@ -544,7 +552,7 @@ export default function ChatBot() {
                 </div>
               </div>
             )}
-            {activeChoices.length > 0 && (
+            {activeChoices.length > 0 && !humanMode && (
               <div className="flex flex-wrap items-center gap-2 pt-1">
                 {!atRootChips && config.restartLabel.trim() && (
                   <button

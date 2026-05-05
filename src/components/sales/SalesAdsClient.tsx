@@ -315,7 +315,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
         {paged.map((ad) => (
           <article
             key={ad.id}
-            className="group flex flex-col overflow-hidden rounded-2xl border-2 border-black bg-white shadow-sm transition-shadow hover:shadow-md"
+            className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
           >
             <button
               type="button"

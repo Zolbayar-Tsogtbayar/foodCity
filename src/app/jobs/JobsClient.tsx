@@ -115,7 +115,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
               <button
                 type="button"
                 onClick={() => setOpen(job)}
-                className="flex h-full min-h-[320px] w-full min-w-0 flex-col rounded-xl border-2 border-black bg-white text-left shadow-sm transition hover:border-black/70 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                className="flex h-full min-h-[320px] w-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40"
               >
                 {job.imageUrl ? (
                   <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-xl bg-brand-900/5">

@@ -212,6 +212,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
               </p>
             )}
           </div>
+          <div className="h-1 bg-accent-500 w-full" />
         </div>
       </div>
 
@@ -368,6 +369,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     </p>
                   )}
                 </div>
+                <div className="h-1 bg-accent-500 w-full" />
               </button>
             ))}
           </div>

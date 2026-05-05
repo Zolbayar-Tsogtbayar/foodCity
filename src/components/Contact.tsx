@@ -255,65 +255,7 @@ export default function Contact({ content }: { content: ContactSections }) {
               </div>
             )}
 
-            {/* Contact Form */}
-            <div className="bg-gray-50 border border-gray-100 rounded-3xl p-6 sm:p-8">
-              <h3 className="text-xl font-bold text-brand-900 mb-6">
-                {content.formTitle || (lang === "mn" ? "Лавлагаа илгээх" : "Send an Inquiry")}
-              </h3>
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
-                      {lang === "mn" ? "Овог нэр" : "Full Name"}
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
-                      placeholder={lang === "mn" ? "Таны нэр..." : "Your name..."}
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
-                      {lang === "mn" ? "Утасны дугаар" : "Phone Number"}
-                    </label>
-                    <input
-                      type="tel"
-                      className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
-                      placeholder="+976"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
-                    {lang === "mn" ? "Имэйл хаяг" : "Email Address"}
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all"
-                    placeholder="example@mail.com"
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400 ml-1">
-                    {lang === "mn" ? "Лавлагааны агуулга" : "Message"}
-                  </label>
-                  <textarea
-                    rows={4}
-                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-accent-500/20 focus:border-accent-500 transition-all resize-none"
-                    placeholder={lang === "mn" ? "Та мессежээ энд бичнэ үү..." : "Type your message here..."}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full bg-brand-900 hover:bg-accent-500 text-white font-bold py-4 rounded-xl transition-all shadow-lg shadow-brand-900/10 flex items-center justify-center gap-2 group"
-                >
-                  {lang === "mn" ? "Илгээх" : "Submit"}
-                  <svg className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </button>
-              </form>
-            </div>
+
           </div>
         </div>
       </div>

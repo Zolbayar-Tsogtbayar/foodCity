@@ -118,7 +118,7 @@ export const defaultContactSections: ContactSections = {
     telHref: "tel:+97699224455",
     telLabel: "Одоо залгах",
   },
-  formTitle: "Лавлагаа илгээх",
+
   links: [],
 };
 

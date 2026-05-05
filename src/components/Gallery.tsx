@@ -289,6 +289,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
           ))}
         </div>
       )}
+      <div className="h-1 bg-accent-500 w-full" />
 
       {selected && <Modal item={item} onClose={() => setSelected(false)} />}
     </div>

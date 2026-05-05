@@ -89,7 +89,7 @@ export type ContactSections = {
     telHref: string;
     telLabel: string;
   };
-  formTitle: string;
+  formTitle?: string;
   links: { type: string; href: string; title: string }[];
 };
 

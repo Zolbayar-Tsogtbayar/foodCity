@@ -239,6 +239,7 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
               </a>
             </div>
           </div>
+          <div className="h-1 bg-accent-500 w-full" />
         </div>
       </div>
 
@@ -527,6 +528,7 @@ export default function Properties({
                       </a>
                     </div>
                   </div>
+                  <div className="h-1 bg-accent-500 w-full" />
                 </Tag>
               );
             })

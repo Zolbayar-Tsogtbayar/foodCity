@@ -239,7 +239,7 @@ export const translations = {
       agentName: "Оюунгэрэл Цэнд",
       agentAvailable: "Түрээсийн хэлтсийн дарга — одоо боломжтой",
       callNow: "Одоо залгах",
-      formTitle: "Лавлагаа илгээх",
+
       labels: {
         firstName: "Нэр",
         lastName: "Овог",
@@ -262,7 +262,7 @@ export const translations = {
         "Үл хөдлөх худалдан авах",
         "Ерөнхий лавлагаа",
       ],
-      submit: "Лавлагаа илгээх",
+
       contactInfo: [
         {
           title: "Төв оффис",

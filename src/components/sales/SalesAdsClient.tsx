@@ -303,6 +303,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               {t.sales.close}
             </button>
           </footer>
+          <div className="h-1 bg-accent-500 w-full shrink-0" />
         </div>
       </div>,
       document.body,
@@ -380,6 +381,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   </svg>
                 </span>
               </div>
+              <div className="h-1 bg-accent-500 w-full" />
             </button>
           </article>
         ))}

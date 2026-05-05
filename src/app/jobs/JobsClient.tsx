@@ -174,6 +174,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                     </p>
                   )}
                 </div>
+                <div className="h-1 bg-accent-500 w-full" />
               </button>
             </li>
           );
@@ -395,6 +396,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                   {t.jobs.close}
                 </button>
               </footer>
+              <div className="h-1 bg-accent-500 w-full shrink-0" />
             </div>
           </div>,
           document.body,

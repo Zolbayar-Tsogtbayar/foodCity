@@ -203,7 +203,7 @@ export default function Contact({ content }: { content: ContactSections }) {
                     </div>
                   </div>
                   <a
-                    href={content.agent.telHref}
+                    href={content.agent.telHref.startsWith("tel:") ? content.agent.telHref : `tel:${content.agent.telHref.replace(/\s+/g, '')}`}
                     className="h-10 px-4 bg-brand-900 hover:bg-accent-500 text-white rounded-lg flex items-center justify-center text-xs font-bold transition-all shrink-0 shadow-sm"
                   >
                     {content.agent.telLabel}

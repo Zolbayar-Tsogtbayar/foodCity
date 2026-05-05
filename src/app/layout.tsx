@@ -45,9 +45,8 @@ export default async function RootLayout({
       <body className="min-h-full flex flex-col">
         <Providers>
           <TopLoader />
-          <Navbar />
+          <NavbarWithContent />
           <PageWrapper>
-
             <main className="flex-1">{children}</main>
           </PageWrapper>
           <Suspense fallback={<FooterFallback />}>

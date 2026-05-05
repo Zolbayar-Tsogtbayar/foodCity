@@ -53,8 +53,10 @@ export type FooterSocial = {
 export type FooterLinkSection = {
   label: string;
   href?: string;
-  items: { label: string; href: string }[];
+  items: { label: string; href: string; hidden?: boolean }[];
+  hidden?: boolean;
 };
+
 
 
 export type FooterSections = {

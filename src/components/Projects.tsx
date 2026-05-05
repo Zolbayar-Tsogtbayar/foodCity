@@ -220,17 +220,23 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
         className={`fixed inset-0 z-[500] hidden sm:flex flex-col bg-black transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`}
         onClick={handleClose}
       >
-        <div className="absolute top-4 right-4 z-30">
-          <button onClick={handleClose} className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 hover:bg-white/25 text-white backdrop-blur-sm transition-colors">
+        <div className="absolute top-4 right-4 z-40">
+          <button 
+            onClick={handleClose} 
+            className="flex h-12 w-12 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 transition-all duration-300 hover:scale-110 active:scale-95"
+            title="Хаах (Esc)"
+          >
             {closeSvg}
           </button>
         </div>
         <div className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}>
           {images.length > 0 ? (
-            <>
-              {slideNodes}
+            <div className="absolute inset-4 sm:inset-12 md:inset-20 lg:inset-24 flex items-center justify-center">
+              <div className="relative w-full h-full">
+                {slideNodes}
+              </div>
               {arrowNodes}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24 translate-y-4 sm:translate-y-8 md:translate-y-12 lg:translate-y-16">
                 <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
                   {project.category && <span className="text-accent-400">{project.category}</span>}
                   {project.category && <span>·</span>}
@@ -250,7 +256,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                   </p>
                 )}
               </div>
-            </>
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="text-center p-8">
@@ -261,6 +267,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
             </div>
           )}
         </div>
+
         {images.length > 1 && (
           <div className="shrink-0 bg-black/90 px-5 py-3" onClick={(e) => e.stopPropagation()}>
             <div ref={thumbsRef} className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>

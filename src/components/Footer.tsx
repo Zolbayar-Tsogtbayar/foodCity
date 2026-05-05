@@ -129,32 +129,37 @@ export default function Footer({
           </div>
 
           {/* Links */}
-          {(content.sections || []).map((section, idx) => (
-            <div key={idx}>
-              <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 mb-4">
-                {section.href ? (
-                  <Link href={section.href} className="hover:text-accent-400 transition-colors">
-                    {section.label}
-                  </Link>
-                ) : (
-                  section.label
-                )}
-              </h4>
-
-              <ul className="flex flex-col gap-2.5">
-                {section.items.map((link, lidx) => (
-                  <li key={lidx}>
-                    <Link
-                      href={link.href || "#"}
-                      className="text-gray-400 hover:text-accent-400 text-sm transition-colors"
-                    >
-                      {link.label}
+          {(content.sections || [])
+            .filter((s) => !s.hidden)
+            .map((section, idx) => (
+              <div key={idx}>
+                <h4 className="font-bold text-xs uppercase tracking-widest text-gray-500 mb-4">
+                  {section.href ? (
+                    <Link href={section.href} className="hover:text-accent-400 transition-colors">
+                      {section.label}
                     </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+                  ) : (
+                    section.label
+                  )}
+                </h4>
+
+                <ul className="flex flex-col gap-2.5">
+                  {section.items
+                    .filter((l) => !l.hidden)
+                    .map((link, lidx) => (
+                      <li key={lidx}>
+                        <Link
+                          href={link.href || "#"}
+                          className="text-gray-400 hover:text-accent-400 text-sm transition-colors"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            ))}
+
         </div>
       </div>
     </footer>

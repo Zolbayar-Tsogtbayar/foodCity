@@ -5,16 +5,16 @@ import { getLanguageServer } from "@/lib/i18n-server";
 
 export const unstable_instant = { prefetch: "static" };
 
-export default async function ContactPage() {
-  const lang = await getLanguageServer();
+export default function ContactPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <ContactContent lang={lang} />
+      <ContactContent />
     </Suspense>
   );
 }
 
-async function ContactContent({ lang }: { lang: string }) {
+async function ContactContent() {
+  const lang = await getLanguageServer();
   const content = await getContactSections(lang);
   return <Contact content={content} />;
 }

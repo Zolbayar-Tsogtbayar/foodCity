@@ -9,17 +9,16 @@ import { getLanguageServer } from "@/lib/i18n-server";
  */
 export const unstable_instant = { prefetch: "static" };
 
-export default async function AboutPage() {
-  const lang = await getLanguageServer();
-  
+export default function AboutPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <AboutContent lang={lang} />
+      <AboutContent />
     </Suspense>
   );
 }
 
-async function AboutContent({ lang }: { lang: string }) {
+async function AboutContent() {
+  const lang = await getLanguageServer();
   const { main } = await getAboutSections(lang);
   return <About main={main} />;
 }

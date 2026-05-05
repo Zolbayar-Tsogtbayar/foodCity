@@ -5,16 +5,16 @@ import { getLanguageServer } from "@/lib/i18n-server";
 
 export const unstable_instant = { prefetch: "static" };
 
-export default async function PropertiesPage() {
-  const lang = await getLanguageServer();
+export default function PropertiesPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <PropertiesContent lang={lang} />
+      <PropertiesContent />
     </Suspense>
   );
 }
 
-async function PropertiesContent({ lang }: { lang: string }) {
+async function PropertiesContent() {
+  const lang = await getLanguageServer();
   const content = await getPropertiesPageSections(lang);
   return <Properties content={content} />;
 }

@@ -34,20 +34,18 @@ function FooterFallback() {
   );
 }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const lang = await getLanguageServer();
   return (
-    <html lang={lang} className={`${roboto.variable} h-full antialiased`}>
+    <html lang="mn" className={`${roboto.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Providers>
           <TopLoader />
           <Navbar />
           <PageWrapper>
-
             <main className="flex-1">{children}</main>
           </PageWrapper>
           <Suspense fallback={<FooterFallback />}>

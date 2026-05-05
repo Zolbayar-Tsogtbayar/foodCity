@@ -30,16 +30,16 @@ async function loadJobs(lang: string): Promise<JobItem[]> {
   }
 }
 
-export default async function JobsPage() {
-  const lang = await getLanguageServer();
+export default function JobsPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <JobsContent lang={lang} />
+      <JobsContent />
     </Suspense>
   );
 }
 
-async function JobsContent({ lang }: { lang: string }) {
+async function JobsContent() {
+  const lang = await getLanguageServer();
   const [jobs, header] = await Promise.all([loadJobs(lang), getJobsPageSections(lang)]);
 
   return (

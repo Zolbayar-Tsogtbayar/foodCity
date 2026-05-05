@@ -5,17 +5,16 @@ import { getLanguageServer } from "@/lib/i18n-server";
 
 export const unstable_instant = { prefetch: "static" };
 
-export default async function GalleryPage() {
-  const lang = await getLanguageServer();
-  
+export default function GalleryPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <GalleryContent lang={lang} />
+      <GalleryContent />
     </Suspense>
   );
 }
 
-async function GalleryContent({ lang }: { lang: string }) {
+async function GalleryContent() {
+  const lang = await getLanguageServer();
   const content = await getGallerySections(lang);
   return <Gallery content={content} />;
 }

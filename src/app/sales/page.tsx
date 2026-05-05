@@ -32,17 +32,16 @@ async function loadAds(lang: string): Promise<SalesAdItem[]> {
   }
 }
 
-export default async function SalesPage() {
-  const lang = await getLanguageServer();
-  
+export default function SalesPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
-      <SalesContent lang={lang} />
+      <SalesContent />
     </Suspense>
   );
 }
 
-async function SalesContent({ lang }: { lang: string }) {
+async function SalesContent() {
+  const lang = await getLanguageServer();
   const [ads, header] = await Promise.all([loadAds(lang), getSalesPageSections(lang)]);
 
   return (

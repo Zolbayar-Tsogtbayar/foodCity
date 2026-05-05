@@ -3,7 +3,7 @@ import Hero from "@/components/Hero";
 import { getHomeSections } from "@/lib/getSiteContent";
 import { getLanguageServer } from "@/lib/i18n-server";
 
-export const unstable_instant = { prefetch: "static" };
+
 
 export default function Home() {
   return (

@@ -489,7 +489,7 @@ export default function Properties({
                     <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-accent-500 z-10" />
                   </div>
 
-                  <div className="p-4 sm:p-6 flex-1 flex flex-col">
+                  <div className="p-4 sm:p-6 flex-1 flex flex-col border-x border-b border-gray-200 rounded-b-xl">
                     <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1 group-hover:text-accent-500 transition-colors">
                       <FormattedText text={p.name} />
                     </h3>
@@ -497,7 +497,7 @@ export default function Properties({
                       <FormattedText text={p.description} />
                     </p>
 
-                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border border-gray-200 rounded-lg">
+                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4">
                       {[
                         { icon: "▭", label: p.size },
                         { icon: "≡", label: p.floor },
@@ -514,7 +514,7 @@ export default function Properties({
                       ))}
                     </div>
 
-                    <div className="flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
+                    <div className="flex items-center justify-between gap-2">
                       <div>
                         <div className="text-xs text-gray-400 uppercase tracking-wide">
                           Эхлэх үнэ

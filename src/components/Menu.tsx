@@ -143,6 +143,7 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
           <MediaSlide src={images[incoming]} alt={`${item.name} ${incoming + 1}`} active={false} />
         </div>
       )}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent-500 z-20" />
     </>
   );
 
@@ -480,6 +481,7 @@ export default function Properties({
                         {p.images.length} медиа
                       </span>
                     )}
+                    <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-accent-500 z-10" />
                   </div>
 
                   <div className="p-4 sm:p-6">

@@ -77,7 +77,8 @@ function MediaSlide({
       src={resolveMediaUrl(src)}
       alt={alt}
       fill
-      className="object-cover"
+      className="object-contain"
+
       unoptimized
     />
   );

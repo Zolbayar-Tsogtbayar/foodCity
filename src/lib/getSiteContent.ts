@@ -45,7 +45,9 @@ type ApiSitePage = {
 };
 
 const EMPTY_HOME: HomeSections = {
+  hidden: false,
   hero: {
+
     slideImages: [],
     badge: "",
     titleLine1: "",
@@ -61,7 +63,9 @@ const EMPTY_HOME: HomeSections = {
   },
 };
 const EMPTY_ABOUT: AboutSections = {
+  hidden: false,
   main: {
+
     sectionLabel: "",
     h2Line1: "",
     h2Accent: "",
@@ -76,9 +80,14 @@ const EMPTY_ABOUT: AboutSections = {
   },
 };
 const EMPTY_FOOTER: FooterSections = {
+  logo: "",
   partners: { partnersLabel: "", items: [] },
   brand: { desc: "" },
+  socials: [],
+  sections: [],
+  copyright: "",
 };
+
 const EMPTY_CONTACT: ContactSections = {
   hero: { badge: "", h2Accent: "", intro: "" },
   items: [],
@@ -99,9 +108,11 @@ const EMPTY_PROPERTIES_PAGE: PropertiesPageSections = {
   cta: { href: "", label: "" },
 };
 const EMPTY_PROJECTS_PAGE: ProjectsPageSections = {
+  hidden: false,
   header: { badge: "", titleLine1: "", titleAccent: "", intro: "" },
   items: [],
 };
+
 
 const EMPTY_SALES_PAGE: SalesPageSections = {
   header: { eyebrow: "", title: "", intro: "" },
@@ -173,8 +184,10 @@ export async function getHomeSections(lang: string = "mn"): Promise<HomeSections
   const patch = asRecord(await fetchSitePageSections("home", lang));
   const hero = asRecord(patch.hero);
   return {
+    hidden: !!patch.hidden,
     hero: {
       ...EMPTY_HOME.hero,
+
       ...hero,
       slideImages: Array.isArray(hero.slideImages) ? (hero.slideImages as string[]) : [],
       stats: Array.isArray(hero.stats) ? (hero.stats as { value: string; label: string }[]) : [],
@@ -186,7 +199,9 @@ export async function getAboutSections(lang: string = "mn"): Promise<AboutSectio
   const patch = asRecord(await fetchSitePageSections("about", lang));
   const main = asRecord(patch.main);
   return {
+    hidden: !!patch.hidden,
     main: {
+
       ...EMPTY_ABOUT.main,
       ...main,
       stats: Array.isArray(main.stats) ? (main.stats as { value: string; label: string }[]) : [],
@@ -198,19 +213,28 @@ export async function getFooterSections(lang: string = "mn"): Promise<FooterSect
   const patch = asRecord(await fetchSitePageSections("footer", lang));
   const partners = asRecord(patch.partners);
   return {
+    hidden: !!patch.hidden,
+    logo: typeof patch.logo === "string" ? patch.logo : EMPTY_FOOTER.logo,
+
     partners: {
       ...EMPTY_FOOTER.partners,
       ...partners,
       items: Array.isArray(partners.items) ? (partners.items as FooterSections["partners"]["items"]) : [],
     },
     brand: { ...EMPTY_FOOTER.brand, ...asRecord(patch.brand) },
+    socials: Array.isArray(patch.socials) ? (patch.socials as FooterSections["socials"]) : EMPTY_FOOTER.socials,
+    sections: Array.isArray(patch.sections) ? (patch.sections as FooterSections["sections"]) : EMPTY_FOOTER.sections,
+    copyright: typeof patch.copyright === "string" ? patch.copyright : EMPTY_FOOTER.copyright,
   };
 }
+
 
 export async function getContactSections(lang: string = "mn"): Promise<ContactSections> {
   const patch = asRecord(await fetchSitePageSections("contact", lang));
   return {
+    hidden: !!patch.hidden,
     hero: { ...EMPTY_CONTACT.hero, ...asRecord(patch.hero) },
+
     items: Array.isArray(patch.items) ? (patch.items as ContactSections["items"]) : [],
     agent: { ...EMPTY_CONTACT.agent, ...asRecord(patch.agent) },
     formTitle: typeof patch.formTitle === "string" ? patch.formTitle : "",
@@ -227,7 +251,9 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
 export async function getGallerySections(lang: string = "mn"): Promise<GallerySections> {
   const patch = asRecord(await fetchSitePageSections("gallery", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_SERVICES.header, ...asRecord(patch.header) },
+
     features: Array.isArray(patch.features)
       ? (patch.features as Record<string, unknown>[]).map((f) => ({
           title: typeof f.title === "string" ? f.title : "",
@@ -246,7 +272,9 @@ export async function getGallerySections(lang: string = "mn"): Promise<GallerySe
 export async function getPropertiesPageSections(lang: string = "mn"): Promise<PropertiesPageSections> {
   const patch = asRecord(await fetchSitePageSections("properties-page", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_PROPERTIES_PAGE.header, ...asRecord(patch.header) },
+
     categories: Array.isArray(patch.categories) ? (patch.categories as string[]) : [],
     items: Array.isArray(patch.items)
       ? (patch.items as Record<string, unknown>[]).map((item) => ({
@@ -271,10 +299,24 @@ export async function getPropertiesPageSections(lang: string = "mn"): Promise<Pr
 export async function getProjectsPageSections(lang: string = "mn"): Promise<ProjectsPageSections> {
   const patch = asRecord(await fetchSitePageSections("projects-page", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_PROJECTS_PAGE.header, ...asRecord(patch.header) },
     items: Array.isArray(patch.items) ? (patch.items as ProjectsPageSections["items"]) : [],
   };
 }
+export async function getPagesMetadata(lang: string = "mn"): Promise<{ pageId: string; hidden: boolean }[]> {
+  const isDev = process.env.NODE_ENV === "development";
+  const fetchInit: NextFetchInit = isDev ? { cache: "no-store" } : { next: { revalidate: REVALIDATE_SECONDS, tags: ["site-content"] } };
+  try {
+    const res = await fetchWithTimeout(`${getApiBaseForServer()}/api/v1/site-pages?lang=${lang}`, fetchInit, SERVER_FETCH_TIMEOUT_MS);
+    if (!res.ok) return [];
+    const json = (await res.json()) as { data?: { pageId: string; hidden: boolean }[] };
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
 
 export async function getSalesPageSections(lang: string = "mn"): Promise<SalesPageSections> {
   const patch = asRecord(await fetchSitePageSections("sales-page", lang));

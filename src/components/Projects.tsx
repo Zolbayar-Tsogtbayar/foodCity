@@ -39,7 +39,8 @@ function MediaSlide({
       <video
         ref={videoRef}
         src={resolveMediaUrl(src)}
-        className="h-full w-full object-cover"
+        className="h-full w-full object-contain"
+
         playsInline
         onPlay={onVideoPlay}
         onPause={onVideoPause}
@@ -52,7 +53,8 @@ function MediaSlide({
       src={resolveMediaUrl(src)}
       alt={alt}
       fill
-      className="object-cover"
+      className="object-contain"
+
       unoptimized
     />
   );

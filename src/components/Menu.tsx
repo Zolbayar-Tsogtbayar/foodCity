@@ -310,15 +310,24 @@ export default function Properties({
 }: {
   content: PropertiesPageSections;
 }) {
-  const categories = content.categories;
-  const [active, setActive] = useState("Бүгд");
+  const allLabel = "Бүгд";
+  const displayCategories = [allLabel, ...content.categories.filter(c => c !== allLabel)];
+
+  const [active, setActive] = useState(allLabel);
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<PropertyItem | null>(null);
 
   const filtered =
-    active === "Бүгд"
+    active === allLabel
       ? content.items
-      : content.items.filter((p) => p.category === active);
+      : content.items.filter(
+          (p) =>
+            (p.category || "").trim().toLowerCase() ===
+            active.trim().toLowerCase(),
+        );
+
+
+
 
   const PAGE_SIZE = 9;
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
@@ -358,7 +367,8 @@ export default function Properties({
           className="hero-reveal flex gap-2 sm:gap-3 mb-8 sm:mb-12 overflow-x-auto pb-2 sm:pb-0 sm:flex-wrap sm:justify-center"
           style={{ animationDelay: "0.5s" }}
         >
-          {categories.map((cat) => (
+          {displayCategories.map((cat) => (
+
             <button
               key={cat}
               onClick={() => {
@@ -378,133 +388,151 @@ export default function Properties({
 
         {/* Grid */}
         <div
-          className="hero-reveal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+          className="hero-reveal grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 min-h-[200px]"
           style={{ animationDelay: "0.6s" }}
         >
-          {paged.map((p) => {
-            const clickable = hasGallery(p);
-            const Tag = clickable ? "button" : "div";
-            return (
-              <Tag
-                key={p.id}
-                {...(clickable ? { onClick: () => setSelected(p) } : {})}
-                className={`group bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
-              >
-                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
-                  {p.image ? (
-                    isVideo(p.image) ? (
-                      <video
-                        src={resolveMediaUrl(p.image)}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="h-full w-full object-cover"
-                      />
+          {paged.length > 0 ? (
+            paged.map((p) => {
+              const clickable = hasGallery(p);
+              const Tag = clickable ? "button" : "div";
+              return (
+                <Tag
+                  key={p.id}
+                  {...(clickable ? { onClick: () => setSelected(p) } : {})}
+                  className={`group bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
+                >
+                  <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
+                    {p.image ? (
+                      isVideo(p.image) ? (
+                        <video
+                          src={resolveMediaUrl(p.image)}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={resolveMediaUrl(p.image)}
+                          alt={p.name}
+                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      )
                     ) : (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={resolveMediaUrl(p.image)}
-                        alt={p.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                    )
-                  ) : (
-                    <>
-                      <div
-                        className="absolute inset-0 opacity-10"
-                        style={{
-                          backgroundImage:
-                            "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
-                          backgroundSize: "24px 24px",
-                        }}
-                      />
-                      <svg
-                        viewBox="0 0 120 80"
-                        className="absolute bottom-0 right-4 w-20 opacity-20 sm:w-24"
-                        fill="white"
-                      >
-                        <rect x="10" y="20" width="30" height="60" />
-                        <rect x="50" y="5" width="40" height="75" />
-                        <rect x="100" y="35" width="20" height="45" />
-                        {[0, 1, 2].map((r) =>
-                          [15, 25, 35].map((x) => (
-                            <rect
-                              key={`${r}${x}`}
-                              x={x}
-                              y={28 + r * 18}
-                              width="6"
-                              height="10"
-                              fill="#f97316"
-                              opacity="0.8"
-                            />
-                          )),
-                        )}
-                      </svg>
-                    </>
-                  )}
-                  {p.badge && (
-                    <span className="absolute left-3 top-3 rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">
-                      {p.badge}
+                      <>
+                        <div
+                          className="absolute inset-0 opacity-10"
+                          style={{
+                            backgroundImage:
+                              "linear-gradient(rgba(255,255,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.4) 1px, transparent 1px)",
+                            backgroundSize: "24px 24px",
+                          }}
+                        />
+                        <svg
+                          viewBox="0 0 120 80"
+                          className="absolute bottom-0 right-4 w-20 opacity-20 sm:w-24"
+                          fill="white"
+                        >
+                          <rect x="10" y="20" width="30" height="60" />
+                          <rect x="50" y="5" width="40" height="75" />
+                          <rect x="100" y="35" width="20" height="45" />
+                          {[0, 1, 2].map((r) =>
+                            [15, 25, 35].map((x) => (
+                              <rect
+                                key={`${r}${x}`}
+                                x={x}
+                                y={28 + r * 18}
+                                width="6"
+                                height="10"
+                                fill="#f97316"
+                                opacity="0.8"
+                              />
+                            )),
+                          )}
+                        </svg>
+                      </>
+                    )}
+                    {p.badge && (
+                      <span className="absolute left-3 top-3 rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">
+                        {p.badge}
+                      </span>
+                    )}
+                    <span className="absolute bottom-3 right-3 z-10 rounded bg-black/35 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                      {p.tag}
                     </span>
-                  )}
-                  <span className="absolute bottom-3 right-3 z-10 rounded bg-black/35 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
-                    {p.tag}
-                  </span>
-                  {p.images.length > 1 && (
-                    <span className="absolute bottom-3 left-3 z-10 rounded bg-black/35 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm">
-                      {p.images.length} медиа
-                    </span>
-                  )}
-                </div>
-
-                <div className="p-4 sm:p-6">
-                  <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1 group-hover:text-accent-500 transition-colors">
-                    {p.name}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4 leading-relaxed">
-                    {p.description}
-                  </p>
-
-                  <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border-y border-gray-100">
-                    {[
-                      { icon: "▭", label: p.size },
-                      { icon: "≡", label: p.floor },
-                      { icon: "⊡", label: p.parking },
-                    ].map((spec) => (
-                      <div key={spec.label} className="text-center">
-                        <div className="text-accent-500 text-xs mb-0.5">
-                          {spec.icon}
-                        </div>
-                        <div className="text-gray-600 text-xs font-medium leading-tight">
-                          {spec.label}
-                        </div>
-                      </div>
-                    ))}
+                    {p.images.length > 1 && (
+                      <span className="absolute bottom-3 left-3 z-10 rounded bg-black/35 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm">
+                        {p.images.length} медиа
+                      </span>
+                    )}
                   </div>
 
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="text-xs text-gray-400 uppercase tracking-wide">
-                        Эхлэх үнэ
-                      </div>
-                      <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">
-                        {p.price}
-                      </div>
+                  <div className="p-4 sm:p-6">
+                    <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1 group-hover:text-accent-500 transition-colors">
+                      {p.name}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-2">
+                      {p.description}
+                    </p>
+
+                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border-y border-gray-100">
+                      {[
+                        { icon: "▭", label: p.size },
+                        { icon: "≡", label: p.floor },
+                        { icon: "⊡", label: p.parking },
+                      ].map((spec) => (
+                        <div key={spec.label} className="text-center">
+                          <div className="text-accent-500 text-xs mb-0.5">
+                            {spec.icon}
+                          </div>
+                          <div className="text-gray-600 text-xs font-medium leading-tight">
+                            {spec.label}
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <a
-                      href="/contact"
-                      onClick={(e) => e.stopPropagation()}
-                      className="shrink-0 bg-brand-900 hover:bg-accent-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded transition-colors duration-200"
-                    >
-                      Лавлагаа авах
-                    </a>
+
+                    <div className="flex items-center justify-between gap-2">
+                      <div>
+                        <div className="text-xs text-gray-400 uppercase tracking-wide">
+                          Эхлэх үнэ
+                        </div>
+                        <div className="text-accent-500 font-black text-base sm:text-lg leading-tight">
+                          {p.price}
+                        </div>
+                      </div>
+                      <a
+                        href="/contact"
+                        onClick={(e) => e.stopPropagation()}
+                        className="shrink-0 bg-brand-900 hover:bg-accent-500 text-white text-xs sm:text-sm font-semibold px-3 sm:px-4 py-2 rounded transition-colors duration-200"
+                      >
+                        Лавлагаа авах
+                      </a>
+                    </div>
                   </div>
-                </div>
-              </Tag>
-            );
-          })}
+                </Tag>
+              );
+            })
+          ) : (
+            <div className="col-span-full py-20 text-center">
+              <div className="text-gray-300 mb-4">
+                <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+              </div>
+              <p className="text-gray-500 font-medium">Энэ ангилалд одоогоор мэдээлэл байхгүй байна.</p>
+              <button 
+                onClick={() => setActive(allLabel)}
+                className="mt-4 text-accent-500 font-bold hover:underline"
+              >
+                Бүх ангилал руу буцах
+              </button>
+            </div>
+          )}
         </div>
+
 
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-10">

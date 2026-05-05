@@ -6,20 +6,27 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
-export default function Navbar() {
+export default function Navbar({ 
+  hiddenPageIds = [] 
+}: { 
+  hiddenPageIds?: string[] 
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
   const { lang, t, toggle } = useLanguage();
 
-  const navLinks = [
-    { label: t.nav.home, href: "/" },
-    { label: t.nav.about, href: "/about" },
-    { label: t.nav.gallery, href: "/gallery" },
-    { label: t.nav.projects, href: "/projects" },
-    { label: t.nav.properties, href: "/properties" },
-    { label: t.nav.contact, href: "/contact" },
+  const allLinks = [
+    { id: "home", label: t.nav.home, href: "/" },
+    { id: "about", label: t.nav.about, href: "/about" },
+    { id: "gallery", label: t.nav.gallery, href: "/gallery" },
+    { id: "projects-page", label: t.nav.projects, href: "/projects" },
+    { id: "properties-page", label: t.nav.properties, href: "/properties" },
+    { id: "contact", label: t.nav.contact, href: "/contact" },
   ];
+
+  const navLinks = allLinks.filter(link => !hiddenPageIds.includes(link.id));
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);

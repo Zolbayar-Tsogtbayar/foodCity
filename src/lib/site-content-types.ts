@@ -8,7 +8,9 @@ export type PartnerLogo = {
 };
 
 export type HomeSections = {
+  hidden?: boolean;
   hero: {
+
     slideImages: string[];
     badge: string;
     titleLine1: string;
@@ -25,7 +27,9 @@ export type HomeSections = {
 };
 
 export type AboutSections = {
+  hidden?: boolean;
   main: {
+
     sectionLabel: string;
     h2Line1: string;
     h2Accent: string;
@@ -40,7 +44,23 @@ export type AboutSections = {
   };
 };
 
+export type FooterSocial = {
+  label: string;
+  href: string;
+  iconType: "facebook" | "instagram" | "linkedin" | "twitter" | "youtube";
+};
+
+export type FooterLinkSection = {
+  label: string;
+  href?: string;
+  items: { label: string; href: string }[];
+};
+
+
 export type FooterSections = {
+  hidden?: boolean;
+  logo: string;
+
   partners: {
     partnersLabel: string;
     items: PartnerLogo[];
@@ -48,9 +68,14 @@ export type FooterSections = {
   brand: {
     desc: string;
   };
+  socials: FooterSocial[];
+  sections: FooterLinkSection[];
+  copyright: string;
 };
 
+
 export type ContactSections = {
+  hidden?: boolean;
   hero: {
     badge: string;
     h2Accent: string;
@@ -69,7 +94,9 @@ export type ContactSections = {
 };
 
 export type GallerySections = {
+  hidden?: boolean;
   header: {
+
     badge: string;
     h2Line1: string;
     h2Accent: string;
@@ -94,7 +121,9 @@ export type ServicesSections = {
 
 /** /properties listing page copy (site page id: `properties-page`) */
 export type PropertiesPageSections = {
+  hidden?: boolean;
   header: {
+
     badge: string;
     titleLine1: string;
     titleAccent: string;
@@ -132,7 +161,9 @@ export type ProjectItem = {
 
 /** /projects listing page (site page id: `projects-page`) */
 export type ProjectsPageSections = {
+  hidden?: boolean;
   header: {
+
     badge: string;
     titleLine1: string;
     titleAccent: string;
@@ -143,7 +174,9 @@ export type ProjectsPageSections = {
 
 /** /sales marketing header (site page id: `sales-page`) */
 export type SalesPageSections = {
+  hidden?: boolean;
   header: {
+
     eyebrow: string;
     title: string;
     intro: string;
@@ -152,7 +185,9 @@ export type SalesPageSections = {
 
 /** /jobs listing page copy (site page id: `jobs-page`) */
 export type JobsPageSections = {
+  hidden?: boolean;
   header: {
+
     title: string;
     intro: string;
   };
@@ -172,7 +207,9 @@ export type TeamMember = {
 
 /** /team — «Мэдээ мэдээлэл» (site page id: `team`) */
 export type TeamPageSections = {
+  hidden?: boolean;
   header: {
+
     eyebrow: string;
     h2Line1: string;
     h2Accent: string;

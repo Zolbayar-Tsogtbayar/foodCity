@@ -3,8 +3,9 @@ import { Suspense } from "react";
 import { Roboto } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
-import Navbar from "@/components/Navbar";
+import NavbarWithContent from "@/components/NavbarWithContent";
 import FooterWithContent from "@/components/FooterWithContent";
+import Navbar from "@/components/Navbar";
 import PageWrapper from "@/components/PageWrapper";
 import ChatBotLoader from "@/components/ChatBotLoader";
 import TopLoader from "@/components/TopLoader";
@@ -46,6 +47,7 @@ export default async function RootLayout({
           <TopLoader />
           <Navbar />
           <PageWrapper>
+
             <main className="flex-1">{children}</main>
           </PageWrapper>
           <Suspense fallback={<FooterFallback />}>

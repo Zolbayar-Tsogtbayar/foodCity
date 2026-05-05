@@ -175,7 +175,7 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                         resolvePublicMediaUrl(open.imageUrl) ?? open.imageUrl
                       }
                       alt=""
-                      className="h-full w-full object-cover object-center"
+                      className="h-full w-full object-contain object-center"
                     />
                   </div>
                 ) : (

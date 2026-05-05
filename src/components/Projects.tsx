@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
@@ -34,6 +35,8 @@ function MediaSlide({
       videoRef.current.currentTime = 0;
     }
   }, [active]);
+
+  if (!src) return null;
 
   if (isVideo(src)) {
     return (
@@ -168,7 +171,7 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
     </svg>
   );
 
-  return (
+  return createPortal(
     <>
       {/* ── MOBILE: centered card overlay ── hidden on sm+ ── */}
       <div
@@ -226,13 +229,15 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
             {closeSvg}
           </button>
         </div>
-        <div className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}>
+        <div className={`relative flex-1 flex items-center justify-center p-6 sm:p-16 md:p-24 lg:p-32 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.98]"}`}>
           {images.length > 0 ? (
-            <>
-              {slideNodes}
+            <div className="relative w-full h-full max-w-7xl max-h-full">
+              <div className="absolute inset-0">
+                {slideNodes}
+              </div>
               {arrowNodes}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
-                <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-6 pb-6 pt-24 sm:px-10 md:px-16">
+                <p className="mb-1.5 flex items-center gap-2 text-[10px] uppercase tracking-widest text-white/50">
                   {project.category && <span className="text-accent-400">{project.category}</span>}
                   {project.category && <span>·</span>}
                   {displayIndex + 1} / {images.length}
@@ -242,16 +247,16 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
                     </span>
                   )}
                 </p>
-                <h2 className="text-3xl font-bold text-white leading-tight">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
                   <FormattedText text={project.name} />
                 </h2>
                 {project.description && (
-                  <p className="mt-1.5 text-base text-white/65 leading-relaxed">
+                  <p className="mt-1.5 text-xs sm:text-sm lg:text-base text-white/65 leading-relaxed max-w-3xl">
                     <FormattedText text={project.description} />
                   </p>
                 )}
               </div>
-            </>
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="text-center p-8">
@@ -282,7 +287,8 @@ function Modal({ project, onClose }: { project: ProjectItem; onClose: () => void
           </div>
         )}
       </div>
-    </>
+    </>,
+    document.body
   );
 }
 
@@ -319,7 +325,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
               <button
                 key={project.id}
                 onClick={() => setSelected(project)}
-                className="hero-reveal group text-left rounded overflow-hidden bg-white border border-gray-100 hover:border-accent-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                className="hero-reveal group flex flex-col h-full text-left rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   {project.coverImage ? (
@@ -354,7 +360,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     </span>
                   )}
                 </div>
-                <div className="p-5 sm:p-6">
+                <div className="p-5 sm:p-6 flex-1 flex flex-col">
                   {project.category && (
                     <span className="text-xs font-semibold uppercase tracking-widest text-accent-500">
                       {project.category}
@@ -364,7 +370,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     <FormattedText text={project.name} />
                   </h3>
                   {project.description && (
-                    <p className="mt-1.5 text-gray-400 text-sm leading-relaxed">
+                    <p className="mt-1.5 text-gray-400 text-sm leading-relaxed line-clamp-4">
                       <FormattedText text={project.description} />
                     </p>
                   )}

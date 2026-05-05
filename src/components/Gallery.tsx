@@ -49,6 +49,8 @@ function MediaSlide({
     }
   }, [active]);
 
+  if (!src) return null;
+
   if (isYouTubeOrVimeo(src)) {
     return (
       <iframe
@@ -153,9 +155,9 @@ function Modal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
           </svg>
         </button>
       </div>
-      <div className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}>
+      <div className={`relative flex-1 flex items-center justify-center p-6 sm:p-16 md:p-24 lg:p-32 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.98]"}`}>
         {images.length > 0 && (
-          <>
+          <div className="relative w-full h-full max-w-7xl max-h-full">
             <div
               className="absolute inset-0 will-change-transform"
               style={{
@@ -195,19 +197,19 @@ function Modal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
               </>
             )}
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-8 pb-10 pt-32">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-6 pb-8 pt-32 sm:px-10 md:px-16">
               <div className="max-w-4xl mx-auto">
-                <p className="mb-2 flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/50 font-bold">
+                <p className="mb-2 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/50 font-bold">
                   {displayIndex + 1} / {images.length}
                   {(isVideo(images[displayIndex]) || isYouTubeOrVimeo(images[displayIndex])) && (
                     <span className="bg-accent-500 text-white px-1.5 py-0.5 rounded text-[10px]">VIDEO</span>
                   )}
                 </p>
-                <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">{item.title}</h2>
-                {item.desc && <p className="mt-4 text-white/70 text-lg leading-relaxed max-w-2xl">{item.desc}</p>}
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-white leading-tight">{item.title}</h2>
+                {item.desc && <p className="mt-3 text-white/70 text-sm sm:text-base leading-relaxed max-w-2xl">{item.desc}</p>}
               </div>
             </div>
-          </>
+          </div>
         )}
       </div>
       {images.length > 1 && (
@@ -246,7 +248,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
   }
   
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden mb-12 max-w-2xl mx-auto w-full">
+    <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden mb-12 max-w-2xl mx-auto w-full">
       {/* Post Text */}
       <div className="p-5 sm:p-6">
         {item.date && (

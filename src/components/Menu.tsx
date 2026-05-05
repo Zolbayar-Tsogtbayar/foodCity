@@ -37,6 +37,8 @@ function MediaSlide({
     }
   }, [active]);
 
+  if (!src) return null;
+
   if (isVideo(src)) {
     return (
       <video
@@ -52,7 +54,7 @@ function MediaSlide({
   }
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={resolveMediaUrl(src)} alt={alt} className="absolute inset-0 h-full w-full object-cover" />
+    <img src={resolveMediaUrl(src)} alt={alt} className="absolute inset-0 h-full w-full object-contain" />
   );
 }
 
@@ -251,12 +253,14 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
         <div className="absolute top-4 right-4 z-30">
           {closeBtn("bg-white/10 hover:bg-white/25")}
         </div>
-        <div className={`relative flex-1 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.97]"}`}>
+        <div className={`relative flex-1 flex items-center justify-center p-6 sm:p-16 md:p-24 lg:p-32 overflow-hidden transition-transform duration-300 ${visible ? "scale-100" : "scale-[0.98]"}`}>
           {images.length > 0 ? (
-            <>
-              {slides}
+            <div className="relative w-full h-full max-w-7xl max-h-full">
+              <div className="absolute inset-0">
+                {slides}
+              </div>
               {arrows}
-              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24">
+              <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-black/85 via-black/40 to-transparent px-8 pb-6 pt-24 sm:px-12 md:px-20 lg:px-32">
                 <p className="mb-1.5 flex items-center gap-2 text-[11px] uppercase tracking-widest text-white/50">
                   {displayIndex + 1} / {images.length}
                   {isVideo(images[displayIndex]) && (
@@ -266,7 +270,7 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
                   )}
                 </p>
                 <div className="flex items-center gap-3 mb-1">
-                  <h2 className="text-3xl font-bold text-white leading-tight">
+                  <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
                     <FormattedText text={item.name} />
                   </h2>
                   {item.badge && (
@@ -274,18 +278,18 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
                   )}
                 </div>
                 {item.description && (
-                  <p className="mt-1 text-base text-white/65 leading-relaxed">
+                  <p className="mt-1 text-sm sm:text-base text-white/65 leading-relaxed max-w-4xl">
                     <FormattedText text={item.description} />
                   </p>
                 )}
                 <div className="mt-3 flex items-center gap-6">
-                  <span className="text-white/60 text-sm">{item.size}</span>
-                  <span className="text-white/60 text-sm">{item.floor}</span>
-                  <span className="text-white/60 text-sm">{item.parking}</span>
-                  <span className="text-accent-400 font-bold text-base">{item.price}</span>
+                  <span className="text-white/60 text-xs sm:text-sm">{item.size}</span>
+                  <span className="text-white/60 text-xs sm:text-sm">{item.floor}</span>
+                  <span className="text-white/60 text-xs sm:text-sm">{item.parking}</span>
+                  <span className="text-accent-400 font-bold text-sm sm:text-base">{item.price}</span>
                 </div>
               </div>
-            </>
+            </div>
           ) : (
             <div className="flex h-full items-center justify-center">
               <div className="text-center p-8">
@@ -414,7 +418,7 @@ export default function Properties({
                 <Tag
                   key={p.id}
                   {...(clickable ? { onClick: () => setSelected(p) } : {})}
-                  className={`group bg-white border border-gray-100 hover:border-accent-200 rounded overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
+                  className={`group flex flex-col h-full bg-white border border-gray-100 shadow-sm rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
                 >
                   <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
                     {p.image ? (
@@ -485,11 +489,11 @@ export default function Properties({
                     <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-accent-500 z-10" />
                   </div>
 
-                  <div className="p-4 sm:p-6">
+                  <div className="p-4 sm:p-6 flex-1 flex flex-col">
                     <h3 className="font-bold text-brand-900 text-base sm:text-lg mb-1 group-hover:text-accent-500 transition-colors">
                       <FormattedText text={p.name} />
                     </h3>
-                    <p className="text-gray-400 text-sm mb-4 leading-relaxed">
+                    <p className="text-gray-400 text-sm mb-4 leading-relaxed line-clamp-3">
                       <FormattedText text={p.description} />
                     </p>
 

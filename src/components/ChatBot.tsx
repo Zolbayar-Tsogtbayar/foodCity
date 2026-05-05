@@ -231,6 +231,11 @@ export default function ChatBot() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const socketRef = useRef<Socket | null>(null);
+  const [humanMode, setHumanMode] = useState(false);
+  const humanModeRef = useRef(false);
+  useEffect(() => {
+    humanModeRef.current = humanMode;
+  }, [humanMode]);
   const seenIds = useRef<Set<string>>(new Set());
   const base = getApiBaseUrl();
 
@@ -252,8 +257,6 @@ export default function ChatBot() {
       setLoadingConfig(false);
     }
   }, [base, defaultConfig]);
-
-  const [humanMode, setHumanMode] = useState(false);
 
   const bootstrapConversation = useCallback(async () => {
     setError(null);
@@ -357,7 +360,7 @@ export default function ChatBot() {
       }
       
       // BLOCK bot messages if we are in human mode (backend might emit them incorrectly)
-      if (m.role === "bot" && humanMode) return;
+      if (m.role === "bot" && humanModeRef.current) return;
 
       if (seenIds.current.has(m.id)) return;
       seenIds.current.add(m.id);

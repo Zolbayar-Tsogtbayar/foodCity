@@ -497,7 +497,7 @@ export default function Properties({
                       <FormattedText text={p.description} />
                     </p>
 
-                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border-y border-gray-100">
+                    <div className="grid grid-cols-3 gap-2 mb-4 sm:mb-5 py-3 sm:py-4 border border-gray-100 rounded-lg">
                       {[
                         { icon: "▭", label: p.size },
                         { icon: "≡", label: p.floor },

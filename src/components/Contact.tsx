@@ -201,7 +201,7 @@ export default function Contact({ content }: { content: ContactSections }) {
             )}
 
             {/* Info Items section */}
-            <div className="flex flex-wrap gap-x-8 gap-y-6">
+            <div className="flex flex-col gap-6">
               {items.map((item, i) => {
                 const iconKey = item.icon?.toLowerCase();
                 const IconComponent = iconKey && SOCIAL_META[iconKey] 

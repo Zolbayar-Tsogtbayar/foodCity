@@ -307,32 +307,34 @@ export default function Gallery({ content }: { content: GallerySections }) {
 
   return (
     <section id="gallery" className="py-12 sm:py-16 lg:py-20 bg-gray-50 min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
-        {content.header?.badge && (
-          <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
-            {stripHtmlAndDecode(content.header.badge)}
-          </span>
-        )}
-        {(content.header?.h2Line1 || content.header?.h2Accent) && (
-          <h2 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">
-            {content.header.h2Line1 && <FormattedText text={content.header.h2Line1} />}{" "}
-            {content.header.h2Accent && (
-              <span className="text-accent-500">
-                <FormattedText text={content.header.h2Accent} />
-              </span>
-            )}
-          </h2>
-        )}
-        {content.header?.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
-          <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            <FormattedText text={content.header.intro} />
-          </p>
-        )}
-      </div>
+      {!content.header?.hidden && (content.header?.badge || content.header?.h2Line1 || content.header?.h2Accent || content.header?.intro) && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+          {content.header?.badge && (
+            <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
+              {stripHtmlAndDecode(content.header.badge)}
+            </span>
+          )}
+          {(content.header?.h2Line1 || content.header?.h2Accent) && (
+            <h2 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">
+              {content.header.h2Line1 && <FormattedText text={content.header.h2Line1} />}{" "}
+              {content.header.h2Accent && (
+                <span className="text-accent-500">
+                  <FormattedText text={content.header.h2Accent} />
+                </span>
+              )}
+            </h2>
+          )}
+          {content.header?.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
+            <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              <FormattedText text={content.header.intro} />
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center">
-          {features.length > 0 ? (
+          {!content.featuresHidden && (features.length > 0 ? (
             features.map((item, i) => (
               <GalleryPost key={i} item={item} />
             ))
@@ -345,7 +347,7 @@ export default function Gallery({ content }: { content: GallerySections }) {
               </div>
               <h3 className="text-xl font-bold text-gray-500">Одоогоор пост байхгүй байна.</h3>
             </div>
-          )}
+          ))}
         </div>
       </div>
     </section>

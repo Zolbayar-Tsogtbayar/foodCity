@@ -9,6 +9,11 @@ export default async function FooterWithContent() {
     getFooterSections(lang),
     getPagesMetadata(lang),
   ]);
+
+  if (content.hidden) {
+    return null;
+  }
+
   const hiddenPageIds = metadata.filter((m: { hidden: boolean }) => m.hidden).map((m: { pageId: string }) => m.pageId);
   const t = translations[lang];
   return <Footer content={content} t={t} hiddenPageIds={hiddenPageIds} />;

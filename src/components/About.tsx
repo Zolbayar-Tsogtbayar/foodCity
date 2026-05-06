@@ -4,6 +4,7 @@ import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
 
 export default function About({ main }: { main: AboutSections["main"] }) {
+  if (main.hidden) return null;
   const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
   const imageUrl = resolveMediaUrl(rawUrl);
   const isVideo = rawUrl.match(/\.(mp4|webm|mov|ogg|avi)$/i);
@@ -100,21 +101,23 @@ export default function About({ main }: { main: AboutSections["main"] }) {
               <FormattedText text={main.p2} />
             </p>
 
-            <div
-              className="hero-reveal grid grid-cols-2 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-gray-100"
-              style={{ animationDelay: "0.75s" }}
-            >
-              {main.stats.map((s) => (
-                <div key={s.label}>
-                  <div className="text-2xl sm:text-3xl font-black text-brand-900">
-                    {s.value}
+            {!main.statsHidden && (main.stats?.length ?? 0) > 0 && (
+              <div
+                className="hero-reveal grid grid-cols-2 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t border-gray-100"
+                style={{ animationDelay: "0.75s" }}
+              >
+                {main.stats.map((s) => (
+                  <div key={s.label}>
+                    <div className="text-2xl sm:text-3xl font-black text-brand-900">
+                      {s.value}
+                    </div>
+                    <div className="text-gray-400 text-xs mt-1 uppercase tracking-wide leading-snug font-normal">
+                      {s.label}
+                    </div>
                   </div>
-                  <div className="text-gray-400 text-xs mt-1 uppercase tracking-wide leading-snug font-normal">
-                    {s.label}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -17,6 +17,7 @@ const HOLD = 5000;
 const SPEED = 900;
 
 export default function Hero({ hero }: { hero: HeroContent }) {
+  if (hero.hidden) return null;
   const trimmed = (hero.slideImages ?? []).map((s) => s.trim()).filter(Boolean);
   const slidesRaw =
     trimmed.length > 0 ? trimmed : ["/images/baclground-image-1.jpg"];
@@ -189,22 +190,24 @@ export default function Hero({ hero }: { hero: HeroContent }) {
           </div>
 
           {/* Stats */}
-          <div
-            className="hero-reveal grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/20"
-            style={{ animationDelay: "0.75s" }}
-          >
-            {hero.stats.map((stat) => (
-              <div key={stat.label}>
-                <CountUp
-                  value={stat.value}
-                  className="text-2xl sm:text-3xl font-black text-accent-500"
-                />
-                <div className="text-gray-200 text-xs sm:text-sm mt-1 uppercase tracking-wide">
-                  {stat.label}
+          {!hero.statsHidden && (hero.stats?.length ?? 0) > 0 && (
+            <div
+              className="hero-reveal grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8 pt-6 sm:pt-8 border-t border-white/20"
+              style={{ animationDelay: "0.75s" }}
+            >
+              {hero.stats.map((stat) => (
+                <div key={stat.label}>
+                  <CountUp
+                    value={stat.value}
+                    className="text-2xl sm:text-3xl font-black text-accent-500"
+                  />
+                  <div className="text-gray-200 text-xs sm:text-sm mt-1 uppercase tracking-wide">
+                    {stat.label}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

@@ -299,26 +299,28 @@ export default function Projects({ content }: { content: ProjectsPageSections })
   return (
     <main className="min-h-screen bg-brand-50 pt-20 pb-20">
       {/* Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
-        <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-2">
-          {stripHtmlAndDecode(content.header.badge)}
-        </span>
-        <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">
-          <FormattedText text={content.header.titleLine1} />{" "}
-          <span className="text-accent-500">
-            <FormattedText text={content.header.titleAccent} />
+      {!content.header.hidden && (content.header.badge || content.header.titleLine1 || content.header.titleAccent || content.header.intro) && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 text-center">
+          <span className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-2">
+            {stripHtmlAndDecode(content.header.badge)}
           </span>
-        </h1>
-        {content.header.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
-          <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-            <FormattedText text={content.header.intro} />
-          </p>
-        )}
-      </div>
+          <h1 className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 leading-tight [&_div]:inline [&_p]:inline">
+            <FormattedText text={content.header.titleLine1} />{" "}
+            <span className="text-accent-500">
+              <FormattedText text={content.header.titleAccent} />
+            </span>
+          </h1>
+          {content.header.intro && content.header.intro.replace(/<[^>]*>?/gm, '').trim() && (
+            <p className="hero-reveal mt-4 text-gray-500 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+              <FormattedText text={content.header.intro} />
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Cards grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {content.items.length === 0 ? (
+        {!content.itemsHidden && (content.items.length === 0 ? (
           <p className="text-gray-400 text-center py-20">Одоогоор төсөл байхгүй байна.</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -380,7 +382,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
               </button>
             ))}
           </div>
-        )}
+        ))}
       </div>
 
       {selected && <Modal project={selected} onClose={() => setSelected(null)} />}

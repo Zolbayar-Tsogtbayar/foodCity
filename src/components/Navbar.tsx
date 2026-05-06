@@ -7,9 +7,13 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Navbar({ 
-  hiddenPageIds = [] 
+  hiddenPageIds = [],
+  phoneNumber = "+976 1100-0000",
+  phoneHref = "tel:+97611000000"
 }: { 
-  hiddenPageIds?: string[] 
+  hiddenPageIds?: string[];
+  phoneNumber?: string;
+  phoneHref?: string;
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -94,7 +98,7 @@ export default function Navbar({
         {/* Phone + lang toggle — desktop only */}
         <div className="hidden lg:flex items-center gap-4 xl:gap-6 shrink-0">
           <a
-            href="tel:+97611000000"
+            href={phoneHref}
             className="flex items-center gap-2 text-gray-300 hover:text-white text-sm transition-colors whitespace-nowrap"
           >
             <svg
@@ -104,7 +108,7 @@ export default function Navbar({
             >
               <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.58.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.24 1.01L6.6 10.8z" />
             </svg>
-            +976 1100-0000
+            {phoneNumber}
           </a>
           <button
             onClick={toggle}
@@ -123,7 +127,7 @@ export default function Navbar({
             {lang === "mn" ? "EN" : "MN"}
           </button>
           <a
-            href="tel:+97611000000"
+            href={phoneHref}
             className="flex h-11 w-11 shrink-0 items-center justify-center text-accent-500 touch-manipulation"
             aria-label="Утас"
           >

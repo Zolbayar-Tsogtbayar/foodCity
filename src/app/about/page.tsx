@@ -9,6 +9,8 @@ import { getLanguageServer } from "@/lib/i18n-server";
  */
 
 
+import { notFound } from "next/navigation";
+
 export default function AboutPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
@@ -19,6 +21,11 @@ export default function AboutPage() {
 
 async function AboutContent() {
   const lang = await getLanguageServer();
-  const { main } = await getAboutSections(lang);
-  return <About main={main} />;
+  const content = await getAboutSections(lang);
+  
+  if (content.hidden) {
+    notFound();
+  }
+  
+  return <About main={content.main} />;
 }

@@ -72,7 +72,7 @@ export default function Footer({
   return (
     <footer className="bg-brand-900 text-white">
       {/* Partners */}
-      {partners && partners.length > 0 && (
+      {partners && partners.length > 0 && !content.partners?.hidden && (
         <div className="border-b border-brand-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
             <p className="text-center text-gray-500 text-xs uppercase tracking-[0.16em] mb-4 sm:mb-6">
@@ -109,20 +109,24 @@ export default function Footer({
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Left Side: Brand, Copyright, Socials */}
           <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-            <Link href="/" className="inline-block shrink-0">
-              <Image
-                src={resolveMediaUrl(content.logo || "/fclogo.png")}
-                alt="Food City"
-                width={160}
-                height={57}
-                className="h-[2.5rem] w-auto object-contain"
-                unoptimized
-              />
-            </Link>
+            {!content.brand?.hidden && !content.logoHidden && (
+              <Link href="/" className="inline-block shrink-0">
+                <Image
+                  src={resolveMediaUrl(content.logo || "/fclogo.png")}
+                  alt="Food City"
+                  width={160}
+                  height={57}
+                  className="h-[2.5rem] w-auto object-contain"
+                  unoptimized
+                />
+              </Link>
+            )}
             <div className="hidden sm:block w-px h-6 bg-brand-800"></div>
-            <p className="text-gray-500 text-[11px] leading-relaxed text-center sm:text-left">
-              {content.copyright}
-            </p>
+            {!content.copyrightHidden && (
+              <p className="text-gray-500 text-[11px] leading-relaxed text-center sm:text-left">
+                {content.copyright}
+              </p>
+            )}
           </div>
 
           {/* Right Side: Links & Socials Inline */}
@@ -139,7 +143,7 @@ export default function Footer({
             ))}
 
             {/* Additional Links */}
-            {(content.sections || []).flatMap(section => 
+            {(content.sections || []).filter(s => !s.hidden).flatMap(section => 
               (section.items || []).filter(item => !item.hidden).map((link, lidx) => (
                 <Link
                   key={`${section.label}-${lidx}`}
@@ -155,7 +159,7 @@ export default function Footer({
 
             {/* Socials */}
             <div className="flex gap-3">
-              {(content.socials || []).map((s) => (
+              {(content.socials || []).filter(s => !s.hidden).map((s) => (
                 <a
                   key={s.label}
                   href={s.href}

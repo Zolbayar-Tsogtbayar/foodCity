@@ -225,6 +225,7 @@ export async function getFooterSections(lang: string = "mn"): Promise<FooterSect
     socials: Array.isArray(patch.socials) ? (patch.socials as FooterSections["socials"]) : EMPTY_FOOTER.socials,
     sections: Array.isArray(patch.sections) ? (patch.sections as FooterSections["sections"]) : EMPTY_FOOTER.sections,
     copyright: typeof patch.copyright === "string" ? patch.copyright : EMPTY_FOOTER.copyright,
+    copyrightHidden: !!patch.copyrightHidden,
   };
 }
 
@@ -233,6 +234,8 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
   const patch = asRecord(await fetchSitePageSections("contact", lang));
   return {
     hidden: !!patch.hidden,
+    navbarPhoneLabel: typeof patch.navbarPhoneLabel === "string" ? patch.navbarPhoneLabel : "",
+    navbarPhoneHref: typeof patch.navbarPhoneHref === "string" ? patch.navbarPhoneHref : "",
     hero: { ...EMPTY_CONTACT.hero, ...asRecord(patch.hero) },
 
     items: Array.isArray(patch.items) ? (patch.items as ContactSections["items"]) : [],

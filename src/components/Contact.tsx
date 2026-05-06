@@ -142,28 +142,30 @@ export default function Contact({ content }: { content: ContactSections }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Hero header */}
-        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
-          <span
-            className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
-            style={{ animationDelay: "0.1s" }}
-          >
-            {stripHtmlAndDecode(hero.badge)}
-          </span>
-          <h2
-            className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
-            style={{ animationDelay: "0.25s" }}
-          >
-            <span className="text-accent-500">
-              <FormattedText text={hero.h2Accent} />
+        {!hero.hidden && (hero.badge || hero.h2Accent || hero.intro) && (
+          <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
+            <span
+              className="hero-reveal inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4"
+              style={{ animationDelay: "0.1s" }}
+            >
+              {stripHtmlAndDecode(hero.badge)}
             </span>
-          </h2>
-          <p
-            className="hero-reveal text-gray-500 text-base sm:text-lg"
-            style={{ animationDelay: "0.4s" }}
-          >
-            <FormattedText text={hero.intro} />
-          </p>
-        </div>
+            <h2
+              className="hero-reveal text-3xl sm:text-4xl lg:text-5xl font-black text-brand-900 mb-4"
+              style={{ animationDelay: "0.25s" }}
+            >
+              <span className="text-accent-500">
+                <FormattedText text={hero.h2Accent} />
+              </span>
+            </h2>
+            <p
+              className="hero-reveal text-gray-500 text-base sm:text-lg"
+              style={{ animationDelay: "0.4s" }}
+            >
+              <FormattedText text={hero.intro} />
+            </p>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
 
@@ -173,7 +175,7 @@ export default function Contact({ content }: { content: ContactSections }) {
             style={{ animationDelay: "0.5s" }}
           >
             {/* Agent section */}
-            {content.agent && content.agent.name && (
+            {!content.agent?.hidden && content.agent?.name && (
               <div className="agent-reveal">
                 <div className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
                   <div className="w-14 h-14 rounded-full bg-brand-900 flex items-center justify-center text-white text-xl font-bold shrink-0 shadow-lg">
@@ -201,32 +203,34 @@ export default function Contact({ content }: { content: ContactSections }) {
             )}
 
             {/* Info Items section */}
-            <div className="flex flex-col gap-6">
-              {items.map((item, i) => {
-                const iconKey = item.icon?.toLowerCase();
-                const IconComponent = iconKey && SOCIAL_META[iconKey] 
-                  ? SOCIAL_META[iconKey].icon 
-                  : iconKey === "phone" ? CONTACT_ICONS[1]
-                  : iconKey === "mail" ? CONTACT_ICONS[2]
-                  : iconKey === "map-pin" ? CONTACT_ICONS[0]
-                  : iconKey === "clock" ? CONTACT_ICONS[3]
-                  : CONTACT_ICONS[i % CONTACT_ICONS.length];
+            {!content.itemsHidden && (
+              <div className="flex flex-col gap-6">
+                {items.map((item, i) => {
+                  const iconKey = item.icon?.toLowerCase();
+                  const IconComponent = iconKey && SOCIAL_META[iconKey] 
+                    ? SOCIAL_META[iconKey].icon 
+                    : iconKey === "phone" ? CONTACT_ICONS[1]
+                    : iconKey === "mail" ? CONTACT_ICONS[2]
+                    : iconKey === "map-pin" ? CONTACT_ICONS[0]
+                    : iconKey === "clock" ? CONTACT_ICONS[3]
+                    : CONTACT_ICONS[i % CONTACT_ICONS.length];
 
-                return (
-                  <div key={`${item.title}-${i}`} className="flex items-start gap-4 min-w-[240px]">
-                    <div className="w-11 h-11 sm:w-12 sm:h-12 bg-accent-50 text-accent-500 rounded flex items-center justify-center shrink-0">
-                      {IconComponent}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-brand-900 text-sm">{item.title}</div>
-                      <div className="text-gray-500 text-sm mt-0.5 leading-snug">
-                        <FormattedText text={item.value} />
+                  return (
+                    <div key={`${item.title}-${i}`} className="flex items-start gap-4 min-w-[240px]">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 bg-accent-50 text-accent-500 rounded flex items-center justify-center shrink-0">
+                        {IconComponent}
+                      </div>
+                      <div>
+                        <div className="font-semibold text-brand-900 text-sm">{item.title}</div>
+                        <div className="text-gray-500 text-sm mt-0.5 leading-snug">
+                          <FormattedText text={item.value} />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Right — platform links & Contact Form */}
@@ -235,7 +239,7 @@ export default function Contact({ content }: { content: ContactSections }) {
             style={{ animationDelay: "0.6s" }}
           >
             {/* Social Links */}
-            {activeLinks.length > 0 && (
+            {!content.linksHidden && activeLinks.length > 0 && (
               <div className="space-y-3">
                 <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
                   {lang === "mn" ? "Сошиал холбоосууд" : "Social Links"}
@@ -265,12 +269,14 @@ export default function Contact({ content }: { content: ContactSections }) {
             )}
 
             {/* Contact Form */}
-            <div className="space-y-3">
-              <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
-                {lang === "mn" ? "Холбоо барих маягт" : "Contact Form"}
+            {!content.formHidden && (
+              <div className="space-y-3">
+                <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
+                  {lang === "mn" ? "Холбоо барих маягт" : "Contact Form"}
+                </div>
+                <ContactForm />
               </div>
-              <ContactForm />
-            </div>
+            )}
           </div>
         </div>
       </div>

@@ -30,6 +30,8 @@ async function loadJobs(lang: string): Promise<JobItem[]> {
   }
 }
 
+import { notFound } from "next/navigation";
+
 export default function JobsPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-white animate-pulse" />}>
@@ -42,12 +44,20 @@ async function JobsContent() {
   const lang = await getLanguageServer();
   const [jobs, header] = await Promise.all([loadJobs(lang), getJobsPageSections(lang)]);
 
+  if (header.hidden) {
+    notFound();
+  }
+
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-24 sm:pt-28">
-      <h1 className="mb-2 text-3xl font-bold text-brand-900">
-        {header.header.title}
-      </h1>
-      <p className="mb-10 text-gray-600">{header.header.intro}</p>
+      {!header.header.hidden && (header.header.title || header.header.intro) && (
+        <>
+          <h1 className="mb-2 text-3xl font-bold text-brand-900">
+            {header.header.title}
+          </h1>
+          <p className="mb-10 text-gray-600">{header.header.intro}</p>
+        </>
+      )}
       <JobsClient jobs={jobs} />
     </section>
   );

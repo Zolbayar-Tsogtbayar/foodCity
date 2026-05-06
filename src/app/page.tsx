@@ -5,6 +5,8 @@ import { getLanguageServer } from "@/lib/i18n-server";
 
 
 
+import { notFound } from "next/navigation";
+
 export default function Home() {
   return (
     <Suspense fallback={<div className="min-h-[80vh] bg-brand-900 animate-pulse" />}>
@@ -15,6 +17,15 @@ export default function Home() {
 
 async function HomeContent() {
   const lang = await getLanguageServer();
-  const { hero } = await getHomeSections(lang);
-  return <Hero hero={hero} />;
+  const content = await getHomeSections(lang);
+  
+  if (content.hidden) {
+    notFound();
+  }
+
+  if (content.hero.hidden) {
+    return null;
+  }
+
+  return <Hero hero={content.hero} />;
 }

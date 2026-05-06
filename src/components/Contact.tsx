@@ -169,27 +169,13 @@ export default function Contact({ content }: { content: ContactSections }) {
 
           {/* Left — contact info */}
           <div
-            className="hero-reveal space-y-5"
+            className="hero-reveal space-y-10"
             style={{ animationDelay: "0.5s" }}
           >
-            {items.map((item, i) => (
-              <div key={`${item.title}-${i}`} className="flex items-start gap-4">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-accent-50 text-accent-500 rounded flex items-center justify-center shrink-0">
-                  {CONTACT_ICONS[i % CONTACT_ICONS.length]}
-                </div>
-                <div>
-                  <div className="font-semibold text-brand-900 text-sm">{item.title}</div>
-                  <div className="text-gray-500 text-sm mt-0.5 leading-snug">
-                    <FormattedText text={item.value} />
-                  </div>
-                </div>
-              </div>
-            ))}
-
             {/* Agent section */}
             {content.agent && content.agent.name && (
-              <div className="mt-10 pt-10 border-t border-gray-100">
-                <div className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100">
+              <div className="agent-reveal">
+                <div className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 border border-gray-100 shadow-sm">
                   <div className="w-14 h-14 rounded-full bg-brand-900 flex items-center justify-center text-white text-xl font-bold shrink-0 shadow-lg">
                     {content.agent.initials}
                   </div>
@@ -213,6 +199,34 @@ export default function Contact({ content }: { content: ContactSections }) {
                 </div>
               </div>
             )}
+
+            {/* Info Items section */}
+            <div className="flex flex-wrap gap-x-8 gap-y-6">
+              {items.map((item, i) => {
+                const iconKey = item.icon?.toLowerCase();
+                const IconComponent = iconKey && SOCIAL_META[iconKey] 
+                  ? SOCIAL_META[iconKey].icon 
+                  : iconKey === "phone" ? CONTACT_ICONS[1]
+                  : iconKey === "mail" ? CONTACT_ICONS[2]
+                  : iconKey === "map-pin" ? CONTACT_ICONS[0]
+                  : iconKey === "clock" ? CONTACT_ICONS[3]
+                  : CONTACT_ICONS[i % CONTACT_ICONS.length];
+
+                return (
+                  <div key={`${item.title}-${i}`} className="flex items-start gap-4 min-w-[240px]">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 bg-accent-50 text-accent-500 rounded flex items-center justify-center shrink-0">
+                      {IconComponent}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-brand-900 text-sm">{item.title}</div>
+                      <div className="text-gray-500 text-sm mt-0.5 leading-snug">
+                        <FormattedText text={item.value} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Right — platform links & Contact Form */}
@@ -226,30 +240,23 @@ export default function Contact({ content }: { content: ContactSections }) {
                 <div className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-4 px-1">
                   {lang === "mn" ? "Сошиал холбоосууд" : "Social Links"}
                 </div>
-                <div className="grid grid-cols-1 xs:grid-cols-2 gap-3">
+                <div className="flex flex-wrap gap-4">
                   {activeLinks.map((link, i) => {
                     const meta = SOCIAL_META[link.type];
-                    const displayTitle = link.title || meta?.label || link.type;
                     return (
                       <a
                         key={i}
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 border border-gray-100 rounded-xl p-3 bg-white hover:shadow-md hover:border-accent-200 transition-all duration-200 group"
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${meta?.bg ?? "bg-gray-400"}`}
+                        title={link.title || meta?.label || link.type}
                       >
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0 ${meta?.bg ?? "bg-gray-400"}`}>
-                          {meta?.icon ?? (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                            </svg>
-                          )}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-bold text-brand-900 text-xs group-hover:text-accent-500 transition-colors truncate">
-                            {displayTitle}
-                          </div>
-                        </div>
+                        {meta?.icon ?? (
+                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                          </svg>
+                        )}
                       </a>
                     );
                   })}

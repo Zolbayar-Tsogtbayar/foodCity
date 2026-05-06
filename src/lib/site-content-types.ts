@@ -82,7 +82,7 @@ export type ContactSections = {
     h2Accent: string;
     intro: string;
   };
-  items: { title: string; value: string }[];
+  items: { title: string; value: string; icon?: string }[];
   agent: {
     initials: string;
     name: string;

@@ -10,11 +10,14 @@ export default async function NavbarWithContent() {
   ]);
   const hiddenPageIds = metadata.filter((m) => m.hidden).map((m) => m.pageId);
   
+  const phoneLabel = (contact.navbarPhoneLabel || contact.navbarPhoneHref || contact.agent?.telLabel || "").trim();
+  const phoneLink = (contact.navbarPhoneHref || contact.agent?.telHref || `tel:${phoneLabel.replace(/\s+/g, "")}`).trim();
+  
   return (
     <Navbar 
       hiddenPageIds={hiddenPageIds} 
-      phoneNumber={contact.navbarPhoneLabel || contact.navbarPhoneHref || contact.agent?.telLabel}
-      phoneHref={contact.navbarPhoneHref || contact.agent?.telHref}
+      phoneNumber={phoneLabel}
+      phoneHref={phoneLink}
     />
   );
 }

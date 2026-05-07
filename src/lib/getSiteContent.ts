@@ -234,8 +234,8 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
   const patch = asRecord(await fetchSitePageSections("contact", lang));
   return {
     hidden: !!patch.hidden,
-    navbarPhoneLabel: typeof patch.navbarPhoneLabel === "string" ? patch.navbarPhoneLabel : "",
-    navbarPhoneHref: typeof patch.navbarPhoneHref === "string" ? patch.navbarPhoneHref : "",
+    navbarPhoneLabel: typeof patch.navbarPhoneLabel === "string" ? patch.navbarPhoneLabel.trim() : "",
+    navbarPhoneHref: typeof patch.navbarPhoneHref === "string" ? patch.navbarPhoneHref.trim() : "",
     hero: { ...EMPTY_CONTACT.hero, ...asRecord(patch.hero) },
 
     items: Array.isArray(patch.items) ? (patch.items as ContactSections["items"]) : [],

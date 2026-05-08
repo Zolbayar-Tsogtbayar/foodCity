@@ -21,11 +21,12 @@ export default function About({ main }: { main: AboutSections["main"] }) {
             className="hero-reveal relative lg:sticky lg:top-28"
             style={{ animationDelay: "0.1s" }}
           >
-            <div className="relative rounded overflow-hidden aspect-[4/3] mb-8 sm:mb-0">
+            <div className={`relative rounded overflow-hidden mb-8 sm:mb-0 ${isVideo ? "aspect-video" : "aspect-[4/3]"}`}>
               {isVideo ? (
                 <video
                   src={imageUrl}
                   autoPlay
+                  muted
                   loop
                   playsInline
                   preload="auto"

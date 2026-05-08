@@ -16,10 +16,11 @@ export default function About({ main }: { main: AboutSections["main"] }) {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    v.muted = false;
-    v.play().catch(() => {
-      v.muted = true;
-      v.play().catch(() => {});
+    // iOS requires muted=true in HTML to autoplay — play muted first, then unmute
+    v.play().then(() => {
+      v.muted = false;
+    }).catch(() => {
+      // autoplay blocked entirely (rare) — nothing more we can do
     });
   }, []);
 

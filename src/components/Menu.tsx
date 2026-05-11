@@ -7,6 +7,7 @@ import { resolveMediaUrl } from "@/lib/media";
 import VideoPlayer from "./VideoPlayer";
 import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SPEED = 500;
 const VIDEO_EXTS = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i;
@@ -319,8 +320,9 @@ export default function Properties({
 }: {
   content: PropertiesPageSections;
 }) {
+  const { lang, t } = useLanguage();
   const existingAll = content.categories.find(c => c.trim().toUpperCase() === 'ALL' || c.trim().toUpperCase() === 'БҮГД' || c.trim().toUpperCase() === 'БҮГД ');
-  const allLabel = existingAll || "Бүгд";
+  const allLabel = existingAll || (lang === "mn" ? "Бүгд" : "All");
   const displayCategories = existingAll 
     ? content.categories 
     : [allLabel, ...content.categories];

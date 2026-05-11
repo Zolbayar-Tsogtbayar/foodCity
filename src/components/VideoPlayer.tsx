@@ -16,7 +16,7 @@ interface VideoPlayerProps {
 export default function VideoPlayer({
   src,
   className = "",
-  muted = true,
+  muted = false,
   loop = true,
   poster,
   autoPlay = false,
@@ -68,30 +68,18 @@ export default function VideoPlayer({
         onPause={() => setIsPlaying(false)}
       />
       
-      <button
+      <div 
+        className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all duration-300 ${!isPlaying || showControls ? 'bg-black/20 opacity-100' : 'opacity-0'}`}
         onClick={togglePlay}
-        className={`absolute bottom-4 right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-all duration-300 hover:bg-accent-500 ${
-          showControls || !isPlaying ? "opacity-100 scale-100" : "opacity-0 scale-90"
-        }`}
-        aria-label={isPlaying ? "Pause" : "Play"}
       >
-        {isPlaying ? (
-          <Pause className="h-5 w-5" fill="currentColor" />
-        ) : (
-          <Play className="h-5 w-5 ml-0.5" fill="currentColor" />
-        )}
-      </button>
-
-      {!isPlaying && (
-        <div 
-          className="absolute inset-0 flex items-center justify-center bg-black/10 cursor-pointer"
-          onClick={togglePlay}
-        >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/90 text-white shadow-xl transition-transform hover:scale-110">
+        <div className={`flex h-16 w-16 items-center justify-center rounded-full bg-accent-500/90 text-white shadow-xl transition-transform hover:scale-110 ${(!isPlaying || showControls) ? 'scale-100' : 'scale-90'}`}>
+          {isPlaying ? (
+            <Pause className="h-8 w-8" fill="currentColor" />
+          ) : (
             <Play className="h-8 w-8 ml-1" fill="currentColor" />
-          </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

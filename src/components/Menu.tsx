@@ -49,7 +49,6 @@ function MediaSlide({
         className="h-full w-full"
         active={active}
         autoPlay={false}
-        muted={true}
       />
     );
   }
@@ -436,7 +435,6 @@ export default function Properties({
                             src={resolveMediaUrl(p.image)}
                             autoPlay={false}
                             loop
-                            muted
                             className="absolute inset-0 h-full w-full"
                           />
                         ) : (

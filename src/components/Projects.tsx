@@ -344,7 +344,6 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                     isVideo(project.coverImage) ? (
                       <VideoPlayer
                         src={resolveMediaUrl(project.coverImage)}
-                        muted
                         loop
                         autoPlay={false}
                         className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"

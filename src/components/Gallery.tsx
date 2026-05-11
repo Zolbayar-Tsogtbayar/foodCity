@@ -71,7 +71,6 @@ function MediaSlide({
         className="h-full w-full"
         active={active}
         autoPlay={false}
-        muted={true}
       />
     );
   }
@@ -277,7 +276,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
               {isYouTubeOrVimeo(m) ? (
                 <iframe src={getEmbedUrl(m)} className="absolute inset-0 h-full w-full object-cover" allow="autoplay; fullscreen" />
               ) : isVideo(m) ? (
-                <VideoPlayer src={resolveMediaUrl(m)} muted loop autoPlay={false} className="absolute inset-0 h-full w-full" />
+                <VideoPlayer src={resolveMediaUrl(m)} loop autoPlay={false} className="absolute inset-0 h-full w-full" />
               ) : (
                 <Image src={resolveMediaUrl(m)} alt="" fill className="object-cover" unoptimized />
               )}

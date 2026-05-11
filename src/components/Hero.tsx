@@ -70,7 +70,6 @@ export default function Hero({ hero }: { hero: HeroContent }) {
             <VideoPlayer
               src={slides[current]}
               autoPlay={false}
-              muted
               loop
               className="absolute inset-0 w-full h-full"
             />
@@ -93,7 +92,6 @@ export default function Hero({ hero }: { hero: HeroContent }) {
               <VideoPlayer
                 src={slides[incoming]}
                 autoPlay={false}
-                muted
                 loop
                 className="absolute inset-0 w-full h-full"
               />

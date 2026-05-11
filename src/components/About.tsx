@@ -31,7 +31,6 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                 <VideoPlayer
                   src={imageUrl}
                   autoPlay={false}
-                  muted
                   loop
                   className="absolute inset-0 w-full h-full"
                 />
@@ -41,7 +40,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
                   style={{ backgroundImage: `url("${imageUrl}")` }}
                 />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-start p-6 sm:p-8">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex items-end justify-start p-6 sm:p-8 pointer-events-none">
                 <div
                   className="absolute inset-0 opacity-10"
                   style={{

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import type { PropertiesPageSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
+import VideoPlayer from "./VideoPlayer";
 import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
 
@@ -42,14 +43,12 @@ function MediaSlide({
 
   if (isVideo(src)) {
     return (
-      <video
-        ref={videoRef}
+      <VideoPlayer
         src={resolveMediaUrl(src)}
-        className="h-full w-full object-cover"
-        playsInline
-        onPlay={onVideoPlay}
-        onPause={onVideoPause}
-        onEnded={onVideoPause}
+        className="h-full w-full"
+        active={active}
+        autoPlay={false}
+        muted={true}
       />
     );
   }
@@ -412,23 +411,31 @@ export default function Properties({
             {paged.length > 0 ? (
               paged.map((p) => {
                 const clickable = hasGallery(p);
-                const Tag = clickable ? "button" : "div";
                 return (
-                  <Tag
+                  <div
                     key={p.id}
-                    {...(clickable ? { onClick: () => setSelected(p) } : {})}
-                    className={`group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer" : ""}`}
+                    {...(clickable ? { 
+                      onClick: () => setSelected(p),
+                      role: "button",
+                      tabIndex: 0,
+                      onKeyDown: (e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setSelected(p);
+                        }
+                      }
+                    } : {})}
+                    className={`group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full ${clickable ? "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2" : ""}`}
                   >
                     <div className="relative h-40 overflow-hidden bg-gradient-to-br from-brand-700 to-brand-900 sm:h-48">
                       {p.image ? (
                         isVideo(p.image) ? (
-                          <video
+                          <VideoPlayer
                             src={resolveMediaUrl(p.image)}
-                            autoPlay
+                            autoPlay={false}
                             loop
                             muted
-                            playsInline
-                            className="h-full w-full object-cover"
+                            className="absolute inset-0 h-full w-full"
                           />
                         ) : (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -514,7 +521,7 @@ export default function Properties({
                       </div>
                     </div>
                     <div className="h-1 bg-accent-500 w-full" />
-                  </Tag>
+                  </div>
                 );
               })
             ) : (

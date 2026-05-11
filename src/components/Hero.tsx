@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import CountUp from "@/components/CountUp";
 import { resolveMediaUrl } from "@/lib/media";
+import VideoPlayer from "./VideoPlayer";
 import type { HomeSections } from "@/lib/site-content-types";
 import FormattedText from "@/components/FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
@@ -25,14 +26,6 @@ export default function Hero({ hero }: { hero: HeroContent }) {
   const [current, setCurrent] = useState(0);
   const [incoming, setIncoming] = useState<number | null>(null);
   const [entered, setEntered] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (!videoRef.current) return;
-    if (isVideo(slidesRaw[current])) {
-      void videoRef.current.play().catch(() => undefined);
-    }
-  }, [current]);
 
   useEffect(() => {
     const id = setTimeout(() => {
@@ -73,15 +66,15 @@ export default function Hero({ hero }: { hero: HeroContent }) {
       {/* Sliding backgrounds */}
       <div className="absolute inset-0">
         {isVideoSlide ? (
-          <video
-            ref={videoRef}
-            src={slides[current]}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
+          <div className="absolute inset-0 z-0">
+            <VideoPlayer
+              src={slides[current]}
+              autoPlay={false}
+              muted
+              loop
+              className="absolute inset-0 w-full h-full"
+            />
+          </div>
         ) : (
           <div
             className="absolute inset-0 bg-cover bg-center will-change-transform"
@@ -96,15 +89,15 @@ export default function Hero({ hero }: { hero: HeroContent }) {
         )}
         {incoming !== null && (
           isVideo(slidesRaw[incoming]) ? (
-            <video
-              key={incoming}
-              src={slides[incoming]}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            />
+            <div key={incoming} className="absolute inset-0 z-0">
+              <VideoPlayer
+                src={slides[incoming]}
+                autoPlay={false}
+                muted
+                loop
+                className="absolute inset-0 w-full h-full"
+              />
+            </div>
           ) : (
             <div
               className="absolute inset-0 bg-cover bg-center will-change-transform"
@@ -121,7 +114,7 @@ export default function Hero({ hero }: { hero: HeroContent }) {
       </div>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-brand-900/20" />
+      <div className="absolute inset-0 bg-brand-900/20 pointer-events-none z-10" />
       {/* Accent left strip */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent-500 z-10" />
 

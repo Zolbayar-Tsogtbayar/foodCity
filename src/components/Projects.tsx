@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
+import VideoPlayer from "./VideoPlayer";
 import type { ProjectsPageSections, ProjectItem } from "@/lib/site-content-types";
 import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
@@ -325,21 +326,28 @@ export default function Projects({ content }: { content: ProjectsPageSections })
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {content.items.map((project) => (
-              <button
+              <div
                 key={project.id}
                 onClick={() => setSelected(project)}
-                className="hero-reveal group flex flex-col h-full text-left rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected(project);
+                  }
+                }}
+                className="hero-reveal group flex flex-col h-full text-left rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 cursor-pointer"
               >
                 <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                   {project.coverImage ? (
                     isVideo(project.coverImage) ? (
-                      <video
+                      <VideoPlayer
                         src={resolveMediaUrl(project.coverImage)}
                         muted
                         loop
-                        autoPlay
-                        playsInline
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        autoPlay={false}
+                        className="absolute inset-0 h-full w-full transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <Image
@@ -379,7 +387,7 @@ export default function Projects({ content }: { content: ProjectsPageSections })
                   )}
                 </div>
 
-              </button>
+              </div>
             ))}
           </div>
         ))}

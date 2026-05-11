@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { resolveMediaUrl } from "@/lib/media";
+import VideoPlayer from "./VideoPlayer";
 import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
 import type { GallerySections } from "@/lib/site-content-types";
@@ -65,14 +66,12 @@ function MediaSlide({
   }
   if (isVideo(src)) {
     return (
-      <video
-        ref={videoRef}
+      <VideoPlayer
         src={resolveMediaUrl(src)}
-        className="h-full w-full object-cover"
-        playsInline
-        onPlay={onVideoPlay}
-        onPause={onVideoPause}
-        onEnded={onVideoPause}
+        className="h-full w-full"
+        active={active}
+        autoPlay={false}
+        muted={true}
       />
     );
   }
@@ -278,7 +277,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
               {isYouTubeOrVimeo(m) ? (
                 <iframe src={getEmbedUrl(m)} className="absolute inset-0 h-full w-full object-cover" allow="autoplay; fullscreen" />
               ) : isVideo(m) ? (
-                <video src={resolveMediaUrl(m)} muted loop autoPlay playsInline className="absolute inset-0 h-full w-full object-cover" controls />
+                <VideoPlayer src={resolveMediaUrl(m)} muted loop autoPlay={false} className="absolute inset-0 h-full w-full" />
               ) : (
                 <Image src={resolveMediaUrl(m)} alt="" fill className="object-cover" unoptimized />
               )}

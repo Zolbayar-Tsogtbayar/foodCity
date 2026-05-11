@@ -11,6 +11,7 @@ export type SalesAdItem = {
   title: string;
   summary?: string;
   body: string;
+  badge?: string;
   imageUrl?: string;
   externalUrl?: string;
   validFrom?: string;
@@ -152,6 +153,11 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                 >
                   {open.title}
                 </h2>
+                {open.badge && (
+                  <span className="inline-block rounded bg-red-500 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
+                    {open.badge}
+                  </span>
+                )}
               </div>
               <button
                 type="button"
@@ -334,6 +340,13 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
                   <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900">
                     <span className="text-4xl font-black text-white/20">
                       FC
+                    </span>
+                  </div>
+                )}
+                {ad.badge && (
+                  <div className="absolute left-3 top-3 z-10">
+                    <span className="rounded bg-red-500 px-2.5 py-1 text-[11px] font-black text-white uppercase tracking-wider shadow-lg">
+                      {ad.badge}
                     </span>
                   </div>
                 )}

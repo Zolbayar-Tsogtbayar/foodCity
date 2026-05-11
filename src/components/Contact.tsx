@@ -6,6 +6,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import FormattedText from "./FormattedText";
 import ContactForm from "./ContactForm";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
+import { resolveMediaUrl } from "@/lib/media";
 
 const SOCIAL_META: Record<string, { label: string; bg: string; icon: ReactNode }> = {
   facebook: {
@@ -253,13 +254,22 @@ export default function Contact({ content }: { content: ContactSections }) {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 ${meta?.bg ?? "bg-gray-400"}`}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden ${link.imageUrl ? "bg-white" : (meta?.bg ?? "bg-gray-400")}`}
                         title={link.title || meta?.label || link.type}
                       >
-                        {meta?.icon ?? (
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                          </svg>
+                        {link.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img 
+                            src={resolveMediaUrl(link.imageUrl)} 
+                            alt={link.title || link.type} 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          meta?.icon ?? (
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                          )
                         )}
                       </a>
                     );

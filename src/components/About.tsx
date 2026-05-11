@@ -3,6 +3,7 @@
 import { useRef, useEffect } from "react";
 import type { AboutSections } from "@/lib/site-content-types";
 import { resolveMediaUrl } from "@/lib/media";
+import VideoPlayer from "./VideoPlayer";
 import FormattedText from "./FormattedText";
 import { stripHtmlAndDecode } from "@/lib/html-utils";
 
@@ -11,18 +12,7 @@ export default function About({ main }: { main: AboutSections["main"] }) {
   const rawUrl = main.imageUrl?.trim() || "/images/baclground-image-1.jpg";
   const imageUrl = resolveMediaUrl(rawUrl);
   const isVideo = rawUrl.match(/\.(mp4|webm|mov|ogg|avi)$/i);
-  const videoRef = useRef<HTMLVideoElement>(null);
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    // iOS requires muted=true in HTML to autoplay — play muted first, then unmute
-    v.play().then(() => {
-      v.muted = false;
-    }).catch(() => {
-      // autoplay blocked entirely (rare) — nothing more we can do
-    });
-  }, []);
 
   return (
     <section
@@ -38,15 +28,12 @@ export default function About({ main }: { main: AboutSections["main"] }) {
           >
             <div className={`relative rounded overflow-hidden mb-8 sm:mb-0 ${isVideo ? "aspect-video" : "aspect-[4/3]"}`}>
               {isVideo ? (
-                <video
-                  ref={videoRef}
+                <VideoPlayer
                   src={imageUrl}
-                  autoPlay
+                  autoPlay={false}
                   muted
                   loop
-                  playsInline
-                  preload="auto"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full"
                 />
               ) : (
                 <div

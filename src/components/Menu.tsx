@@ -21,7 +21,7 @@ function MediaSlide({
   active,
   onVideoPlay,
   onVideoPause,
-}: {
+}: {  
   src: string;
   alt: string;
   active: boolean;
@@ -209,8 +209,8 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
               <h2 className="text-lg font-bold text-brand-900">
                 <FormattedText text={item.name} />
               </h2>
-              {item.badge && (
-                <span className="shrink-0 rounded bg-accent-500 px-2 py-0.5 text-xs font-bold text-white">{item.badge}</span>
+              {item.badge && item.badge !== "<br>" && item.badge !== "<p><br></p>" && item.badge.trim() !== "" && (
+                <span className="shrink-0 rounded bg-accent-500 px-2 py-0.5 text-xs font-bold text-white">{item.badge.replace(/<[^>]*>?/gm, '')}</span>
               )}
             </div>
             {item.description && (
@@ -263,8 +263,8 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
                   <h2 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
                     <FormattedText text={item.name} />
                   </h2>
-                  {item.badge && (
-                    <span className="rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">{item.badge}</span>
+                  {item.badge && item.badge !== "<br>" && item.badge !== "<p><br></p>" && item.badge.trim() !== "" && (
+                    <span className="rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">{item.badge.replace(/<[^>]*>?/gm, '')}</span>
                   )}
                 </div>
                 {item.description && (
@@ -479,14 +479,16 @@ export default function Properties({
                           </svg>
                         </>
                       )}
-                      {p.badge && (
+                      {p.badge && p.badge !== "<br>" && p.badge !== "<p><br></p>" && p.badge.trim() !== "" && (
                         <span className="absolute left-3 top-3 rounded bg-accent-500 px-2.5 py-1 text-xs font-bold text-white">
-                          {p.badge}
+                          {p.badge.replace(/<[^>]*>?/gm, '')}
                         </span>
                       )}
-                      <span className="absolute bottom-3 right-3 z-10 rounded bg-black/35 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
-                        {p.tag}
-                      </span>
+                      {p.tag && p.tag !== "<br>" && p.tag !== "<p><br></p>" && p.tag.trim() !== "" && (
+                        <span className="absolute bottom-3 right-3 z-10 rounded bg-black/35 px-3 py-1 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                          {p.tag.replace(/<[^>]*>?/gm, '')}
+                        </span>
+                      )}
                       {p.images.length > 1 && (
                         <span className="absolute bottom-3 left-3 z-10 rounded bg-black/35 px-2 py-0.5 text-xs text-white/80 backdrop-blur-sm">
                           {p.images.length} медиа

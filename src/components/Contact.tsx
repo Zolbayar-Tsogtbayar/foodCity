@@ -179,7 +179,7 @@ function SocialModal({ title, subLinks, onClose }: { title: string; subLinks: { 
                     </svg>
                   )}
                 </div>
-                <span className="flex-1 truncate">{link.label}</span>
+                <FormattedText text={link.label} className="flex-1 truncate" />
                 <svg className="w-4 h-4 text-gray-300 group-hover:text-accent-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -249,17 +249,17 @@ export default function Contact({ content }: { content: ContactSections }) {
                       {lang === "mn" ? "Холбоо барих ажилтан" : "Contact Agent"}
                     </div>
                     <div className="font-bold text-brand-900 text-base leading-tight truncate">
-                      {content.agent.name}
+                      <FormattedText text={content.agent.name} />
                     </div>
                     <div className="text-accent-500 text-xs font-medium mt-0.5">
-                      {content.agent.role}
+                      <FormattedText text={content.agent.role} />
                     </div>
                   </div>
                   <a
                     href={content.agent.telHref.startsWith("tel:") ? content.agent.telHref : `tel:${content.agent.telHref.replace(/\s+/g, '')}`}
                     className="h-10 px-4 bg-brand-900 hover:bg-accent-500 text-white rounded-lg flex items-center justify-center text-xs font-bold transition-all shrink-0 shadow-sm"
                   >
-                    {content.agent.telLabel}
+                    <FormattedText text={content.agent.telLabel} />
                   </a>
                 </div>
               </div>

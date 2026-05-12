@@ -248,6 +248,13 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
           title: typeof l.title === "string" ? l.title : "",
           imageUrl: typeof l.imageUrl === "string" ? l.imageUrl : undefined,
           hidden: !!l.hidden,
+          subLinks: Array.isArray(l.subLinks)
+            ? (l.subLinks as Record<string, unknown>[]).map((sl) => ({
+                type: typeof sl.type === "string" ? sl.type : "",
+                label: typeof sl.label === "string" ? sl.label : "",
+                href: typeof sl.href === "string" ? sl.href : "",
+              }))
+            : undefined,
         }))
       : [],
   };

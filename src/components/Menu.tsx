@@ -21,7 +21,7 @@ function MediaSlide({
   active,
   onVideoPlay,
   onVideoPause,
-}: {  
+}: {
   src: string;
   alt: string;
   active: boolean;
@@ -105,7 +105,7 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, incoming, videoPlaying]);
 
   useEffect(() => {
@@ -117,7 +117,7 @@ function Modal({ item, onClose }: { item: PropertyItem; onClose: () => void }) {
     if (images.length <= 1 || incoming !== null || videoPlaying) return;
     const id = setTimeout(() => next(), 3000);
     return () => clearTimeout(id);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [current, incoming, videoPlaying, images.length]);
 
   const displayIndex = incoming !== null ? incoming : current;
@@ -322,8 +322,8 @@ export default function Properties({
   const { lang, t } = useLanguage();
   const existingAll = content.categories.find(c => c.trim().toUpperCase() === 'ALL' || c.trim().toUpperCase() === 'БҮГД' || c.trim().toUpperCase() === 'БҮГД ');
   const allLabel = existingAll || (lang === "mn" ? "Бүгд" : "All");
-  const displayCategories = existingAll 
-    ? content.categories 
+  const displayCategories = existingAll
+    ? content.categories
     : [allLabel, ...content.categories];
 
   const [active, setActive] = useState(displayCategories[0] || allLabel);
@@ -340,10 +340,10 @@ export default function Properties({
     active === allLabel
       ? content.items
       : content.items.filter(
-          (p) =>
-            (p.category || "").trim().toLowerCase() ===
-            active.trim().toLowerCase(),
-        );
+        (p) =>
+          (p.category || "").trim().toLowerCase() ===
+          active.trim().toLowerCase(),
+      );
 
 
 
@@ -398,11 +398,10 @@ export default function Properties({
                 setActive(cat);
                 setPage(0);
               }}
-              className={`px-4 sm:px-5 py-2 rounded text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all whitespace-nowrap shrink-0 ${
-                active === cat
+              className={`px-4 sm:px-5 py-2 rounded text-xs sm:text-sm font-semibold uppercase tracking-wide transition-all whitespace-nowrap shrink-0 ${active === cat
                   ? "bg-brand-900 text-white"
                   : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -421,7 +420,7 @@ export default function Properties({
                 return (
                   <div
                     key={p.id}
-                    {...(clickable ? { 
+                    {...(clickable ? {
                       onClick: () => setSelected(p),
                       role: "button",
                       tabIndex: 0,
@@ -540,7 +539,7 @@ export default function Properties({
                   </svg>
                 </div>
                 <p className="text-gray-500 font-medium">Энэ ангилалд одоогоор мэдээлэл байхгүй байна.</p>
-                <button 
+                <button
                   onClick={() => setActive(allLabel)}
                   className="mt-4 text-accent-500 font-bold hover:underline"
                 >
@@ -565,11 +564,10 @@ export default function Properties({
               <button
                 key={i}
                 onClick={() => setPage(i)}
-                className={`w-8 h-8 rounded text-sm font-bold transition-colors ${
-                  i === page
+                className={`w-8 h-8 rounded text-sm font-bold transition-colors ${i === page
                     ? "bg-brand-900 text-white"
                     : "border border-gray-200 text-gray-600 hover:border-gray-400 hover:text-brand-900"
-                }`}
+                  }`}
               >
                 {i + 1}
               </button>

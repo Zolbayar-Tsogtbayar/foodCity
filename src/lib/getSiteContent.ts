@@ -135,11 +135,11 @@ const fetchSitePageSectionsRaw = cache(async (pageId: string, lang: string = "mn
   const fetchInit: NextFetchInit = isDev
     ? { cache: "no-store" }
     : {
-        next: {
-          revalidate: REVALIDATE_SECONDS,
-          tags: ["site-content"],
-        },
-      };
+      next: {
+        revalidate: REVALIDATE_SECONDS,
+        tags: ["site-content"],
+      },
+    };
 
   try {
     const res = await fetchWithTimeout(
@@ -243,19 +243,19 @@ export async function getContactSections(lang: string = "mn"): Promise<ContactSe
     formTitle: typeof patch.formTitle === "string" ? patch.formTitle : "",
     links: Array.isArray(patch.links)
       ? (patch.links as Record<string, unknown>[]).map((l) => ({
-          type: typeof l.type === "string" ? l.type : "",
-          href: typeof l.href === "string" ? l.href : "",
-          title: typeof l.title === "string" ? l.title : "",
-          imageUrl: typeof l.imageUrl === "string" ? l.imageUrl : undefined,
-          hidden: !!l.hidden,
-          subLinks: Array.isArray(l.subLinks)
-            ? (l.subLinks as Record<string, unknown>[]).map((sl) => ({
-                type: typeof sl.type === "string" ? sl.type : "",
-                label: typeof sl.label === "string" ? sl.label : "",
-                href: typeof sl.href === "string" ? sl.href : "",
-              }))
-            : undefined,
-        }))
+        type: typeof l.type === "string" ? l.type : "",
+        href: typeof l.href === "string" ? l.href : "",
+        title: typeof l.title === "string" ? l.title : "",
+        imageUrl: typeof l.imageUrl === "string" ? l.imageUrl : undefined,
+        hidden: !!l.hidden,
+        subLinks: Array.isArray(l.subLinks)
+          ? (l.subLinks as Record<string, unknown>[]).map((sl) => ({
+            type: typeof sl.type === "string" ? sl.type : "",
+            label: typeof sl.label === "string" ? sl.label : "",
+            href: typeof sl.href === "string" ? sl.href : "",
+          }))
+          : undefined,
+      }))
       : [],
   };
 }
@@ -268,13 +268,14 @@ export async function getGallerySections(lang: string = "mn"): Promise<GallerySe
 
     features: Array.isArray(patch.features)
       ? (patch.features as Record<string, unknown>[]).map((f) => ({
-          title: typeof f.title === "string" ? f.title : "",
-          desc: typeof f.desc === "string" ? f.desc : "",
-          image: typeof f.image === "string" ? f.image : "",
-          images: Array.isArray(f.images) ? (f.images as string[]) : [],
-          videoUrl: typeof f.videoUrl === "string" ? f.videoUrl : undefined,
-          date: typeof f.date === "string" ? f.date : undefined,
-        }))
+        title: typeof f.title === "string" ? f.title : "",
+        desc: typeof f.desc === "string" ? f.desc : "",
+        image: typeof f.image === "string" ? f.image : "",
+        images: Array.isArray(f.images) ? (f.images as string[]) : [],
+        videoUrl: typeof f.videoUrl === "string" ? f.videoUrl : undefined,
+        date: typeof f.date === "string" ? f.date : undefined,
+        hidden: !!f.hidden,
+      }))
       : [],
     banner: Array.isArray(patch.banner) ? (patch.banner as GallerySections["banner"]) : [],
     slides: Array.isArray(patch.slides) ? (patch.slides as string[]) : [],
@@ -290,19 +291,19 @@ export async function getPropertiesPageSections(lang: string = "mn"): Promise<Pr
     categories: Array.isArray(patch.categories) ? (patch.categories as string[]) : [],
     items: Array.isArray(patch.items)
       ? (patch.items as Record<string, unknown>[]).map((item) => ({
-          id: typeof item.id === "number" ? item.id : 0,
-          name: typeof item.name === "string" ? item.name : "",
-          image: typeof item.image === "string" ? item.image : "",
-          category: typeof item.category === "string" ? item.category : "",
-          badge: typeof item.badge === "string" ? item.badge : null,
-          size: typeof item.size === "string" ? item.size : "",
-          floor: typeof item.floor === "string" ? item.floor : "",
-          parking: typeof item.parking === "string" ? item.parking : "",
-          price: typeof item.price === "string" ? item.price : "",
-          tag: typeof item.tag === "string" ? item.tag : "",
-          description: typeof item.description === "string" ? item.description : "",
-          images: Array.isArray(item.images) ? (item.images as string[]) : [],
-        }))
+        id: typeof item.id === "number" ? item.id : 0,
+        name: typeof item.name === "string" ? item.name : "",
+        image: typeof item.image === "string" ? item.image : "",
+        category: typeof item.category === "string" ? item.category : "",
+        badge: typeof item.badge === "string" ? item.badge : null,
+        size: typeof item.size === "string" ? item.size : "",
+        floor: typeof item.floor === "string" ? item.floor : "",
+        parking: typeof item.parking === "string" ? item.parking : "",
+        price: typeof item.price === "string" ? item.price : "",
+        tag: typeof item.tag === "string" ? item.tag : "",
+        description: typeof item.description === "string" ? item.description : "",
+        images: Array.isArray(item.images) ? (item.images as string[]) : [],
+      }))
       : [],
     cta: { ...EMPTY_PROPERTIES_PAGE.cta, ...asRecord(patch.cta) },
   };

@@ -163,11 +163,11 @@ function SocialModal({ title, subLinks, onClose }: { title: string; subLinks: { 
           {subLinks.map((link, i) => {
             const meta = SOCIAL_META[link.type];
             return (
-              <a 
-                key={i} 
-                href={link.href} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                key={i}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-brand-900 transition-all font-medium group"
               >
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${meta?.bg ?? "bg-gray-400"}`}>
@@ -270,13 +270,13 @@ export default function Contact({ content }: { content: ContactSections }) {
               <div className="flex flex-col gap-6">
                 {items.map((item, i) => {
                   const iconKey = item.icon?.toLowerCase();
-                  const IconComponent = iconKey && SOCIAL_META[iconKey] 
-                    ? SOCIAL_META[iconKey].icon 
+                  const IconComponent = iconKey && SOCIAL_META[iconKey]
+                    ? SOCIAL_META[iconKey].icon
                     : iconKey === "phone" ? CONTACT_ICONS[1]
-                    : iconKey === "mail" ? CONTACT_ICONS[2]
-                    : iconKey === "map-pin" ? CONTACT_ICONS[0]
-                    : iconKey === "clock" ? CONTACT_ICONS[3]
-                    : CONTACT_ICONS[i % CONTACT_ICONS.length];
+                      : iconKey === "mail" ? CONTACT_ICONS[2]
+                        : iconKey === "map-pin" ? CONTACT_ICONS[0]
+                          : iconKey === "clock" ? CONTACT_ICONS[3]
+                            : CONTACT_ICONS[i % CONTACT_ICONS.length];
 
                   return (
                     <div key={`${item.title}-${i}`} className="flex items-start gap-4 min-w-[240px]">
@@ -328,10 +328,10 @@ export default function Contact({ content }: { content: ContactSections }) {
                       >
                         {link.imageUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img 
-                            src={resolveMediaUrl(link.imageUrl)} 
-                            alt={link.title || link.type} 
-                            className="w-full h-full object-cover" 
+                          <img
+                            src={resolveMediaUrl(link.imageUrl)}
+                            alt={link.title || link.type}
+                            className="w-full h-full object-cover"
                           />
                         ) : (
                           meta?.icon ?? (
@@ -360,7 +360,7 @@ export default function Contact({ content }: { content: ContactSections }) {
         </div>
       </div>
       {activeModalLink !== null && activeLinks[activeModalLink] && (
-        <SocialModal 
+        <SocialModal
           title={activeLinks[activeModalLink].title || SOCIAL_META[activeLinks[activeModalLink].type]?.label || activeLinks[activeModalLink].type}
           subLinks={activeLinks[activeModalLink].subLinks!}
           onClose={() => setActiveModalLink(null)}

@@ -179,7 +179,7 @@ function Modal({ item, onClose }: { item: GalleryItem; onClose: () => void }) {
                 <MediaSlide src={images[incoming]} alt={`${item.title} ${incoming + 1}`} active={false} />
               </div>
             )}
-            
+
             {images.length > 1 && (
               <>
                 <button onClick={(e) => { e.stopPropagation(); prev(); }}
@@ -239,14 +239,14 @@ function GalleryPost({ item }: { item: GalleryItem }) {
   const [selected, setSelected] = useState(false);
   const validImages = item.images?.filter((m) => m && m.trim()) || [];
   const validImage = item.image?.trim() ? [item.image.trim()] : [];
-  
+
   const media = [];
   if (item.videoUrl?.trim()) media.push(item.videoUrl.trim());
   if (validImage.length > 0 && !media.includes(validImage[0])) media.push(validImage[0]);
   for (const img of validImages) {
     if (!media.includes(img)) media.push(img);
   }
-  
+
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-md overflow-hidden mb-12 max-w-2xl mx-auto w-full">
       {/* Post Text */}
@@ -260,16 +260,15 @@ function GalleryPost({ item }: { item: GalleryItem }) {
 
       {/* Post Media Grid */}
       {media.length > 0 && (
-        <div 
-          className={`relative grid gap-1 bg-gray-50 aspect-square sm:aspect-video ${
-            media.length === 1 ? "grid-cols-1" : 
-            media.length === 2 ? "grid-cols-2" : 
-            "grid-cols-2"
-          }`}
+        <div
+          className={`relative grid gap-1 bg-gray-50 aspect-square sm:aspect-video ${media.length === 1 ? "grid-cols-1" :
+              media.length === 2 ? "grid-cols-2" :
+                "grid-cols-2"
+            }`}
         >
           {media.slice(0, 4).map((m, idx) => (
-            <div 
-              key={idx} 
+            <div
+              key={idx}
               className={`relative h-full w-full cursor-pointer ${media.length === 3 && idx === 0 ? "row-span-2" : ""}`}
               onClick={() => setSelected(true)}
             >
@@ -280,7 +279,7 @@ function GalleryPost({ item }: { item: GalleryItem }) {
               ) : (
                 <Image src={resolveMediaUrl(m)} alt="" fill className="object-cover" unoptimized />
               )}
-              
+
               {/* Overlay for +N items */}
               {idx === 3 && media.length > 4 && (
                 <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white text-3xl font-black backdrop-blur-[2px]">
@@ -332,8 +331,8 @@ export default function Gallery({ content }: { content: GallerySections }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center">
-          {!content.featuresHidden && (features.length > 0 ? (
-            features.map((item, i) => (
+          {!content.featuresHidden && (features.filter(f => !f.hidden).length > 0 ? (
+            features.filter(f => !f.hidden).map((item, i) => (
               <GalleryPost key={i} item={item} />
             ))
           ) : (

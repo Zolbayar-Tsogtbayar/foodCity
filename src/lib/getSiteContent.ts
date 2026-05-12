@@ -333,6 +333,7 @@ export async function getPagesMetadata(lang: string = "mn"): Promise<{ pageId: s
 export async function getSalesPageSections(lang: string = "mn"): Promise<SalesPageSections> {
   const patch = asRecord(await fetchSitePageSections("sales-page", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_SALES_PAGE.header, ...asRecord(patch.header) },
   };
 }
@@ -340,6 +341,7 @@ export async function getSalesPageSections(lang: string = "mn"): Promise<SalesPa
 export async function getJobsPageSections(lang: string = "mn"): Promise<JobsPageSections> {
   const patch = asRecord(await fetchSitePageSections("jobs-page", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_JOBS_PAGE.header, ...asRecord(patch.header) },
   };
 }
@@ -347,6 +349,7 @@ export async function getJobsPageSections(lang: string = "mn"): Promise<JobsPage
 export async function getTeamPageSections(lang: string = "mn"): Promise<TeamPageSections> {
   const patch = asRecord(await fetchSitePageSections("team", lang));
   return {
+    hidden: !!patch.hidden,
     header: { ...EMPTY_TEAM_PAGE.header, ...asRecord(patch.header) },
     members: Array.isArray(patch.members) ? (patch.members as TeamPageSections["members"]) : [],
     cta: { ...EMPTY_TEAM_PAGE.cta, ...asRecord(patch.cta) },

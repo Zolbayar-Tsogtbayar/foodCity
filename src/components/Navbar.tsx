@@ -26,6 +26,9 @@ export default function Navbar({
     { id: "gallery", label: t.nav.gallery, href: "/gallery" },
     { id: "projects-page", label: t.nav.projects, href: "/projects" },
     { id: "properties-page", label: t.nav.properties, href: "/properties" },
+    { id: "sales-page", label: t.nav.sales, href: "/sales" },
+    { id: "jobs-page", label: t.nav.jobs, href: "/jobs" },
+    { id: "team", label: t.nav.team, href: "/team" },
     { id: "contact", label: t.nav.contact, href: "/contact" },
   ];
 

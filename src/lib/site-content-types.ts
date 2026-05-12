@@ -104,7 +104,7 @@ export type ContactSections = {
   };
   formTitle?: string;
   formHidden?: boolean;
-  links: { type: string; href: string; title: string; imageUrl?: string; hidden?: boolean }[];
+  links: { type: string; href: string; title: string; imageUrl?: string; hidden?: boolean; subLinks?: { type: string; label: string; href: string }[] }[];
   linksHidden?: boolean;
 };
 

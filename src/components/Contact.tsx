@@ -1,6 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useState, useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import type { ContactSections } from "@/lib/site-content-types";
 import { useLanguage } from "@/contexts/LanguageContext";
 import FormattedText from "./FormattedText";
@@ -132,11 +133,72 @@ const CONTACT_ICONS = [
   ),
 ];
 
+function SocialModal({ title, subLinks, onClose }: { title: string; subLinks: { type: string; label: string; href: string }[]; onClose: () => void }) {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => { requestAnimationFrame(() => setVisible(true)); }, []);
+
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(onClose, 300);
+  };
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
+
+  return createPortal(
+    <div className={`fixed inset-0 z-[600] flex items-center justify-center p-4 transition-opacity duration-300 ${visible ? "opacity-100" : "opacity-0"}`} onClick={handleClose}>
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+      <div className={`relative w-full max-w-xs bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${visible ? "opacity-100 scale-100" : "opacity-0 scale-95"}`} onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 className="font-bold text-brand-900">{title}</h3>
+          <button onClick={handleClose} className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="p-2 space-y-1">
+          {subLinks.map((link, i) => {
+            const meta = SOCIAL_META[link.type];
+            return (
+              <a 
+                key={i} 
+                href={link.href} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 text-gray-700 hover:text-brand-900 transition-all font-medium group"
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white shrink-0 ${meta?.bg ?? "bg-gray-400"}`}>
+                  {meta?.icon ? (
+                    <div className="scale-75">{meta.icon}</div>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  )}
+                </div>
+                <span className="flex-1 truncate">{link.label}</span>
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-accent-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 export default function Contact({ content }: { content: ContactSections }) {
   const { t, lang } = useLanguage();
   const { hero, items, links } = content;
+  const [activeModalLink, setActiveModalLink] = useState<number | null>(null);
 
-  const activeLinks = (links ?? []).filter((l) => l.href);
+  const activeLinks = (links ?? []).filter((l) => l.href || (l.subLinks && l.subLinks.length > 0));
 
   return (
     <section id="contact" className="py-16 sm:py-20 lg:py-24 bg-white">
@@ -248,12 +310,19 @@ export default function Contact({ content }: { content: ContactSections }) {
                 <div className="flex flex-wrap gap-4">
                   {activeLinks.map((link, i) => {
                     const meta = SOCIAL_META[link.type];
+                    const hasSubs = link.subLinks && link.subLinks.length > 0;
                     return (
                       <a
                         key={i}
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={hasSubs ? undefined : link.href}
+                        target={hasSubs ? undefined : "_blank"}
+                        rel={hasSubs ? undefined : "noopener noreferrer"}
+                        onClick={(e) => {
+                          if (hasSubs) {
+                            e.preventDefault();
+                            setActiveModalLink(i);
+                          }
+                        }}
                         className={`w-12 h-12 rounded-xl flex items-center justify-center text-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 overflow-hidden ${link.imageUrl ? "bg-white" : (meta?.bg ?? "bg-gray-400")}`}
                         title={link.title || meta?.label || link.type}
                       >
@@ -290,6 +359,13 @@ export default function Contact({ content }: { content: ContactSections }) {
           </div>
         </div>
       </div>
+      {activeModalLink !== null && activeLinks[activeModalLink] && (
+        <SocialModal 
+          title={activeLinks[activeModalLink].title || SOCIAL_META[activeLinks[activeModalLink].type]?.label || activeLinks[activeModalLink].type}
+          subLinks={activeLinks[activeModalLink].subLinks!}
+          onClose={() => setActiveModalLink(null)}
+        />
+      )}
     </section>
   );
 }

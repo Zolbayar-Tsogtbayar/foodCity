@@ -42,11 +42,19 @@ export default function JobsPage() {
 
 async function JobsContent() {
   const lang = await getLanguageServer();
-  const [jobs, header] = await Promise.all([loadJobs(lang), getJobsPageSections(lang)]);
+  const header = await getJobsPageSections(lang);
 
   if (header.hidden) {
     notFound();
   }
+
+  // Use items from Site Content instead of separate API
+  const jobs: JobItem[] = (header.items ?? [])
+    .filter(it => it.active)
+    .map(it => ({
+      ...it,
+      // Ensure all fields match JobItem type
+    }));
 
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-24 sm:pt-28">

@@ -44,11 +44,19 @@ export default function SalesPage() {
 
 async function SalesContent() {
   const lang = await getLanguageServer();
-  const [ads, header] = await Promise.all([loadAds(lang), getSalesPageSections(lang)]);
+  const header = await getSalesPageSections(lang);
 
   if (header.hidden) {
     notFound();
   }
+
+  // Use items from Site Content instead of separate API
+  const ads: SalesAdItem[] = (header.items ?? [])
+    .filter(it => it.active)
+    .map(it => ({
+      ...it,
+      // Ensure all fields match SalesAdItem type
+    }));
 
   return (
     <section className="border-b border-gray-100 bg-gradient-to-b from-brand-900/[0.03] to-white pb-16 pt-24 sm:pt-28">

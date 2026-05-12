@@ -63,3 +63,26 @@ export type ChatMessage = {
   text: string;
   createdAt?: string;
 };
+
+/**
+ * Standardizes building a URL for the backend.
+ * - Base is typically from getApiBaseUrl().
+ * - Path should start with /api/v1/...
+ * - Ensures single slashes and correctly joined parts.
+ */
+export function joinBackendRequestUrl(base: string, path: string): string {
+  const b = base.replace(/\/+$/, "");
+  let p = path.replace(/\/+$/, "");
+  if (!p.startsWith("/")) p = "/" + p;
+
+  // Most of our routes expect /api/v1
+  if (!p.startsWith("/api/v1/")) {
+    if (p.startsWith("/api/")) {
+      p = "/api/v1" + p.slice(4);
+    } else {
+      p = "/api/v1" + p;
+    }
+  }
+
+  return b + p;
+}

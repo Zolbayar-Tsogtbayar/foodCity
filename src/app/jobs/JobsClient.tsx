@@ -12,9 +12,13 @@ import {
   X,
   Banknote,
   User,
+  Copy,
+  Check,
+  Send,
 } from "lucide-react";
 import { resolvePublicMediaUrl } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
+import SubmitCVModal from "./SubmitCVModal";
 
 export type JobItem = {
   id: string;
@@ -67,9 +71,14 @@ function MetaCell({ label, value }: { label: string; value: ReactNode }) {
 export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
   const { lang, t } = useLanguage();
   const [open, setOpen] = useState<JobItem | null>(null);
+  const [isApplyOpen, setIsApplyOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [copied, setCopied] = useState(false);
 
-  const close = useCallback(() => setOpen(null), []);
+  const close = useCallback(() => {
+    setOpen(null);
+    setIsApplyOpen(false);
+  }, []);
 
   const totalPages = Math.max(1, Math.ceil(jobs.length / JOBS_PAGE_SIZE));
   const currentPage = Math.min(Math.max(1, page), totalPages);
@@ -168,7 +177,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                       )}
                       {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
                       {job.lastEditedByDisplayName &&
-                      job.lastEditedByDisplayName !== job.postedByDisplayName ? (
+                        job.lastEditedByDisplayName !== job.postedByDisplayName ? (
                         <span>{t.jobs.labels.lastEdited}: {job.lastEditedByDisplayName}</span>
                       ) : null}
                     </p>
@@ -343,7 +352,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                                 <div>{t.jobs.labels.poster}: {open.postedByDisplayName}</div>
                               )}
                               {open.lastEditedByDisplayName &&
-                              open.lastEditedByDisplayName !== open.postedByDisplayName ? (
+                                open.lastEditedByDisplayName !== open.postedByDisplayName ? (
                                 <div className="mt-0.5 text-xs font-medium text-slate-500">
                                   {t.jobs.labels.lastEdited}: {open.lastEditedByDisplayName}
                                 </div>
@@ -363,39 +372,41 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                         {open.description}
                       </div>
                     </section>
-
-                    {open.contactEmail ? (
-                      <div className="rounded-2xl border border-slate-200/60 bg-gradient-to-br from-slate-50 to-white p-4 sm:p-5">
-                        <a
-                          href={`mailto:${open.contactEmail}?subject=${encodeURIComponent(`Job Inquiry: ${open.title}`)}`}
-                          className="flex w-full flex-col items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-500 to-accent-600 px-4 py-3.5 text-center text-sm font-bold text-white shadow-md shadow-accent-500/20 transition hover:from-accent-600 hover:to-accent-700 sm:inline-flex sm:flex-row sm:min-w-[260px] sm:px-5"
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <Mail className="h-5 w-5 shrink-0" aria-hidden />
-                            {t.jobs.labels.sendEmail}
-                          </span>
-                          <span className="max-w-full break-all text-xs font-normal opacity-95 sm:text-sm">
-                            {open.contactEmail}
-                          </span>
-                        </a>
-                        <p className="mt-3 text-center text-xs leading-relaxed text-slate-500 sm:text-left">
-                          {t.jobs.labels.emailHint}
-                        </p>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </div>
 
-              <footer className="flex shrink-0 items-center justify-end border-t border-slate-200/80 bg-gradient-to-t from-slate-100/50 to-slate-50/30 px-5 py-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-7">
+              <footer className="flex shrink-0 items-center justify-between border-t border-slate-200/80 bg-gradient-to-t from-slate-100/50 to-slate-50/30 px-5 py-3.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-7">
                 <button
                   type="button"
                   onClick={close}
-                  className="w-full rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[140px]"
+                  className="rounded-xl border border-slate-300/90 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-slate-400 hover:bg-slate-50 sm:w-auto sm:min-w-[140px]"
                 >
                   {t.jobs.close}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setIsApplyOpen(true)}
+                  className="flex items-center gap-2 rounded-xl bg-brand-900 px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-900/20 transition hover:bg-brand-800 sm:w-auto"
+                >
+                  <Send className="h-4 w-4" />
+                  {t.jobs.labels.apply}
+                </button>
               </footer>
+
+              {isApplyOpen && (
+                <SubmitCVModal
+                  jobId={open.id}
+                  jobTitle={open.title}
+                  lang={lang}
+                  onClose={() => setIsApplyOpen(false)}
+                  onSuccess={() => {
+                    setIsApplyOpen(false);
+                    close();
+                    alert(lang === "mn" ? "Амжилттай илгээлээ!" : "Successfully submitted!");
+                  }}
+                />
+              )}
 
             </div>
           </div>,

@@ -336,6 +336,18 @@ export async function getSalesPageSections(lang: string = "mn"): Promise<SalesPa
   return {
     hidden: !!patch.hidden,
     header: { ...EMPTY_SALES_PAGE.header, ...asRecord(patch.header) },
+    items: Array.isArray(patch.items)
+      ? (patch.items as Record<string, unknown>[]).map((it) => ({
+        id: String(it.id || ""),
+        title: String(it.title || ""),
+        summary: String(it.summary || ""),
+        body: String(it.body || ""),
+        badge: String(it.badge || ""),
+        imageUrl: String(it.imageUrl || ""),
+        externalUrl: it.externalUrl ? String(it.externalUrl) : undefined,
+        active: it.active !== false,
+      }))
+      : [],
   };
 }
 
@@ -344,6 +356,19 @@ export async function getJobsPageSections(lang: string = "mn"): Promise<JobsPage
   return {
     hidden: !!patch.hidden,
     header: { ...EMPTY_JOBS_PAGE.header, ...asRecord(patch.header) },
+    items: Array.isArray(patch.items)
+      ? (patch.items as Record<string, unknown>[]).map((it) => ({
+        id: String(it.id || ""),
+        title: String(it.title || ""),
+        company: String(it.company || ""),
+        location: String(it.location || ""),
+        description: String(it.description || ""),
+        salary: it.salary ? String(it.salary) : undefined,
+        contactEmail: it.contactEmail ? String(it.contactEmail) : undefined,
+        imageUrl: it.imageUrl ? String(it.imageUrl) : undefined,
+        active: it.active !== false,
+      }))
+      : [],
   };
 }
 

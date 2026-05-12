@@ -203,6 +203,16 @@ export type SalesPageSections = {
     title: string;
     intro: string;
   };
+  items: {
+    id: string;
+    title: string;
+    summary: string;
+    body: string;
+    badge: string;
+    imageUrl: string;
+    externalUrl?: string;
+    active: boolean;
+  }[];
 };
 
 /** /jobs listing page copy (site page id: `jobs-page`) */
@@ -213,6 +223,17 @@ export type JobsPageSections = {
     title: string;
     intro: string;
   };
+  items: {
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    description: string;
+    salary?: string;
+    contactEmail?: string;
+    imageUrl?: string;
+    active: boolean;
+  }[];
 };
 
 export type TeamMember = {

@@ -330,6 +330,12 @@ export default function Properties({
   const [page, setPage] = useState(0);
   const [selected, setSelected] = useState<PropertyItem | null>(null);
 
+  // Reset category and page when language or content changes
+  useEffect(() => {
+    setActive(displayCategories[0] || allLabel);
+    setPage(0);
+  }, [lang, content, allLabel]);
+
   const filtered =
     active === allLabel
       ? content.items

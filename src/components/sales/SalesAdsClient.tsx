@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { CalendarDays, Megaphone, X } from "lucide-react";
+import { CalendarDays, LayoutList, Megaphone, X } from "lucide-react";
 import { resolvePublicMediaUrl } from "@/lib/api";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -44,15 +44,16 @@ function previewText(ad: SalesAdItem, maxLen = 140): string {
   return `${base.slice(0, maxLen).trim()}…`;
 }
 
-function MetaCell({ label, value }: { label: string; value: ReactNode }) {
+function MetaCell({ label, value, icon: Icon }: { label: string; value: ReactNode; icon: any }) {
   return (
-    <div className="self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm ring-1 ring-slate-900/[0.03]">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-        {label}
-      </p>
-      <p className="mt-1 text-sm font-semibold leading-snug text-brand-900">
-        {value}
-      </p>
+    <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/30 px-4 py-3 transition-colors hover:bg-slate-50/60">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/50">
+        <Icon className="h-5 w-5 text-accent-500" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+        <p className="mt-0.5 truncate text-sm font-bold text-brand-900">{value}</p>
+      </div>
     </div>
   );
 }
@@ -199,59 +200,25 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
               </div>
 
               <div className="min-w-0 flex-1 space-y-5">
-                {hasMeta ? (
-                  <section className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/90 p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
-                    <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                      <CalendarDays
-                        className="h-4 w-4 text-accent-600"
-                        aria-hidden
-                      />
+                {hasMeta && (
+                  <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+                    <h3 className="mb-5 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+                      <LayoutList className="h-4 w-4 text-accent-500" aria-hidden />
                       {t.sales.metaTitle}
                     </h3>
-                    <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
                       {formatDate(open.validFrom, lang) && (
-                        <MetaCell
-                          label={t.sales.labels.start}
-                          value={formatDate(open.validFrom, lang)}
-                        />
+                        <MetaCell icon={CalendarDays} label={t.sales.labels.start} value={formatDate(open.validFrom, lang)} />
                       )}
                       {formatDate(open.validTo, lang) && (
-                        <MetaCell
-                          label={t.sales.labels.end}
-                          value={formatDate(open.validTo, lang)}
-                        />
+                        <MetaCell icon={CalendarDays} label={t.sales.labels.end} value={formatDate(open.validTo, lang)} />
                       )}
                       {formatDate(open.createdAt, lang) && (
-                        <MetaCell
-                          label={t.sales.labels.published}
-                          value={formatDate(open.createdAt, lang)}
-                        />
-                      )}
-                      {(open.postedByDisplayName ||
-                        open.lastEditedByDisplayName) && (
-                        <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
-                          <p className="text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
-                            {t.sales.labels.admin}
-                          </p>
-                          <div className="mt-1 text-sm font-semibold text-brand-900">
-                            {open.postedByDisplayName && (
-                              <div>
-                                {t.sales.labels.poster}: {open.postedByDisplayName}
-                              </div>
-                            )}
-                            {open.lastEditedByDisplayName &&
-                            open.lastEditedByDisplayName !==
-                              open.postedByDisplayName ? (
-                              <div className="mt-0.5 text-xs font-medium text-slate-500">
-                                {t.sales.labels.lastEdited}: {open.lastEditedByDisplayName}
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
+                        <MetaCell icon={CalendarDays} label={t.sales.labels.published} value={formatDate(open.createdAt, lang)} />
                       )}
                     </div>
                   </section>
-                ) : null}
+                )}
 
                 {open.summary ? (
                   <p className="rounded-xl border border-accent-500/15 bg-accent-500/[0.06] px-4 py-3 text-base font-semibold leading-snug text-accent-800">
@@ -317,84 +284,64 @@ export default function SalesAdsClient({ ads }: { ads: SalesAdItem[] }) {
 
   return (
     <>
-      <div className="grid gap-6 sm:grid-cols-2 lg:gap-8">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {paged.map((ad) => (
           <article
             key={ad.id}
-            className="group flex flex-col overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm transition-shadow hover:shadow-md"
+            className="group flex flex-col h-full bg-white border border-gray-200 shadow-sm rounded-xl overflow-hidden hover:shadow-2xl transition-all duration-300 text-left w-full"
           >
             <button
               type="button"
               onClick={() => setOpenId(ad.id)}
-              className="flex flex-1 flex-col text-left outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
+              className="flex h-full w-full flex-col text-left outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2"
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-brand-900/5">
+              <div className="relative h-40 w-full shrink-0 overflow-hidden bg-brand-900/5 sm:h-48">
                 {ad.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- remote CMS URLs
                   <img
                     src={resolvePublicMediaUrl(ad.imageUrl) ?? ad.imageUrl}
                     alt=""
-                    className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900">
-                    <span className="text-4xl font-black text-white/20">
-                      FC
-                    </span>
+                  <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900">
+                    <Megaphone className="h-10 w-10 text-white/25" aria-hidden />
                   </div>
                 )}
                 {ad.badge && (
                   <div className="absolute left-3 top-3 z-10">
-                    <span className="rounded bg-red-500 px-2.5 py-1 text-[11px] font-black text-white uppercase tracking-wider shadow-lg">
+                    <span className="rounded bg-red-500 px-2 py-0.5 text-[10px] font-black text-white uppercase tracking-wider shadow-lg">
                       {ad.badge}
                     </span>
                   </div>
                 )}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent-500 z-10" />
               </div>
-              <div className="flex flex-1 flex-col p-5 sm:p-6">
-                <h2 className="text-lg font-bold leading-snug text-brand-900 group-hover:text-accent-600 sm:text-xl">
+              <div className="flex flex-1 flex-col p-4 sm:p-6">
+                <h2 className="line-clamp-2 break-words text-base sm:text-lg font-bold leading-snug text-brand-900 group-hover:text-accent-500 transition-colors">
                   {ad.title}
                 </h2>
-                {ad.summary && (
-                  <p className="mt-1.5 text-sm font-semibold text-accent-600">
-                    {ad.summary}
-                  </p>
-                )}
-                <p className="mt-3 line-clamp-3 flex-1 text-sm leading-relaxed text-gray-600">
-                  {previewText(ad, 220)}
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-50 pt-3 text-[13px] text-slate-500">
+                  {ad.summary && (
+                    <span className="inline-flex items-center gap-1.5 font-bold text-accent-600">
+                      <Megaphone className="h-3.5 w-3.5" />
+                      {ad.summary}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-3 line-clamp-3 flex-1 break-words text-sm leading-relaxed text-gray-400">
+                  {previewText(ad, 140)}
                 </p>
-                {(ad.postedByDisplayName || ad.lastEditedByDisplayName) && (
-                  <p className="mt-3 text-xs text-gray-500">
-                    {ad.postedByDisplayName && (
-                      <span>{t.sales.labels.poster}: {ad.postedByDisplayName}</span>
-                    )}
-                    {ad.postedByDisplayName && ad.lastEditedByDisplayName
-                      ? " · "
-                      : null}
-                    {ad.lastEditedByDisplayName &&
-                    ad.lastEditedByDisplayName !== ad.postedByDisplayName ? (
-                      <span>{t.sales.labels.lastEdited}: {ad.lastEditedByDisplayName}</span>
-                    ) : null}
-                  </p>
-                )}
-                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-accent-600">
-                  {t.sales.labels.viewMore}
-                  <svg
-                    className="h-4 w-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </span>
+                
+                <div className="mt-4 pt-4 border-t border-gray-100">
+                  <span className="inline-flex items-center gap-2 text-sm font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
+                    {t.sales.labels.viewMore}
+                    <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </span>
+                </div>
               </div>
-
+              <div className="h-1 bg-accent-500 w-full" />
             </button>
           </article>
         ))}

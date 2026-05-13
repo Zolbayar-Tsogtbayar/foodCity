@@ -62,16 +62,18 @@ async function SalesContent() {
     <section className="border-b border-gray-100 bg-gradient-to-b from-brand-900/[0.03] to-white pb-16 pt-24 sm:pt-28">
       <div className="mx-auto max-w-5xl px-4">
         {!header.header.hidden && (header.header.eyebrow || header.header.title || header.header.intro) && (
-          <div className="mb-10 text-center sm:mb-12 sm:text-left">
-            <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-accent-600">
+          <div className="mb-10 sm:mb-14 text-center">
+            <span className="inline-block text-accent-500 font-semibold text-xs uppercase tracking-widest mb-4">
               {header.header.eyebrow}
-            </p>
-            <h1 className="text-3xl font-black text-brand-900 sm:text-4xl">
+            </span>
+            <h1 className="mb-4 text-3xl font-black text-brand-900 sm:text-4xl lg:text-5xl">
               {header.header.title}
             </h1>
-            <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-gray-600 sm:mx-0">
-              {header.header.intro}
-            </p>
+            {header.header.intro && (
+              <p className="mx-auto max-w-2xl text-base text-gray-500 sm:text-lg">
+                {header.header.intro}
+              </p>
+            )}
           </div>
         )}
 

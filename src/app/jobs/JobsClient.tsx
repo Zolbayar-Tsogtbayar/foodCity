@@ -41,8 +41,8 @@ function excerpt(text: string, max = 140): string {
   return `${t.slice(0, max).trimEnd()}…`;
 }
 
-/** Two columns × two rows per page */
-const JOBS_PAGE_SIZE = 4;
+/** 3 columns × 3 rows per page */
+const JOBS_PAGE_SIZE = 9;
 
 function formatPosted(iso?: string, lang = "mn"): string | null {
   if (!iso) return null;
@@ -59,11 +59,16 @@ function formatPosted(iso?: string, lang = "mn"): string | null {
   }
 }
 
-function MetaCell({ label, value }: { label: string; value: ReactNode }) {
+function MetaCell({ label, value, icon: Icon }: { label: string; value: ReactNode; icon: any }) {
   return (
-    <div className="self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm ring-1 ring-slate-900/[0.03]">
-      <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">{label}</p>
-      <p className="mt-1 text-sm font-semibold leading-snug text-brand-900">{value}</p>
+    <div className="flex flex-1 items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/30 px-4 py-3 transition-colors hover:bg-slate-50/60">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm ring-1 ring-slate-200/50">
+        <Icon className="h-5 w-5 text-accent-500" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{label}</p>
+        <p className="mt-0.5 truncate text-sm font-bold text-brand-900">{value}</p>
+      </div>
     </div>
   );
 }
@@ -116,7 +121,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
 
   return (
     <>
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-6">
         {pageJobs.map((job) => {
           const posted = formatPosted(job.createdAt, lang);
           return (
@@ -124,66 +129,61 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
               <button
                 type="button"
                 onClick={() => setOpen(job)}
-                className="flex h-full min-h-[320px] w-full min-w-0 flex-col rounded-xl border border-gray-100 bg-white text-left shadow-sm transition hover:border-accent-500/30 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-accent-500/40"
+                className="group flex h-full w-full min-w-0 flex-col rounded-xl border border-gray-200 bg-white text-left shadow-sm transition-all duration-300 hover:shadow-2xl hover:border-transparent focus:outline-none focus:ring-2 focus:ring-accent-500/40 overflow-hidden"
               >
-                {job.imageUrl ? (
-                  <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden rounded-t-xl bg-brand-900/5">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- API /upload URLs */}
+                <div className="relative h-40 w-full shrink-0 overflow-hidden bg-brand-900/5 sm:h-48">
+                  {job.imageUrl ? (
                     <img
                       src={resolvePublicMediaUrl(job.imageUrl) ?? job.imageUrl}
                       alt=""
-                      className="h-full w-full object-cover"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  </div>
-                ) : (
-                  <div className="flex aspect-[16/10] w-full shrink-0 items-center justify-center rounded-t-xl bg-gradient-to-br from-brand-800 to-brand-900">
-                    <Briefcase className="h-12 w-12 text-white/25" aria-hidden />
-                  </div>
-                )}
-                <div className="flex min-h-0 flex-1 flex-col p-4 sm:p-5">
-                  <h2 className="line-clamp-2 break-words text-lg font-semibold leading-snug text-brand-900">
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-800 to-brand-900">
+                      <Briefcase className="h-10 w-10 text-white/25" aria-hidden />
+                    </div>
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent-500 z-10" />
+                </div>
+                
+                <div className="flex flex-1 flex-col p-4 sm:p-6">
+                  <h2 className="line-clamp-2 break-words text-base sm:text-lg font-bold leading-snug text-brand-900 group-hover:text-accent-500 transition-colors">
                     {job.title}
                   </h2>
-                  <p className="mt-2 flex flex-col gap-1 text-sm text-gray-600">
-                    <span className="inline-flex min-w-0 items-center gap-1">
-                      <Building2 className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                      <span className="break-words">{job.company}</span>
+                  
+                  <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-slate-50 pt-3 text-[13px] text-slate-500">
+                    <span className="inline-flex items-center gap-1.5 font-medium">
+                      <Building2 className="h-3.5 w-3.5 text-accent-500" />
+                      {job.company}
                     </span>
-                    <span className="inline-flex min-w-0 items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden />
-                      <span className="break-words">{job.location}</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 text-accent-500" />
+                      {job.location}
                     </span>
-                  </p>
-                  {job.salary && (
-                    <span className="mt-2 inline-flex w-fit max-w-full items-center gap-1.5 rounded-md border border-emerald-100/80 bg-emerald-50/90 px-2 py-0.5 text-xs font-semibold tabular-nums text-emerald-900">
-                      <Banknote className="h-3 w-3 shrink-0 text-emerald-700" aria-hidden />
-                      <span className="leading-none">{job.salary}</span>
-                    </span>
-                  )}
-                  <p className="mt-3 line-clamp-3 flex-1 break-words text-sm leading-relaxed text-gray-700">
-                    {excerpt(job.description, 160)}
-                  </p>
-                  <span className="mt-4 inline-flex text-sm font-medium text-accent-600">
-                    {t.jobs.labels.viewMore}
-                  </span>
-                  {(posted || job.postedByDisplayName || job.lastEditedByDisplayName) && (
-                    <p className="mt-2 line-clamp-2 text-xs text-gray-400">
-                      {posted ? <>{t.jobs.labels.published}: {posted}</> : null}
-                      {posted && (job.postedByDisplayName || job.lastEditedByDisplayName)
-                        ? " · "
-                        : null}
-                      {job.postedByDisplayName && (
-                        <span>{t.jobs.labels.poster}: {job.postedByDisplayName}</span>
-                      )}
-                      {job.postedByDisplayName && job.lastEditedByDisplayName ? " · " : null}
-                      {job.lastEditedByDisplayName &&
-                        job.lastEditedByDisplayName !== job.postedByDisplayName ? (
-                        <span>{t.jobs.labels.lastEdited}: {job.lastEditedByDisplayName}</span>
-                      ) : null}
-                    </p>
-                  )}
-                </div>
+                    {job.salary && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-600">
+                        <Banknote className="h-3 w-3" />
+                        {job.salary}
+                      </span>
+                    )}
+                  </div>
 
+
+
+                  <p className="mt-3 line-clamp-3 flex-1 break-words text-sm leading-relaxed text-gray-400">
+                    {excerpt(job.description, 140)}
+                  </p>
+
+                  <div className="mt-4 pt-4 border-t border-gray-100">
+                    <span className="inline-flex items-center gap-2 text-sm font-bold text-brand-900 group-hover:text-accent-500 transition-colors">
+                      {t.jobs.labels.viewMore}
+                      <svg className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div className="h-1 bg-accent-500 w-full" />
               </button>
             </li>
           );
@@ -191,36 +191,34 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
       </ul>
 
       {totalPages > 1 && (
-        <nav
-          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          aria-label={t.jobs.labels.pagination}
-        >
-          <div className="flex flex-wrap items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 mt-10">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            ←
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => (
             <button
-              type="button"
-              disabled={currentPage <= 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+              key={i}
+              onClick={() => setPage(i + 1)}
+              className={`w-8 h-8 rounded text-sm font-bold transition-colors ${i + 1 === currentPage
+                  ? "bg-brand-900 text-white"
+                  : "border border-gray-200 text-gray-600 hover:border-gray-400 hover:text-brand-900"
+                }`}
             >
-              {t.jobs.labels.prev}
+              {i + 1}
             </button>
-            <button
-              type="button"
-              disabled={currentPage >= totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              {t.jobs.labels.next}
-            </button>
-          </div>
-          <p className="text-sm text-gray-500">
-            {t.jobs.labels.page} <span className="font-medium text-brand-900">{currentPage}</span> /{" "}
-            {totalPages}{" "}
-            <span className="text-gray-400">
-              ({jobs.length} {t.jobs.labels.adsCount})
-            </span>
-          </p>
-        </nav>
+          ))}
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 rounded border border-gray-200 text-sm font-medium text-gray-600 hover:border-accent-400 hover:text-accent-500 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            →
+          </button>
+        </div>
       )}
 
       {typeof document !== "undefined" &&
@@ -299,66 +297,19 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                   </div>
 
                   <div className="min-w-0 flex-1 space-y-5">
-                    <section className="rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white to-slate-50/90 p-4 shadow-sm ring-1 ring-slate-900/[0.03] sm:p-5">
-                      <h3 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
-                        <LayoutList className="h-4 w-4 text-emerald-600" aria-hidden />
+                    <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+                      <h3 className="mb-5 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+                        <LayoutList className="h-4 w-4 text-accent-500" aria-hidden />
                         {t.jobs.metaTitle}
                       </h3>
-                      <div className="grid grid-cols-2 items-start gap-2 sm:grid-cols-3 lg:grid-cols-4 lg:gap-3">
-                        <div className="col-span-2 flex gap-2 self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-emerald-50/50 px-3 py-2 sm:col-span-1">
-                          <Building2 className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
-                          <div className="min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              {t.jobs.labels.company}
-                            </p>
-                            <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
-                              {open.company}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="col-span-2 flex gap-2 self-start rounded-xl border border-slate-200/70 bg-gradient-to-b from-white to-slate-50/80 px-3 py-2 shadow-sm sm:col-span-1">
-                          <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" aria-hidden />
-                          <div className="min-w-0">
-                            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                              {t.jobs.labels.location}
-                            </p>
-                            <p className="mt-1 break-words text-sm font-semibold leading-snug text-brand-900">
-                              {open.location}
-                            </p>
-                          </div>
-                        </div>
-                        {open.salary ? (
-                          <div className="col-span-2 flex w-fit max-w-full flex-nowrap items-center gap-2 self-start rounded-lg border border-emerald-200/90 bg-gradient-to-r from-emerald-50 to-white px-3 py-1.5 sm:col-span-1">
-                            <Banknote className="h-3.5 w-3.5 shrink-0 text-emerald-700" aria-hidden />
-                            <span className="shrink-0 text-[10px] font-bold uppercase leading-none tracking-wide text-emerald-800">
-                              {t.jobs.labels.salary}
-                            </span>
-                            <span className="min-w-0 text-sm font-bold leading-none tabular-nums text-emerald-950">
-                              {open.salary}
-                            </span>
-                          </div>
-                        ) : null}
-                        {formatPosted(open.createdAt, lang) ? (
-                          <MetaCell label={t.jobs.labels.published} value={formatPosted(open.createdAt, lang)} />
-                        ) : null}
-                        {(open.postedByDisplayName || open.lastEditedByDisplayName) && (
-                          <div className="col-span-2 self-start rounded-xl border border-violet-200/60 bg-gradient-to-br from-violet-50/90 to-white px-3 py-2.5 shadow-sm sm:col-span-1 lg:col-span-2">
-                            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-violet-600/90">
-                              <User className="h-3.5 w-3.5" aria-hidden />
-                              {t.jobs.labels.admin}
-                            </p>
-                            <div className="mt-1 text-sm font-semibold text-brand-900">
-                              {open.postedByDisplayName && (
-                                <div>{t.jobs.labels.poster}: {open.postedByDisplayName}</div>
-                              )}
-                              {open.lastEditedByDisplayName &&
-                                open.lastEditedByDisplayName !== open.postedByDisplayName ? (
-                                <div className="mt-0.5 text-xs font-medium text-slate-500">
-                                  {t.jobs.labels.lastEdited}: {open.lastEditedByDisplayName}
-                                </div>
-                              ) : null}
-                            </div>
-                          </div>
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
+                        <MetaCell icon={Building2} label={t.jobs.labels.company} value={open.company} />
+                        <MetaCell icon={MapPin} label={t.jobs.labels.location} value={open.location} />
+                        {open.salary && (
+                          <MetaCell icon={Banknote} label={t.jobs.labels.salary} value={open.salary} />
+                        )}
+                        {formatPosted(open.createdAt, lang) && (
+                          <MetaCell icon={CalendarDays} label={t.jobs.labels.published} value={formatPosted(open.createdAt, lang)} />
                         )}
                       </div>
                     </section>

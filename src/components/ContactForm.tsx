@@ -108,9 +108,12 @@ export default function ContactForm() {
           id="phone"
           name="phone"
           value={formData.phone}
-          onChange={handleChange}
+          onChange={(e) => {
+            const val = e.target.value.replace(/\D/g, "").slice(0, 8);
+            setFormData(prev => ({ ...prev, phone: val }));
+          }}
           required
-          placeholder={t.phone}
+          placeholder="88888888"
           className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-transparent transition-all"
         />
       </div>

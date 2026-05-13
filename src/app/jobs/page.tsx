@@ -59,12 +59,16 @@ async function JobsContent() {
   return (
     <section className="mx-auto max-w-6xl px-4 pb-16 pt-24 sm:pt-28">
       {!header.header.hidden && (header.header.title || header.header.intro) && (
-        <>
-          <h1 className="mb-2 text-3xl font-bold text-brand-900">
+        <div className="mb-10 sm:mb-14">
+          <h1 className="mb-4 text-3xl font-black text-brand-900 sm:text-4xl lg:text-5xl">
             {header.header.title}
           </h1>
-          <p className="mb-10 text-gray-600">{header.header.intro}</p>
-        </>
+          {header.header.intro && (
+            <p className="max-w-2xl text-base text-gray-500 sm:text-lg">
+              {header.header.intro}
+            </p>
+          )}
+        </div>
       )}
       <JobsClient jobs={jobs} />
     </section>

@@ -168,7 +168,11 @@ export default function SubmitCVModal({ jobId, jobTitle, lang, onClose, onSucces
                   type="tel"
                   className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-hidden transition focus:border-accent-500 focus:ring-4 focus:ring-accent-500/10"
                   value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, "").slice(0, 8);
+                    setPhone(val);
+                  }}
+                  placeholder="88888888"
                 />
               </div>
               <div className="space-y-1.5">

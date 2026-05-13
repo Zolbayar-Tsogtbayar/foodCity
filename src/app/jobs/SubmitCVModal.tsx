@@ -249,7 +249,7 @@ export default function SubmitCVModal({ jobId, jobTitle, lang, onClose, onSucces
           <button
             type="submit"
             disabled={submitting || uploading || !cvUrl}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-900 py-3.5 text-sm font-bold text-white shadow-xl shadow-brand-900/20 transition hover:bg-brand-800 disabled:opacity-50 disabled:shadow-none"
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 py-3.5 text-sm font-bold text-white shadow-xl shadow-emerald-600/20 transition hover:bg-emerald-700 disabled:opacity-50 disabled:shadow-none"
           >
             {submitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />

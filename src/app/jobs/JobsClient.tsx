@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "react-hot-toast";
 import {
   Briefcase,
   Building2,
@@ -338,7 +339,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                 <button
                   type="button"
                   onClick={() => setIsApplyOpen(true)}
-                  className="flex items-center gap-2 rounded-xl bg-brand-900 px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-brand-900/20 transition hover:bg-brand-800 sm:w-auto"
+                  className="flex items-center gap-2 rounded-xl bg-emerald-600 px-8 py-2.5 text-sm font-bold text-white shadow-lg shadow-emerald-600/20 transition hover:bg-emerald-700 sm:w-auto"
                 >
                   <Send className="h-4 w-4" />
                   {t.jobs.labels.apply}
@@ -354,7 +355,7 @@ export default function JobsClient({ jobs }: { jobs: JobItem[] }) {
                   onSuccess={() => {
                     setIsApplyOpen(false);
                     close();
-                    alert(lang === "mn" ? "Амжилттай илгээлээ!" : "Successfully submitted!");
+                    toast.success(lang === "mn" ? "Амжилттай илгээлээ!" : "Successfully submitted!");
                   }}
                 />
               )}

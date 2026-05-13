@@ -116,9 +116,11 @@ const EMPTY_PROJECTS_PAGE: ProjectsPageSections = {
 
 const EMPTY_SALES_PAGE: SalesPageSections = {
   header: { eyebrow: "", title: "", intro: "" },
+  items: [],
 };
 const EMPTY_JOBS_PAGE: JobsPageSections = {
   header: { title: "", intro: "" },
+  items: [],
 };
 const EMPTY_TEAM_PAGE: TeamPageSections = {
   header: { eyebrow: "", h2Line1: "", h2Accent: "", intro: "" },

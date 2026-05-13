@@ -296,6 +296,7 @@ export const defaultSalesPageSections: SalesPageSections = {
     intro:
       "Хямдрал, урамшуулал, шинэ нээлтийн мэдээллийг эндээс үзнэ үү. Картад дарж дэлгэрэнгүйг уншина уу.",
   },
+  items: [],
 };
 
 export const defaultJobsPageSections: JobsPageSections = {
@@ -303,6 +304,7 @@ export const defaultJobsPageSections: JobsPageSections = {
     title: "Ажлын зар",
     intro: "Нээлттэй ажлын байрууд. Картыг дарж бүх мэдээллийг үзнэ үү.",
   },
+  items: [],
 };
 
 export const defaultTeamPageSections: TeamPageSections = {
